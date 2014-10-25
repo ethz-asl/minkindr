@@ -213,6 +213,7 @@ RotationQuaternionTemplate<Scalar>::setRandom() {
   Vector4 coeffs;
   coeffs.setRandom().normalize();
   q_A_B_ = Implementation(coeffs(0), coeffs(1), coeffs(2), coeffs(3));
+  this->setUnique();
   return *this;
 }
 

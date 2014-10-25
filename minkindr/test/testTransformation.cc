@@ -1,4 +1,5 @@
 #include <cmath>
+
 #include <Eigen/Dense>
 #include <eigen-checks/gtest.h>
 #include <gtest/gtest.h>
@@ -198,7 +199,7 @@ TEST(MinKindrTests, testSetRandomWithAngleAndNorm) {
   const double kTranslationNorm = 2.0;
   const double KRotationAngleRad = 10.0 / 180.0 * M_PI;
 
-  T.setRandom(KRotationAngleRad, kTranslationNorm);
+  T.setRandom(kTranslationNorm, KRotationAngleRad);
   Eigen::Matrix3d R = T.getRotation().getRotationMatrix();
   Eigen::Vector3d p = T.getPosition();
 

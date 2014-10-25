@@ -61,7 +61,7 @@ class QuatTransformationTemplate {
   QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation);
 
   /// \brief set to random transformation with a given translation norm and rotation angle
-  QuatTransformationTemplate<Scalar>& setRandom(Scalar angle_rad, Scalar norm_translation);
+  QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation, Scalar angle_rad);
 
   /// \brief get the position component
   Position& getPosition();

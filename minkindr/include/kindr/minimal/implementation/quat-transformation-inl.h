@@ -226,7 +226,7 @@ QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation) {
 /// \brief set to random transformation with a given translation norm and rotation angle
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>&
-QuatTransformationTemplate<Scalar>::setRandom(Scalar angle_rad, Scalar norm_translation) {
+QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation, Scalar angle_rad) {
   q_A_B_.setRandom(angle_rad);
   A_t_A_B_.setRandom().normalize();
   A_t_A_B_ *= norm_translation;
