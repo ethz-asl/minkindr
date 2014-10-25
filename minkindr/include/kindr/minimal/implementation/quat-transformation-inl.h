@@ -204,6 +204,34 @@ QuatTransformationTemplate<Scalar>::log() const {
   return (Vector6() << A_t_A_B_, (angleaxis.axis()*angleaxis.angle())).finished();
 }
 
+/// \brief set to random transformation
+template<typename Scalar>
+QuatTransformationTemplate<Scalar>&
+QuatTransformationTemplate<Scalar>::setRandom() {
+  q_A_B_.setRandom();
+  A_t_A_B_.setRandom();
+  return *this;
+}
+
+/// \brief set to random transformation with a given translation norm
+template<typename Scalar>
+QuatTransformationTemplate<Scalar>&
+QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation) {
+  setRandom();
+  A_t_A_B_.normalize();
+  A_t_A_B_ *= norm_translation;
+  return *this;
+}
+
+/// \brief set to random transformation with a given translation norm and rotation angle
+template<typename Scalar>
+QuatTransformationTemplate<Scalar>&
+QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation, Scalar angle_rad) {
+  q_A_B_.setRandom(angle_rad);
+  A_t_A_B_.setRandom().normalize();
+  A_t_A_B_ *= norm_translation;
+  return *this;
+}
 
 template<typename Scalar>
 std::ostream & operator<<(std::ostream & out,

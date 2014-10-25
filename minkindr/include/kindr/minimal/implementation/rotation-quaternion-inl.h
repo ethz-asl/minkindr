@@ -1,9 +1,9 @@
 #ifndef KINDR_MIN_ROTATION_QUATERNION_INL_H_
 #define KINDR_MIN_ROTATION_QUATERNION_INL_H_
+#include <boost/math/special_functions/sinc.hpp>
+#include <glog/logging.h>
 #include <kindr/minimal/rotation-quaternion.h>
 #include <kindr/minimal/angle-axis.h>
-#include <glog/logging.h>
-#include <boost/math/special_functions/sinc.hpp>
 
 namespace kindr {
 namespace minimal {
@@ -203,6 +203,27 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>&
 RotationQuaternionTemplate<Scalar>::setIdentity() {
   q_A_B_.setIdentity();
+  return *this;
+}
+
+/// \brief set to random rotation
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>&
+RotationQuaternionTemplate<Scalar>::setRandom() {
+  Vector4 coeffs;
+  coeffs.setRandom().normalize();
+  q_A_B_ = Implementation(coeffs(0), coeffs(1), coeffs(2), coeffs(3));
+  this->setUnique();
+  return *this;
+}
+
+/// \brief set to random rotation  with a given angle
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>&
+RotationQuaternionTemplate<Scalar>::setRandom(Scalar angle_rad) {
+  Vector3 rotation_axis;
+  rotation_axis.setRandom().normalize();
+  q_A_B_ = Implementation(Eigen::AngleAxis<Scalar>(angle_rad, rotation_axis));
   return *this;
 }
 
