@@ -115,6 +115,12 @@ QuatTransformationTemplate<Scalar>::getTransformationMatrix() const {
   return transformation_matrix;
 }
 
+/// \brief get the rotation matrix
+template<typename Scalar>
+typename QuatTransformationTemplate<Scalar>::RotationMatrix
+QuatTransformationTemplate<Scalar>::getRotationMatrix() const {
+  return q_A_B_.getRotationMatrix();
+}
 
 /// \brief compose two transformations
 template<typename Scalar>
