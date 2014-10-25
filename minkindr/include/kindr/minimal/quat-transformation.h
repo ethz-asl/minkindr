@@ -29,6 +29,7 @@ class QuatTransformationTemplate {
 
   typedef Eigen::Matrix<Scalar, 3, 1> Position;
   typedef RotationQuaternionTemplate<Scalar> Rotation;
+  typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
   typedef Eigen::Matrix<Scalar, 4, 4> TransformationMatrix;
 
   QuatTransformationTemplate();
@@ -71,12 +72,15 @@ class QuatTransformationTemplate {
 
   /// \brief get the rotation component
   Rotation& getRotation();
-  
+
   /// \brief get the rotation component
   const Rotation& getRotation() const;
   
   /// \brief get the transformation matrix
   TransformationMatrix getTransformationMatrix() const;
+
+  /// \brief get the rotation matrix
+  RotationMatrix getRotationMatrix() const;
 
   /// \brief compose two transformations
   QuatTransformationTemplate<Scalar> operator*(
