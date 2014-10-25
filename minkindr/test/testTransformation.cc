@@ -1,6 +1,8 @@
+#include <cmath>
+#include <Eigen/Dense>
+#include <eigen-checks/gtest.h>
 #include <gtest/gtest.h>
 #include <kindr/minimal/quat-transformation.h>
-#include <cmath>
 
 typedef kindr::minimal::QuatTransformation Transformation;
 
@@ -165,7 +167,43 @@ TEST(MinKindrTests, testCompose) {
     EXPECT_NEAR(iTTv1[i], invTTv[i],1e-4);
     EXPECT_NEAR(iTTv2[i], invTTv[i],1e-4);
   }
-
-  
 }
 
+TEST(MinKindrTests, testSetRandom) {
+  using namespace kindr::minimal;
+  Transformation T;
+  T.setRandom();
+  Eigen::Matrix3d R = T.getRotation().getRotationMatrix();
+
+  // Check if orthonormal
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(R*R.transpose(), Eigen::Matrix3d::Identity(), 1e-6));
+}
+
+TEST(MinKindrTests, testSetRandomWithNorm) {
+  using namespace kindr::minimal;
+  Transformation T;
+  const double kTranslationNorm = 2.0;
+  T.setRandom(kTranslationNorm);
+  Eigen::Matrix3d R = T.getRotation().getRotationMatrix();
+  Eigen::Vector3d p = T.getPosition();
+
+  // Check if orthonormal and translation norm
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(R*R.transpose(), Eigen::Matrix3d::Identity(), 1e-6));
+  EXPECT_NEAR(p.norm(), kTranslationNorm, 1e-8);
+}
+
+TEST(MinKindrTests, testSetRandomWithAngleAndNorm) {
+  using namespace kindr::minimal;
+  Transformation T;
+  const double kTranslationNorm = 2.0;
+  const double KRotationAngleRad = 10.0 / 180.0 * M_PI;
+
+  T.setRandom(KRotationAngleRad, kTranslationNorm);
+  Eigen::Matrix3d R = T.getRotation().getRotationMatrix();
+  Eigen::Vector3d p = T.getPosition();
+
+  // Check if orthonormal, translation norm and rotation angle
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(R*R.transpose(), Eigen::Matrix3d::Identity(), 1e-6));
+  EXPECT_NEAR(p.norm(), kTranslationNorm, 1e-8);
+  EXPECT_NEAR(AngleAxis(R).angle(), KRotationAngleRad, 1e-8);
+}

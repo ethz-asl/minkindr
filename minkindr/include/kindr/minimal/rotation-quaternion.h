@@ -93,6 +93,9 @@ class RotationQuaternionTemplate {
   /// \brief set the quaternion to identity
   RotationQuaternionTemplate<Scalar>& setIdentity();
 
+  /// \brief set to random rotation
+  RotationQuaternionTemplate<Scalar>& setRandom();
+
   /// \brief get a copy of the quaternion inverted.
   RotationQuaternionTemplate<Scalar> inverted() const;
 

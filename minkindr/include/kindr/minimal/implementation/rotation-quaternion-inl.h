@@ -206,6 +206,16 @@ RotationQuaternionTemplate<Scalar>::setIdentity() {
   return *this;
 }
 
+/// \brief set to random rotation
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>&
+RotationQuaternionTemplate<Scalar>::setRandom() {
+  Eigen::Matrix<Scalar, 4, 1> coeffs;
+  coeffs.setRandom().normalize();
+  q_A_B_ = Implementation(coeffs(0), coeffs(1), coeffs(2), coeffs(3));
+  return *this;
+}
+
 /// \brief get a copy of the quaternion inverted.
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
