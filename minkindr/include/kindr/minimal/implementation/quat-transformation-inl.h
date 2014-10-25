@@ -227,10 +227,7 @@ QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation) {
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>&
 QuatTransformationTemplate<Scalar>::setRandom(Scalar angle_rad, Scalar norm_translation) {
-  Eigen::Vector3d rotation_axis;
-  rotation_axis.setRandom().normalize();
-  rotation_axis *= angle_rad;
-  q_A_B_ =  Rotation(rotation_axis);
+  q_A_B_.setRandom(angle_rad);
   A_t_A_B_.setRandom().normalize();
   A_t_A_B_ *= norm_translation;
   return *this;
