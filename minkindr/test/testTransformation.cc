@@ -105,26 +105,6 @@ TEST(MinKindrTests, testTransform) {
       EXPECT_NEAR(invTv4[i], invTv[i], 1e-4);
     }
   }
-
-  {
-    Eigen::Vector3d invCv1 = T.inverseTransformVector(v);
-    Eigen::Vector3d invCv2 = T.inverted().transformVector(v);
-  
-    for(int i = 0; i < 3; ++i) {
-      EXPECT_NEAR(invCv1[i], invCv[i], 1e-4);
-      EXPECT_NEAR(invCv2[i], invCv[i], 1e-4);
-    }
-  }
-
-  {
-    Eigen::Vector3d Cv1 = T.transformVector(v);
-  
-    for(int i = 0; i < 3; ++i) {
-      EXPECT_NEAR(Cv1[i], Cv[i], 1e-4);
-    }
-  }
-
-
 }
 
 TEST(MinKindrTests, testCompose) {
