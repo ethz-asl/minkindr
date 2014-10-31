@@ -143,6 +143,15 @@ QuatTransformationTemplate<Scalar>::transform(
 
 /// \brief transform a point
 template<typename Scalar>
+typename QuatTransformationTemplate<Scalar>::Vector3
+QuatTransformationTemplate<Scalar>::operator*(
+    const typename QuatTransformationTemplate<Scalar>::Vector3& rhs) const {
+  return transform(rhs);
+}
+
+
+/// \brief transform a point
+template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector4
 QuatTransformationTemplate<Scalar>::transform4(
     const typename QuatTransformationTemplate<Scalar>::Vector4& rhs) const {
@@ -152,16 +161,6 @@ QuatTransformationTemplate<Scalar>::transform4(
       q_A_B_.rotate(rhs.template head<3>()) + rhs[3]*A_t_A_B_;
   return rval;
 }
-
-
-/// \brief transform a vector (apply only the rotational component)
-template<typename Scalar>
-typename QuatTransformationTemplate<Scalar>::Vector3
-QuatTransformationTemplate<Scalar>::transformVector(
-    const QuatTransformationTemplate<Scalar>::Vector3& rhs) const {
-  return q_A_B_.rotate(rhs);
-}
-
 
 /// \brief transform a point by the inverse
 template<typename Scalar>
@@ -182,16 +181,6 @@ QuatTransformationTemplate<Scalar>::inverseTransform4(
   rval[3] = rhs[3];
   return rval;
 }
-
-/// \brief transform a vector by the inverse (apply only the rotational
-///        component)
-template<typename Scalar>
-typename QuatTransformationTemplate<Scalar>::Vector3
-QuatTransformationTemplate<Scalar>::inverseTransformVector(
-    const typename QuatTransformationTemplate<Scalar>::Vector3& rhs) const {
-  return q_A_B_.inverseRotate(rhs);
-}
-
 
 /// \brief return a copy of the transformation inverted
 template<typename Scalar>

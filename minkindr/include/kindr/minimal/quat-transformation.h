@@ -87,23 +87,19 @@ class QuatTransformationTemplate {
       const QuatTransformationTemplate<Scalar>& rhs) const;
 
   /// \brief transform a point
+  Vector3 operator*(const Vector3& rhs) const;
+
+  /// \brief transform a point
   Vector3 transform(const Vector3& rhs) const;
 
   /// \brief transform a point
   Vector4 transform4(const Vector4& rhs) const;
-
-  /// \brief transform a vector (apply only the rotational component)
-  Vector3 transformVector(const Vector3& rhs) const;
 
   /// \brief transform a point by the inverse
   Vector3 inverseTransform(const Vector3& rhs) const;
 
   /// \brief transform a point by the inverse
   Vector4 inverseTransform4(const Vector4& rhs) const;
-
-  /// \brief transform a vector by the inverse (apply only the rotational
-  ///        component)
-  Vector3 inverseTransformVector(const Vector3& rhs) const;
 
   /// \brief get the logarithmic map of the transformation
   Vector6 log() const;
