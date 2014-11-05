@@ -250,7 +250,7 @@ template<typename Scalar>
 typename RotationQuaternionTemplate<Scalar>::Vector3
 RotationQuaternionTemplate<Scalar>::rotate(
     const typename RotationQuaternionTemplate<Scalar>::Vector3& v) const {
-  return q_A_B_*v;
+  return q_A_B_.inverse()*v;
 }
 
 
@@ -261,7 +261,7 @@ RotationQuaternionTemplate<Scalar>::rotate4(
     const typename RotationQuaternionTemplate<Scalar>::Vector4& v) const {
   typename RotationQuaternionTemplate<Scalar>::Vector4 vprime;
   vprime[3] = v[3];
-  vprime.template head<3>() = q_A_B_*v.template head<3>();
+  vprime.template head<3>() = q_A_B_.inverse() * v.template head<3>();
   return vprime;
 }
 
@@ -271,7 +271,7 @@ template<typename Scalar>
 typename RotationQuaternionTemplate<Scalar>::Vector3
 RotationQuaternionTemplate<Scalar>::inverseRotate(
     const typename RotationQuaternionTemplate<Scalar>::Vector3& v) const {
-  return q_A_B_.inverse()*v;
+  return q_A_B_ * v;
 }
 
 
@@ -282,7 +282,7 @@ RotationQuaternionTemplate<Scalar>::inverseRotate4(
     const typename RotationQuaternionTemplate<Scalar>::Vector4& v) const {
   typename RotationQuaternionTemplate<Scalar>::Vector4 vprime;
   vprime[3] = v[3];
-  vprime.template head<3>() = q_A_B_.inverse()*v.template head<3>();
+  vprime.template head<3>() = q_A_B_ * v.template head<3>();
   return vprime;
 }
 
