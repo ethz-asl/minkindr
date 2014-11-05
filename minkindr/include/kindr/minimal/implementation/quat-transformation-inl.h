@@ -127,7 +127,7 @@ template<typename Scalar>
 QuatTransformationTemplate<Scalar>
 QuatTransformationTemplate<Scalar>::operator*(
     const QuatTransformationTemplate<Scalar>& rhs) const {
-  return QuatTransformationTemplate<Scalar>(q_A_B_ * rhs.q_A_B_, A_t_A_B_ +
+  return QuatTransformationTemplate<Scalar>(rhs.q_A_B_ * q_A_B_, A_t_A_B_ +
                                             q_A_B_.rotate(rhs.A_t_A_B_));
 }
 

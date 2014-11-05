@@ -3,6 +3,11 @@
 #include <kindr/minimal/angle-axis.h>
 #include <cmath>
 
+// Let the Eclipse parser see the macro.
+#ifndef TEST
+#define TEST(a, b) int Test_##a##_##b()
+#endif
+
 TEST(MinKindrTests,testQuatAxisAngle) {
   using namespace kindr::minimal;
   Eigen::Vector4d v(0.64491714, 0.26382416,  0.51605132,  0.49816637);
@@ -69,8 +74,6 @@ TEST(MinKindrTests,testQuatAxisAngle) {
   EXPECT_NEAR(a1.inverted().getDisparityAngle(a2.inverted()), 0.0, 1e-3);
   EXPECT_NEAR(a1.inverted().getDisparityAngle(a3.inverted()), 0.0, 1e-3);
   EXPECT_NEAR(a1.inverted().getDisparityAngle(a4.inverted()), 0.0, 1e-3);
-
-
 }
 
 TEST(MinKindrTests,testComposition) {
@@ -104,7 +107,6 @@ TEST(MinKindrTests,testComposition) {
   EXPECT_NEAR((q1.inverted()*a1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
   EXPECT_NEAR((a1.inverted()*q1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
   EXPECT_NEAR((q1.inverted()*q1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
-
 }
 
 TEST(MinKindrTests, testRotate) {
@@ -117,15 +119,14 @@ TEST(MinKindrTests, testRotate) {
         0.91484567,  0.36445417,  0.17386938,
        -0.40276404,  0.85444827,  0.3281757;
 
-  Eigen::Vector4d aax(1.7397629325686206, 0.34520549,  0.67523668,  0.65183479);
-  
+  Eigen::Vector4d aax(1.7397629325686206, -0.34520549,  -0.67523668,  -0.65183479);
   
   RotationQuaternion q1(q);
   AngleAxis a1(aax[0],aax.tail<3>()); 
 
   Eigen::Vector3d v(4.67833851,  8.52053031,  6.71796159);
-  Eigen::Vector3d Cv(2.94720425,  8.55334831,  7.60075758);
-  Eigen::Vector3d Ctv(4.95374446,  7.11329907,  8.02986227);
+  Eigen::Vector3d Cv(4.95374446,  7.11329907,  8.02986227);
+  Eigen::Vector3d Ctv(2.94720425,  8.55334831,  7.60075758);
   Eigen::Vector3d Cv1 = q1.rotate(v);
   Eigen::Vector3d Cv2 = a1.rotate(v);
   Eigen::Vector3d Ctv1 = q1.inverseRotate(v);

@@ -7,21 +7,24 @@
 
 typedef kindr::minimal::QuatTransformation Transformation;
 
+// Let the Eclipse parser see the macro.
+#ifndef TEST
+#define TEST(a, b) int Test_##a##_##b()
+#endif
+
 Eigen::Vector3d fromHomogeneous(const Eigen::Vector4d& v) {
   return v.head<3>() / v[3];
 }
 
-
 TEST(MinKindrTests, testTransform) {
   using namespace kindr::minimal;
-  Eigen::Vector4d q(0.64491714, 0.26382416,  0.51605132,  0.49816637);
+  Eigen::Vector4d q(0.64491714, -0.26382416,  -0.51605132,  -0.49816637);
   RotationQuaternion q1(q);
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
   Transformation T(q,t);
-  //std::cout << "T:\n" << T << std::endl;
   Transformation invT = T.inverted();
-  //std::cout << "invT:\n" << invT << std::endl;
+
   Eigen::Vector3d v(6.26257419,  1.58356548,  6.05772983);
   Eigen::Vector4d vh(6.26257419,  1.58356548,  6.05772983, 1.0);
   Eigen::Vector4d vh2 = vh * 0.2;
@@ -109,7 +112,7 @@ TEST(MinKindrTests, testTransform) {
 
 TEST(MinKindrTests, testCompose) {
   using namespace kindr::minimal;
-  Eigen::Vector4d q(0.64491714, 0.26382416,  0.51605132,  0.49816637);
+  Eigen::Vector4d q(0.64491714, -0.26382416,  -0.51605132,  -0.49816637);
   RotationQuaternion q1(q);
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
