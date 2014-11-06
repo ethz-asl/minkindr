@@ -50,9 +50,6 @@ QuatTransformationTemplate<Scalar>::QuatTransformationTemplate(
     A_t_A_B_(T.template topRightCorner<3,1>().eval()) {
 }
 
-/// \brief a constructor based on the exponential map
-/// translational part in the first 3 dimensions, 
-/// rotational part in the last 3 dimensions
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>::QuatTransformationTemplate(
      const QuatTransformationTemplate<Scalar>::Vector6& x_t_r) : 
@@ -71,39 +68,30 @@ void QuatTransformationTemplate<Scalar>::setIdentity() {
   A_t_A_B_.setZero();
 }
 
-/// \brief get the position component
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Position&
 QuatTransformationTemplate<Scalar>::getPosition() {
   return A_t_A_B_;
 }
 
-  
-/// \brief get the position component
 template<typename Scalar>
 const typename QuatTransformationTemplate<Scalar>::Position&
 QuatTransformationTemplate<Scalar>::getPosition() const {
   return A_t_A_B_;
 }
 
-
-/// \brief get the rotation component
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Rotation&
 QuatTransformationTemplate<Scalar>::getRotation() {
   return q_A_B_;
 }
 
-  
-/// \brief get the rotation component
 template<typename Scalar>
 const typename QuatTransformationTemplate<Scalar>::Rotation&
 QuatTransformationTemplate<Scalar>::getRotation() const {
   return q_A_B_;
 }
 
-  
-/// \brief get the transformation matrix
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::TransformationMatrix
 QuatTransformationTemplate<Scalar>::getTransformationMatrix() const {
@@ -115,14 +103,12 @@ QuatTransformationTemplate<Scalar>::getTransformationMatrix() const {
   return transformation_matrix;
 }
 
-/// \brief get the rotation matrix
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::RotationMatrix
 QuatTransformationTemplate<Scalar>::getRotationMatrix() const {
   return q_A_B_.getRotationMatrix();
 }
 
-/// \brief compose two transformations
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>
 QuatTransformationTemplate<Scalar>::operator*(
@@ -131,8 +117,6 @@ QuatTransformationTemplate<Scalar>::operator*(
                                             q_A_B_.rotate(rhs.A_t_A_B_));
 }
 
-
-/// \brief transform a point
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector3
 QuatTransformationTemplate<Scalar>::transform(
@@ -140,8 +124,6 @@ QuatTransformationTemplate<Scalar>::transform(
   return q_A_B_.rotate(rhs) + A_t_A_B_;
 }
 
-
-/// \brief transform a point
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector3
 QuatTransformationTemplate<Scalar>::operator*(
@@ -149,8 +131,6 @@ QuatTransformationTemplate<Scalar>::operator*(
   return transform(rhs);
 }
 
-
-/// \brief transform a point
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector4
 QuatTransformationTemplate<Scalar>::transform4(
@@ -162,7 +142,6 @@ QuatTransformationTemplate<Scalar>::transform4(
   return rval;
 }
 
-/// \brief transform a point by the inverse
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector3
 QuatTransformationTemplate<Scalar>::inverseTransform(
@@ -170,7 +149,6 @@ QuatTransformationTemplate<Scalar>::inverseTransform(
   return q_A_B_.inverseRotate(rhs - A_t_A_B_);
 }
 
-/// \brief transform a point by the inverse
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector4
 QuatTransformationTemplate<Scalar>::inverseTransform4(
@@ -182,16 +160,12 @@ QuatTransformationTemplate<Scalar>::inverseTransform4(
   return rval;
 }
 
-/// \brief return a copy of the transformation inverted
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>
 QuatTransformationTemplate<Scalar>::inverted() const {
   return QuatTransformation(q_A_B_.inverted(), -q_A_B_.inverseRotate(A_t_A_B_));
 }
 
-/// \brief get the logarithmic map of the transformation
-/// note: this is the log map of SO(3)xR(3) and not SE(3)
-/// \return vector form of log map with first 3 components the translational part and the last three the rotational part.
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector6 
 QuatTransformationTemplate<Scalar>::log() const {
@@ -199,7 +173,6 @@ QuatTransformationTemplate<Scalar>::log() const {
   return (Vector6() << A_t_A_B_, (angleaxis.axis()*angleaxis.angle())).finished();
 }
 
-/// \brief set to random transformation
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>&
 QuatTransformationTemplate<Scalar>::setRandom() {
@@ -208,7 +181,6 @@ QuatTransformationTemplate<Scalar>::setRandom() {
   return *this;
 }
 
-/// \brief set to random transformation with a given translation norm
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>&
 QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation) {
@@ -218,7 +190,6 @@ QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation) {
   return *this;
 }
 
-/// \brief set to random transformation with a given translation norm and rotation angle
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>&
 QuatTransformationTemplate<Scalar>::setRandom(Scalar norm_translation, Scalar angle_rad) {
@@ -235,13 +206,11 @@ std::ostream & operator<<(std::ostream & out,
   return out;
 }
 
-/// \brief check for binary equality
 template<typename Scalar>
 bool QuatTransformationTemplate<Scalar>::operator==(
     const QuatTransformationTemplate<Scalar>& rhs) const {
   return q_A_B_ == rhs.q_A_B_ && A_t_A_B_ == rhs.A_t_A_B_;
 }
-
 
 } // namespace minimal
 } // namespace kindr

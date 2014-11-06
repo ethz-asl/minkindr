@@ -321,12 +321,19 @@ RotationQuaternionTemplate<Scalar>::normalize() {
   return *this;
 }
 
-/// \brief compose two quaternions
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::operator*(
     const RotationQuaternionTemplate<Scalar>& rhs) const {
   return RotationQuaternionTemplate<Scalar>(q_A_B_ * rhs.q_A_B_);
+}
+
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>
+RotationQuaternionTemplate<Scalar>::operator*(
+    const AngleAxisTemplate<Scalar>& rhs) const {
+  return RotationQuaternionTemplate<Scalar>(q_A_B_ *
+                                            rhs.toImplementation());
 }
 
 template<typename Scalar>
@@ -336,17 +343,21 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-/// \brief get the rotation matrix
 template<typename Scalar>
 typename RotationQuaternionTemplate<Scalar>::RotationMatrix
 RotationQuaternionTemplate<Scalar>::getRotationMatrix() const {
   return q_A_B_.matrix();
 }
 
-/// \brief get the angle between this and the other quaternion
 template<typename Scalar>
 Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
     const RotationQuaternionTemplate<Scalar>& rhs) const{
+  return AngleAxis( rhs * this->inverted() ).getUnique().angle();
+}
+
+template<typename Scalar>
+Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
+    const AngleAxisTemplate<Scalar>& rhs) const{
   return AngleAxis( rhs * this->inverted() ).getUnique().angle();
 }
 
