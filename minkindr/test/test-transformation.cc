@@ -23,9 +23,7 @@ TEST(MinKindrTests, testTransform) {
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
   Transformation T(q1,t);
-  //std::cout << "T:\n" << T << std::endl;
   Transformation invT = T.inverted();
-  //std::cout << "invT:\n" << invT << std::endl;
   Eigen::Vector3d v(6.26257419,  1.58356548,  6.05772983);
   Eigen::Vector4d vh(6.26257419,  1.58356548,  6.05772983, 1.0);
   Eigen::Vector4d vh2 = vh * 0.2;
