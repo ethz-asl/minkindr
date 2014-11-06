@@ -130,10 +130,10 @@ class RotationQuaternionTemplate {
   /// \brief get the squared norm of the quaternion.
   Scalar squaredNorm() const;
 
-  /// \brief get the angle between this and the other quaternion.
+  /// \brief get the angle [rad] between this and the other quaternion.
   Scalar getDisparityAngle(const RotationQuaternionTemplate<Scalar>& rhs) const;
 
-  /// \brief get the angle between this and the angle axis.
+  /// \brief get the angle [rad] between this and the angle axis.
   Scalar getDisparityAngle(const AngleAxisTemplate<Scalar>& rhs) const;
 
   /// \brief enforce the unit length constraint.
