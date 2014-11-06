@@ -5,6 +5,10 @@
 #include <gtest/gtest.h>
 #include <kindr/minimal/quat-transformation.h>
 
+#ifndef TEST
+#define TEST(a, b) int Test_##a##_##b()
+#endif
+
 typedef kindr::minimal::QuatTransformation Transformation;
 
 Eigen::Vector3d fromHomogeneous(const Eigen::Vector4d& v) {
@@ -18,10 +22,8 @@ TEST(MinKindrTests, testTransform) {
   RotationQuaternion q1(q);
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
-  Transformation T(q,t);
-  //std::cout << "T:\n" << T << std::endl;
+  Transformation T(q1,t);
   Transformation invT = T.inverted();
-  //std::cout << "invT:\n" << invT << std::endl;
   Eigen::Vector3d v(6.26257419,  1.58356548,  6.05772983);
   Eigen::Vector4d vh(6.26257419,  1.58356548,  6.05772983, 1.0);
   Eigen::Vector4d vh2 = vh * 0.2;
@@ -113,10 +115,8 @@ TEST(MinKindrTests, testCompose) {
   RotationQuaternion q1(q);
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
-  Transformation T(q,t);
-  //std::cout << "T:\n" << T << std::endl;
+  Transformation T(q1,t);
   Transformation invT = T.inverted();
-  //std::cout << "invT:\n" << invT << std::endl;
   Eigen::Vector3d v(6.26257419,  1.58356548,  6.05772983);
   Eigen::Vector3d invTTv(-8.16137069,  -6.14469052, -14.34176544);
   Eigen::Vector3d TTv(5.52009598,  24.34170933,  18.9197339);

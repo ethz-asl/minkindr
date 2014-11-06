@@ -7,13 +7,11 @@
 namespace kindr {
 namespace minimal {
 
-/// \brief initialize to identity
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::AngleAxisTemplate() :
     C_A_B_(Implementation::Identity()) {
 }
 
-/// \brief initialize from real and imaginary components (real first)
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::AngleAxisTemplate(
     Scalar w, Scalar x, Scalar y, Scalar z) : C_A_B_(w, Vector3(x,y,z)) {
@@ -21,7 +19,6 @@ AngleAxisTemplate<Scalar>::AngleAxisTemplate(
              static_cast<Scalar>(1e-4));
 }
  
-/// \brief initialize from real and imaginary components
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::AngleAxisTemplate(
     Scalar angle, const typename AngleAxisTemplate<Scalar>::Vector3& axis) :
@@ -30,13 +27,11 @@ AngleAxisTemplate<Scalar>::AngleAxisTemplate(
                static_cast<Scalar>(1e-4));
 }
 
-/// \brief initialize from an Eigen angleAxis
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::AngleAxisTemplate(const Implementation& angleAxis) :
     C_A_B_(angleAxis) {
 }
 
-/// \brief initialize from a rotation matrix
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::AngleAxisTemplate(const RotationMatrix& matrix) :
     C_A_B_(matrix) {
@@ -53,7 +48,6 @@ AngleAxisTemplate<Scalar>::AngleAxisTemplate(
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::~AngleAxisTemplate() { }
 
-/// \brief assignment operator
 template<typename Scalar>
 AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::operator=(
     const AngleAxisTemplate<Scalar>& rhs) {
@@ -63,26 +57,22 @@ AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::operator=(
   return *this;
 }
 
-  /// \brief Returns the rotation angle.
 template<typename Scalar>
 Scalar AngleAxisTemplate<Scalar>::angle() const{
   return C_A_B_.angle();
 }
 
-/// \brief Sets the rotation angle.
 template<typename Scalar>
 void AngleAxisTemplate<Scalar>::setAngle(Scalar angle){
   C_A_B_.angle() = angle;
 }
 
-/// \brief Returns the rotation axis.
 template<typename Scalar>
 const typename AngleAxisTemplate<Scalar>::Vector3&
 AngleAxisTemplate<Scalar>::axis() const{
   return C_A_B_.axis();
 }
 
-/// \brief Sets the rotation axis.
 template<typename Scalar>
 void AngleAxisTemplate<Scalar>::setAxis(const Vector3& axis){
   CHECK_NEAR(axis.squaredNorm(), static_cast<Scalar>(1.0),
@@ -90,7 +80,6 @@ void AngleAxisTemplate<Scalar>::setAxis(const Vector3& axis){
   C_A_B_.axis() = axis;
 }
 
-/// \brief Sets the rotation axis.
 template<typename Scalar>
 void AngleAxisTemplate<Scalar>::setAxis(Scalar v1, Scalar v2, Scalar v3){
   C_A_B_.axis() = Vector3(v1,v2,v3);
@@ -98,7 +87,6 @@ void AngleAxisTemplate<Scalar>::setAxis(Scalar v1, Scalar v2, Scalar v3){
              static_cast<Scalar>(1e-4));
 }
 
-/// \brief get the components of the angle/axis as a vector (real first)
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::Vector4
 AngleAxisTemplate<Scalar>::vector() const{
@@ -108,7 +96,6 @@ AngleAxisTemplate<Scalar>::vector() const{
     return vector;
 }
 
-/// \brief get a copy of the representation that is unique
 template<typename Scalar>
 AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::getUnique() const {
   // first wraps angle into [-pi,pi)
@@ -143,34 +130,29 @@ AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::getUnique() const {
     }
 }
 
-/// \brief set the angle/axis to its unique representation
 template<typename Scalar>
 AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::setUnique() {
   *this = getUnique();
   return *this;
 }
 
-/// \brief set the angle/axis to identity
 template<typename Scalar>
 AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::setIdentity() {
   C_A_B_ = C_A_B_.Identity();
   return *this;
 }
 
-/// \brief get a copy of the rotation inverted.
 template<typename Scalar>
 AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::inverted() const {
   return AngleAxisTemplate(C_A_B_.inverse());
 }
 
-/// \brief rotate a vector, v
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::Vector3 AngleAxisTemplate<Scalar>::rotate(
     const AngleAxisTemplate<Scalar>::Vector3& v) const {
   return C_A_B_*v;
 }
 
-/// \brief rotate a vector, v
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::Vector4
 AngleAxisTemplate<Scalar>::rotate4(
@@ -181,7 +163,6 @@ AngleAxisTemplate<Scalar>::rotate4(
   return vprime;
 }
 
-/// \brief rotate a vector, v
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::Vector3
 AngleAxisTemplate<Scalar>::inverseRotate(
@@ -189,7 +170,6 @@ AngleAxisTemplate<Scalar>::inverseRotate(
   return C_A_B_.inverse() * v;
 }
 
-/// \brief rotate a vector, v
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::Vector4
 AngleAxisTemplate<Scalar>::inverseRotate4(
@@ -200,35 +180,30 @@ AngleAxisTemplate<Scalar>::inverseRotate4(
   return vprime;
 }
 
-/// \brief cast to the implementation type
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::Implementation&
 AngleAxisTemplate<Scalar>::toImplementation() {
   return C_A_B_;
 }
 
-/// \brief cast to the implementation type
 template<typename Scalar>
 const typename AngleAxisTemplate<Scalar>::Implementation&
 AngleAxisTemplate<Scalar>::toImplementation() const {
   return C_A_B_;
 }
 
-/// \brief enforce the unit length constraint
 template<typename Scalar>
 AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::normalize() {
   C_A_B_.axis().normalize();
   return *this;
 }
 
-/// \brief compose two rotations
 template<typename Scalar>
 AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::operator*(
     const AngleAxisTemplate& rhs) const {
   return AngleAxisTemplate(Implementation(C_A_B_ * rhs.C_A_B_));
 }
 
-/// \brief get the angle between this and the other rotation
 template<typename Scalar>
 Scalar AngleAxisTemplate<Scalar>::getDisparityAngle(
     const AngleAxisTemplate& rhs) const {
@@ -242,7 +217,6 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-/// \brief get the rotation matrix
 template<typename Scalar>
 typename AngleAxisTemplate<Scalar>::RotationMatrix
 AngleAxisTemplate<Scalar>::getRotationMatrix() const {

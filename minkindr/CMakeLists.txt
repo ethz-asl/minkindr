@@ -8,9 +8,9 @@ find_package (Threads)
 
 # add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=0)
 catkin_add_gtest(${PROJECT_NAME}_tests 
-  test/test_main.cc
-  test/testRotation.cc
-  test/testTransformation.cc
+  test/test-main.cc
+  test/test-rotation.cc
+  test/test-transformation.cc
 )
 
 target_link_libraries(${PROJECT_NAME}_tests ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

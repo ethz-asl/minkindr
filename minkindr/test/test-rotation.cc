@@ -3,6 +3,10 @@
 #include <kindr/minimal/angle-axis.h>
 #include <cmath>
 
+#ifndef TEST
+#define TEST(a, b) int Test_##a##_##b()
+#endif
+
 TEST(MinKindrTests,testQuatAxisAngle) {
   using namespace kindr::minimal;
   Eigen::Vector4d v(0.64491714, 0.26382416,  0.51605132,  0.49816637);
@@ -105,6 +109,19 @@ TEST(MinKindrTests,testComposition) {
   EXPECT_NEAR((a1.inverted()*q1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
   EXPECT_NEAR((q1.inverted()*q1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
 
+}
+
+TEST(MinKindrTests, testQuaternionInitialization) {
+ Eigen::Vector4d q_coeffs;
+ q_coeffs << 1, 0, 0, 0;
+ kindr::minimal::RotationQuaternionTemplate<double> q_from_coeffs(q_coeffs);
+ Eigen::Quaterniond q;
+ q.setIdentity();
+
+ for(int i = 0; i < 4; ++i) {
+    EXPECT_NEAR(q_from_coeffs.toImplementation().coeffs()[i],
+                q.coeffs()[i], 1e-10);
+ }
 }
 
 TEST(MinKindrTests, testRotate) {

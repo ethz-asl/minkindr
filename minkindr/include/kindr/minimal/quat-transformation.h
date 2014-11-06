@@ -34,84 +34,87 @@ class QuatTransformationTemplate {
 
   QuatTransformationTemplate();
 
-  QuatTransformationTemplate(
+  explicit QuatTransformationTemplate(
       const RotationQuaternionTemplate<Scalar>& q_A_B, const Position& A_t_A_B);
-  QuatTransformationTemplate(
+  explicit QuatTransformationTemplate(
       const typename Rotation::Implementation& q_A_B, const Position& A_t_A_B);
 
-  QuatTransformationTemplate(const Position& A_t_A_B,
-                             const Rotation& q_A_B);
-  QuatTransformationTemplate(const Position& A_t_A_B,
-                             const typename Rotation::Implementation& q_A_B);
+  explicit QuatTransformationTemplate(
+      const Position& A_t_A_B, const Rotation& q_A_B);
+  explicit QuatTransformationTemplate(
+      const Position& A_t_A_B, const typename Rotation::Implementation& q_A_B);
   
-  QuatTransformationTemplate(const TransformationMatrix& T);
+  explicit QuatTransformationTemplate(const TransformationMatrix& T);
 
-  /// \brief a constructor based on the exponential map
+  /// \brief a constructor based on the exponential map.
   /// translational part in the first 3 dimensions, 
-  /// rotational part in the last 3 dimensions
+  /// rotational part in the last 3 dimensions.
   QuatTransformationTemplate(const Vector6& x_t_r);
 
   virtual ~QuatTransformationTemplate();
 
   void setIdentity();
 
-  /// \brief set to random transformation
+  /// \brief set to random transformation.
   QuatTransformationTemplate<Scalar>& setRandom();
 
-  /// \brief set to random transformation with a given translation norm
+  /// \brief set to random transformation with a given translation norm.
   QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation);
 
-  /// \brief set to random transformation with a given translation norm and rotation angle
+  /// \brief set to random transformation with a given translation norm and rotation angle.
   QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation, Scalar angle_rad);
 
-  /// \brief get the position component
+  /// \brief get the position component.
   Position& getPosition();
   
-  /// \brief get the position component
+  /// \brief get the position component.
   const Position& getPosition() const;
 
-  /// \brief get the rotation component
+  /// \brief get the rotation component.
   Rotation& getRotation();
 
-  /// \brief get the rotation component
+  /// \brief get the rotation component.
   const Rotation& getRotation() const;
   
-  /// \brief get the transformation matrix
+  /// \brief get the transformation matrix.
   TransformationMatrix getTransformationMatrix() const;
 
-  /// \brief get the rotation matrix
+  /// \brief get the rotation matrix.
   RotationMatrix getRotationMatrix() const;
 
-  /// \brief compose two transformations
+  /// \brief compose two transformations.
   QuatTransformationTemplate<Scalar> operator*(
       const QuatTransformationTemplate<Scalar>& rhs) const;
 
-  /// \brief transform a point
+  /// \brief transform a point.
   Vector3 operator*(const Vector3& rhs) const;
 
-  /// \brief transform a point
+  /// \brief transform a point.
   Vector3 transform(const Vector3& rhs) const;
 
-  /// \brief transform a point
+  /// \brief transform a point.
   Vector4 transform4(const Vector4& rhs) const;
 
-  /// \brief transform a point by the inverse
+  /// \brief transform a point by the inverse.
   Vector3 inverseTransform(const Vector3& rhs) const;
 
-  /// \brief transform a point by the inverse
+  /// \brief transform a point by the inverse.
   Vector4 inverseTransform4(const Vector4& rhs) const;
 
   /// \brief get the logarithmic map of the transformation
+  /// note: this is the log map of SO(3)xR(3) and not SE(3)
+  /// \return vector form of log map with first 3 components the translational
+  //          part and the last three the rotational part.
   Vector6 log() const;
 
-  /// \brief return a copy of the transformation inverted
+  /// \brief return a copy of the transformation inverted.
   QuatTransformationTemplate<Scalar> inverted() const;
 
-  /// \brief check for binary equality
+  /// \brief check for binary equality.
   bool operator==(const QuatTransformationTemplate<Scalar>& rhs) const;
 
  private:
-  /// The quaternion that takes vectors from B to A
+  /// The quaternion that takes vectors from B to A.
   ///
   /// \code{.cpp}
   /// A_v = q_A_B_.rotate(B_v);

@@ -34,28 +34,28 @@ class AngleAxisTemplate {
 
   typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
 
-  /// \brief initialize to identity
+  /// \brief initialize to identity.
   AngleAxisTemplate();
 
-  /// \brief initialize from real and imaginary components (real first)
+  /// \brief initialize from real and imaginary components (real first).
   AngleAxisTemplate(Scalar angle, Scalar v1, Scalar v2, Scalar v3);
   
-  /// \brief initialize from real and imaginary components
+  /// \brief initialize from real and imaginary components.
   AngleAxisTemplate(Scalar real, const Vector3& imaginary);
 
-  /// \brief initialize from an Eigen angleAxis
+  /// \brief initialize from an Eigen angleAxis.
   AngleAxisTemplate(const Implementation& angleAxis);
 
-  /// \brief initialize from an Eigen angle/axis
+  /// \brief initialize from an Eigen angle/axis.
   AngleAxisTemplate(const Vector4& angleAxis);
 
-  /// \brief initialize from a rotation matrix
+  /// \brief initialize from a rotation matrix.
   AngleAxisTemplate(const RotationMatrix& matrix);
 
-  /// \brief initialize from an Eigen quaternion
+  /// \brief initialize from an Eigen quaternion.
   AngleAxisTemplate(const RotationQuaternionTemplate<Scalar>& quat);
   
-  /// \brief initialize from a angle-scaled axis vector
+  /// \brief initialize from a angle-scaled axis vector.
   AngleAxisTemplate(const Vector3& angleAxis);
 
   virtual ~AngleAxisTemplate();
@@ -75,53 +75,53 @@ class AngleAxisTemplate {
   /// \brief Sets the rotation axis.
   void setAxis(Scalar v1, Scalar v2, Scalar v3);
 
-  /// \brief get the components of the angle/axis as a vector (angle first)
+  /// \brief get the components of the angle/axis as a vector (angle first).
   Vector4 vector() const;
 
-  /// \brief get a copy of the representation that is unique
+  /// \brief get a copy of the representation that is unique.
   AngleAxisTemplate<Scalar> getUnique() const;
 
-  /// \brief set the angle/axis to its unique representation
+  /// \brief set the angle/axis to its unique representation.
   AngleAxisTemplate<Scalar>& setUnique();
 
-  /// \brief set the rotation to identity
+  /// \brief set the rotation to identity.
   AngleAxisTemplate<Scalar>& setIdentity();
 
   /// \brief get a copy of the rotation inverted.
   AngleAxisTemplate<Scalar> inverted() const;
 
-  /// \brief rotate a vector, v
+  /// \brief rotate a vector, v.
   Vector3 rotate(const Vector3& v) const;
 
-  /// \brief rotate a vector, v
+  /// \brief rotate a vector, v.
   Vector4 rotate4(const Vector4& v) const;
 
-  /// \brief rotate a vector, v
+  /// \brief rotate a vector, v.
   Vector3 inverseRotate(const Vector3& v) const;
 
-  /// \brief rotate a vector, v
+  /// \brief rotate a vector, v.
   Vector4 inverseRotate4(const Vector4& v) const;
 
-  /// \brief cast to the implementation type
+  /// \brief cast to the implementation type.
   Implementation& toImplementation();
 
-  /// \brief cast to the implementation type
+  /// \brief cast to the implementation type.
   const Implementation& toImplementation() const;
 
-  /// \brief get the angle between this and the other rotation
+  /// \brief get the angle between this and the other rotation.
   Scalar getDisparityAngle(const AngleAxisTemplate<Scalar>& rhs) const;
 
-  /// \brief enforce the unit length constraint
+  /// \brief enforce the unit length constraint.
   AngleAxisTemplate<Scalar>& normalize();
 
-  /// \brief compose two rotations
+  /// \brief compose two rotations.
   AngleAxisTemplate<Scalar> operator*(
       const AngleAxisTemplate<Scalar>& rhs) const;
 
-  /// \brief assignment operator
+  /// \brief assignment operator.
   AngleAxisTemplate<Scalar>& operator=(const AngleAxisTemplate<Scalar>& rhs);
 
-  /// \brief get the rotation matrix
+  /// \brief get the rotation matrix.
   RotationMatrix getRotationMatrix() const;
 
  private:
