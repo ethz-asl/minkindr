@@ -19,7 +19,7 @@ Eigen::Vector3d fromHomogeneous(const Eigen::Vector4d& v) {
 TEST(MinKindrTests, testTransform) {
   using namespace kindr::minimal;
   Eigen::Vector4d q(0.64491714, 0.26382416,  0.51605132,  0.49816637);
-  RotationQuaternion q1(q);
+  RotationQuaternion q1(q[0], q[1], q[2], q[3]);
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
   Transformation T(q1,t);
@@ -112,7 +112,7 @@ TEST(MinKindrTests, testTransform) {
 TEST(MinKindrTests, testCompose) {
   using namespace kindr::minimal;
   Eigen::Vector4d q(0.64491714, 0.26382416,  0.51605132,  0.49816637);
-  RotationQuaternion q1(q);
+  RotationQuaternion q1(q[0], q[1], q[2], q[3]);
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
   Transformation T(q1,t);

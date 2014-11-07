@@ -40,9 +40,6 @@ class RotationQuaternionTemplate {
   /// \brief initialize to identity.
   RotationQuaternionTemplate();
 
-  /// \brief initialize from real and imaginary components (real first).
-  explicit RotationQuaternionTemplate(const Vector4& quat);
-
   /// \brief initialize from angle scaled axis.
   explicit RotationQuaternionTemplate(const Vector3& angle_scaled_axis);
 

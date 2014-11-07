@@ -43,16 +43,6 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
              static_cast<Scalar>(1e-4));
 }
 
-/// \brief initialize from real and imaginary components (real first)
-template<typename Scalar>
-RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
-    const Vector4& quat) :
-    q_A_B_(quat[0], quat[1], quat[2], quat[3])
-{
-  CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0),
-             static_cast<Scalar>(1e-4));
-}
-
 /// \brief initialize from axis-scaled angle vector
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
