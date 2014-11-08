@@ -19,11 +19,11 @@ TEST(MinKindrTests,testQuatAxisAngle) {
 
   Eigen::Vector4d aax(1.7397629325686206, 0.34520549,  0.67523668,  0.65183479);
 
-  RotationQuaternion q1(v);
+  RotationQuaternion q1(v[0], v[1], v[2], v[3]);
   RotationQuaternion q2(C);
   RotationQuaternion q3(v[0],v.tail<3>());
   RotationQuaternion q4(v[0], v[1], v[2], v[3]);
-  RotationQuaternion q5(Eigen::Vector4d(-v));
+  RotationQuaternion q5(-v[0], -v[1], -v[2], -v[3]);
 
 
   AngleAxis a1(aax[0],aax.tail<3>()); 
@@ -94,7 +94,7 @@ TEST(MinKindrTests,testComposition) {
   Eigen::Vector4d aax(1.7397629325686206, 0.34520549,  0.67523668,  0.65183479);
   
   
-  RotationQuaternion q1(v);
+  RotationQuaternion q1(v[0], v[1], v[2], v[3]);
   AngleAxis a1(aax[0],aax.tail<3>()); 
 
 
@@ -114,7 +114,8 @@ TEST(MinKindrTests,testComposition) {
 TEST(MinKindrTests, testQuaternionInitialization) {
  Eigen::Vector4d q_coeffs;
  q_coeffs << 1, 0, 0, 0;
- kindr::minimal::RotationQuaternionTemplate<double> q_from_coeffs(q_coeffs);
+ kindr::minimal::RotationQuaternionTemplate<double> q_from_coeffs(
+     q_coeffs[0], q_coeffs[1], q_coeffs[2], q_coeffs[3]);
  Eigen::Quaterniond q;
  q.setIdentity();
 
@@ -137,7 +138,7 @@ TEST(MinKindrTests, testRotate) {
   Eigen::Vector4d aax(1.7397629325686206, 0.34520549,  0.67523668,  0.65183479);
   
   
-  RotationQuaternion q1(q);
+  RotationQuaternion q1(q[0], q[1], q[2], q[3]);
   AngleAxis a1(aax[0],aax.tail<3>()); 
 
   Eigen::Vector3d v(4.67833851,  8.52053031,  6.71796159);

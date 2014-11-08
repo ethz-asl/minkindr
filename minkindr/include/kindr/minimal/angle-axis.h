@@ -46,9 +46,6 @@ class AngleAxisTemplate {
   /// \brief initialize from an Eigen angleAxis.
   AngleAxisTemplate(const Implementation& angleAxis);
 
-  /// \brief initialize from an Eigen angle/axis.
-  AngleAxisTemplate(const Vector4& angleAxis);
-
   /// \brief initialize from a rotation matrix.
   AngleAxisTemplate(const RotationMatrix& matrix);
 
