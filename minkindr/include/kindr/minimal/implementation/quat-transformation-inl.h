@@ -169,8 +169,19 @@ QuatTransformationTemplate<Scalar>::inverted() const {
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector6 
 QuatTransformationTemplate<Scalar>::log() const {
-  AngleAxisTemplate<Scalar> angleaxis(q_A_B_);
-  return (Vector6() << A_t_A_B_, (angleaxis.axis()*angleaxis.angle())).finished();
+  return log(*this);
+}
+
+template<typename Scalar>
+QuatTransformationTemplate<Scalar> QuatTransformationTemplate<Scalar>::exp(const Vector6& vec) {
+  return QuatTransformationTemplate<Scalar>(vec);
+}
+
+template<typename Scalar>
+typename QuatTransformationTemplate<Scalar>::Vector6
+QuatTransformationTemplate<Scalar>::log(const QuatTransformationTemplate<Scalar>& T) {
+  AngleAxisTemplate<Scalar> angleaxis(T.q_A_B_);
+  return (Vector6() << T.A_t_A_B_, (angleaxis.axis()*angleaxis.angle())).finished();
 }
 
 template<typename Scalar>

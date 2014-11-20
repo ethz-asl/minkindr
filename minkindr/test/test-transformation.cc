@@ -188,3 +188,20 @@ TEST(MinKindrTests, testSetRandomWithAngleAndNorm) {
   EXPECT_NEAR(p.norm(), kTranslationNorm, 1e-8);
   EXPECT_NEAR(AngleAxis(R).angle(), KRotationAngleRad, 1e-8);
 }
+
+TEST(MinKindrTests, testExpLog) {
+  using namespace kindr::minimal;
+  for(int i = 0; i < 10; ++i) {
+    Transformation T1;
+    T1.setRandom();
+    Transformation::Vector6 v = T1.log();
+    Transformation T2 = Transformation::exp(v);
+    Eigen::Matrix4d TT1 = T1.getTransformationMatrix();
+    Eigen::Matrix4d TT2 = T2.getTransformationMatrix();
+    for(int r = 0; r < 4; ++r) {
+      for(int c = 0; c < 4; ++c) {
+        EXPECT_NEAR(TT1(r,c), TT2(r,c), 1e-6) << "Failed at (" << r << "," << c << ")";
+      }
+    }
+  }
+}
