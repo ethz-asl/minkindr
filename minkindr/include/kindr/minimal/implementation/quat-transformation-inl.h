@@ -170,6 +170,7 @@ template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector6 
 QuatTransformationTemplate<Scalar>::log() const {
   AngleAxisTemplate<Scalar> angleaxis(q_A_B_);
+  angleaxis.setUnique();
   return (Vector6() << A_t_A_B_, (angleaxis.axis()*angleaxis.angle())).finished();
 }
 

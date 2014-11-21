@@ -59,10 +59,7 @@ AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::operator=(
 
 template<typename Scalar>
 Scalar AngleAxisTemplate<Scalar>::angle() const{
-  Scalar a = C_A_B_.angle();
-  if (a > M_PI)
-    a -= 2*M_PI;
-  return a;
+  return C_A_B_.angle();
 }
 
 template<typename Scalar>
