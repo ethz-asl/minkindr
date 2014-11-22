@@ -43,17 +43,28 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
              static_cast<Scalar>(1e-4));
 }
 
+namespace detail {
+
+template <typename Scalar_ = double>
+inline bool isLessThenEpsilons4thRoot(Scalar_ x){
+  static const Scalar_ epsilon4thRoot = pow(std::numeric_limits<Scalar_>::epsilon(), 1.0/4.0);
+  return x < epsilon4thRoot;
+}
+
+template <typename Scalar_>
+inline Scalar_ arcSinXOverX(Scalar_ x) {
+  if(isLessThenEpsilons4thRoot(fabs(x))){
+    return Scalar_(1.0) + x * x * Scalar_(1.0/6.0);
+  }
+  return asin(x) / x;
+}
+}  // namespace detail
+
 /// \brief initialize from axis-scaled angle vector
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
-    const Vector3& axis_scale_angle) {
-  Scalar half_angle = axis_scale_angle.norm()/static_cast<Scalar>(2.0);
-  Scalar half_sinc_angle = (boost::math::sinc_pi(half_angle))/static_cast<Scalar>(2.0);
-  q_A_B_ = Implementation(cos(half_angle),
-                          half_sinc_angle*axis_scale_angle[0],
-                          half_sinc_angle*axis_scale_angle[1],
-                          half_sinc_angle*axis_scale_angle[2]);
-  CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-4));
+    const Vector3& axis_scaled_angle) {
+  *this = exp(axis_scaled_angle);
 }
 
 /// \brief initialize from a rotation matrix
@@ -349,6 +360,73 @@ template<typename Scalar>
 Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
     const AngleAxisTemplate<Scalar>& rhs) const{
   return AngleAxis(rhs * this->inverted()).getUnique().angle();
+}
+
+template<typename Scalar>
+typename RotationQuaternionTemplate<Scalar>::Vector3
+RotationQuaternionTemplate<Scalar>::log(const RotationQuaternionTemplate<Scalar>& q) {
+  const Eigen::Matrix<Scalar, 3, 1> a = q.imaginary();
+  const Scalar na = a.norm();
+  const Scalar eta = q.w();
+  Scalar scale;
+  if(fabs(eta) < na){ // use eta because it is more precise than na to calculate the scale. No singularities here.
+    scale = acos(eta) / na;
+  } else {
+    /*
+     * In this case more precision is in na than in eta so lets use na only to calculate the scale:
+     *
+     * assume first eta > 0 and 1 > na > 0.
+     *               u = asin (na) / na  (this implies u in [1, pi/2], because na i in [0, 1]
+     *    sin (u * na) = na
+     *  sin^2 (u * na) = na^2
+     *  cos^2 (u * na) = 1 - na^2
+     *                              (1 = ||q|| = eta^2 + na^2)
+     *    cos^2 (u * na) = eta^2
+     *                              (eta > 0,  u * na = asin(na) in [0, pi/2] => cos(u * na) >= 0 )
+     *      cos (u * na) = eta
+     *                              (u * na in [ 0, pi/2] )
+     *                 u = acos (eta) / na
+     *
+     * So the for eta > 0 it is acos(eta) / na == asin(na) / na.
+     * From some geometric considerations (mirror the setting at the hyper plane q==0) it follows for eta < 0 that (pi - asin(na)) / na = acos(eta) / na.
+     */
+    if(eta > 0) {
+      // For asin(na)/ na the singularity na == 0 can be removed. We can ask (e.g. Wolfram alpha) for its series expansion at na = 0. And that is done in the following function.
+      scale = detail::arcSinXOverX(na);
+    } else {
+      // (pi - asin(na))/ na has a pole at na == 0. So we cannot remove this singularity.
+      // It is just the cut locus of the unit quaternion manifold at identity and thus the axis angle description becomes necessarily unstable there.
+      scale = (M_PI - asin(na)) / na;
+    }
+  }
+  return a * (Scalar(2.0) * scale);
+}
+
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>
+RotationQuaternionTemplate<Scalar>::exp(const Vector3& dx) {
+  // Method of implementing this function that is accurate to numerical precision from
+  // Grassia, F. S. (1998). Practical parameterization of rotations using the exponential map. journal of graphics, gpu, and game tools, 3(3):29–48.
+  double theta = dx.norm();
+  // na is 1/theta sin(theta/2)
+  double na;
+  if(detail::isLessThenEpsilons4thRoot(theta)){
+    static const double one_over_48 = 1.0/48.0;
+    na = 0.5 + (theta * theta) * one_over_48;
+  } else {
+    na = sin(theta*0.5) / theta;
+  }
+  double ct = cos(theta*0.5);
+  return RotationQuaternionTemplate<Scalar>(ct,
+                                            dx[0]*na,
+                                            dx[1]*na,
+                                            dx[2]*na);
+}
+
+template<typename Scalar>
+typename RotationQuaternionTemplate<Scalar>::Vector3
+RotationQuaternionTemplate<Scalar>::log() const {
+  return log(*this);
 }
 
 } // namespace minimal

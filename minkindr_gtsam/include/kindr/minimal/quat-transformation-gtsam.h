@@ -70,10 +70,11 @@ inline Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation&
                                 boost::optional<Jacobian3x3&> Hp) {
   if(HT) {
     // TODO(furgalep) fill in.
+    HT->setIdentity();
   }
 
   if(Hp) {
-    // TODO(furgalep) fill in.
+    *Hp = T.getRotationMatrix();
   }
 
   return T * p;
