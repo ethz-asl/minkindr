@@ -111,6 +111,11 @@ inline Expression<kindr::minimal::QuatTransformation> operator*(
   return compose(T1,T2);
 }
 
+/// \brief Compose two transformations as inv(T1)*T2.
+Expression<kindr::minimal::QuatTransformation> invertAndCompose(
+    const Expression<kindr::minimal::QuatTransformation>& T1,
+    const Expression<kindr::minimal::QuatTransformation>& T2);
+
 /// \brief Recover the matrix log of R^3 x SO3
 Expression<Vector6> log(const Expression<kindr::minimal::QuatTransformation>& T);
 
@@ -123,6 +128,12 @@ inline Expression<Eigen::Vector3d> translationLog(
     const Expression<kindr::minimal::QuatTransformation>& T) {
   return translationFromTransformation(T);
 }
+
+Expression<kindr::minimal::QuatTransformation> slerp(
+    const Expression<kindr::minimal::QuatTransformation>& T0,
+    const Expression<kindr::minimal::QuatTransformation>& T1,
+    double alpha);
+
 
 }  // namespace gtsam
 
