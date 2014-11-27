@@ -2,26 +2,22 @@
 #define MINKINDR_QUAT_TRANSFORMATION_GTSAM_H
 
 #include <gtsam/base/Manifold.h>
-#include <kindr/minimal/quat-transformation.h>
 #include <gtsam_unstable/nonlinear/Expression.h>
 
+#include <kindr/minimal/quat-transformation.h>
+
+#include "common-gtsam.h"
+#include "rotation-quaternion-gtsam.h"
+
 namespace gtsam {
-namespace traits {
+namespace traits { // Traits define the basic interface required by gtsam.
 
-//template<>
-//struct is_group<kindr::minimal::QuatTransformation> : public boost::false_type {
-//};
-
-//template<>
-//struct is_manifold<kindr::minimal::QuatTransformation> : public boost::false_type {
-//};
-
-// Required by gtsam.
+// The dimension of the manifold.
 template<>
 struct dimension<kindr::minimal::QuatTransformation> : public boost::integral_constant<int,6> {
 };
 
-// Required by gtsam.
+// Check for equality between two values.
 template<>
 struct equals<kindr::minimal::QuatTransformation>{
   bool operator()(const kindr::minimal::QuatTransformation& T1,
@@ -30,7 +26,7 @@ struct equals<kindr::minimal::QuatTransformation>{
   }
 };
 
-// Required by gtsam.
+// Print a value.
 template<>
 struct print<kindr::minimal::QuatTransformation>{
   void operator()(const kindr::minimal::QuatTransformation& T, const std::string& str) {
@@ -62,32 +58,70 @@ struct DefaultChart<kindr::minimal::QuatTransformation> {
   }
 };
 
-typedef Eigen::Matrix<double, 3, 6> Jacobian3x6;
-typedef Eigen::Matrix<double, 3, 3> Jacobian3x3;
+////////////////////////////////////////////////////////////////////////////////
+// Convenience functions to make working with expressions easy and fun!
 
-inline Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation& T, const Eigen::Vector3d& p,
-                                boost::optional<Jacobian3x6&> HT,
-                                boost::optional<Jacobian3x3&> Hp) {
-  if(HT) {
-    // TODO(furgalep) fill in.
-    HT->setIdentity();
-  }
+/// \brief Transform a point.
+///
+/// This is syntactic sugar to be able to write
+/// Expression<Eigen::Vector3d> Tp = T * p;
+/// instead of
+/// Expression<Eigen::Vector3d> Tp = Expression<Eigen::Vector3d>(&transform_point, T, p);
+Expression<Eigen::Vector3d>
+operator*(const Expression<kindr::minimal::QuatTransformation>& T,
+          const Expression<Eigen::Vector3d>& p);
 
-  if(Hp) {
-    *Hp = T.getRotationMatrix();
-  }
+/// \brief Transform a point.
+Expression<Eigen::Vector3d>
+transform(const Expression<kindr::minimal::QuatTransformation>& T,
+          const Expression<Eigen::Vector3d>& p);
 
-  return T * p;
+/// \brief Build a transformation expression from a rotation expression and a
+///        point expression.
+Expression<kindr::minimal::QuatTransformation> transformationFromComponents(
+    const Expression<kindr::minimal::RotationQuaternion>& C_A_B,
+    const Expression<Eigen::Vector3d>& A_t_B);
+
+/// \brief Recover the rotation part of a transformation.
+Expression<kindr::minimal::RotationQuaternion> rotationFromTransformation(
+    const Expression<kindr::minimal::QuatTransformation>& T);
+
+/// \brief Recover the translation part of a transformation.
+Expression<Eigen::Vector3d> translationFromTransformation(
+    const Expression<kindr::minimal::QuatTransformation>& T);
+
+/// \brief Transform a point by the inverse of a transformation.
+Expression<Eigen::Vector3d> inverseTransform(
+    const Expression<kindr::minimal::QuatTransformation>& T,
+    const Expression<Eigen::Vector3d>& p);
+
+/// \brief Invert a transformation.
+Expression<kindr::minimal::QuatTransformation> inverse(
+    const Expression<kindr::minimal::QuatTransformation>& T);
+
+/// \brief Compose two transformations.
+Expression<kindr::minimal::QuatTransformation> compose(
+    const Expression<kindr::minimal::QuatTransformation>& T1,
+    const Expression<kindr::minimal::QuatTransformation>& T2);
+
+/// \brief Compose two transformations.
+inline Expression<kindr::minimal::QuatTransformation> operator*(
+    const Expression<kindr::minimal::QuatTransformation>& T1,
+    const Expression<kindr::minimal::QuatTransformation>& T2) {
+  return compose(T1,T2);
 }
 
-// This is syntatic sugar to be able to write
-// Expression<Eigen::Vector3d> Tp = T * p;
-// instead of
-// Expression<Eigen::Vector3d> Tp = Expression<Eigen::Vector3d>(&transform_point, T, p);
-inline gtsam::Expression<Eigen::Vector3d>
-operator*(const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
-          const gtsam::Expression<Eigen::Vector3d>& p) {
-  return Expression<Eigen::Vector3d>(&transform_point, T, p);
+/// \brief Recover the matrix log of R^3 x SO3
+Expression<Vector6> log(const Expression<kindr::minimal::QuatTransformation>& T);
+
+/// \brief Recover the matrix log of the rotation part of the transformation.
+Expression<Eigen::Vector3d> rotationLog(
+    const Expression<kindr::minimal::QuatTransformation>& T);
+
+/// \brief Recover the matrix log of the translation part of the transformation.
+inline Expression<Eigen::Vector3d> translationLog(
+    const Expression<kindr::minimal::QuatTransformation>& T) {
+  return translationFromTransformation(T);
 }
 
 }  // namespace gtsam

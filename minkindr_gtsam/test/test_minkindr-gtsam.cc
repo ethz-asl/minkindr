@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <kindr/minimal/quat-transformation-gtsam.h>
-#include <kindr/minimal/rotation-quaternion-gtsam.h>
 #include <gtsam_unstable/nonlinear/Expression.h>
 #include <gtsam_unstable/nonlinear/ExpressionFactor.h>
+#include <kindr/minimal/quat-transformation-gtsam.h>
+#include <kindr/minimal/rotation-quaternion-gtsam.h>
 #include <gtsam/linear/VectorValues.h>
 #include <gtsam/geometry/Rot3.h>
 #include <eigen-checks/gtest.h>
@@ -89,6 +89,7 @@ void testDefaultChart(const T& value) {
 
   Vector dx = Chart::local(value, other);
   EXPECT_EQ(Chart::getDimension(value), dx.size());
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Eigen::VectorXd::Zero(dx.size()), dx, 1e-9));
 
   dx.setRandom();
   T updated = Chart::retract(value, dx);
@@ -105,12 +106,6 @@ void testDefaultChart(const T& value) {
 typedef kindr::minimal::QuatTransformation Transformation;
 typedef kindr::minimal::RotationQuaternion Quaternion;
 
-TEST(MinkindrGtsamTests, testRot3Chart) {
-  gtsam::Rot3 Cval(gtsam::Rot3::RzRyRx(0.1,0.2,0.3));
-  testDefaultChart(Cval);
-}
-
-
 TEST(MinkindrGtsamTests, testRot3Expression) {
 
   gtsam::Rot3 Cval(gtsam::Rot3::RzRyRx(0.1,0.2,0.3));
@@ -123,10 +118,11 @@ TEST(MinkindrGtsamTests, testRot3Expression) {
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(C, values, fd_step, tolerance);
 }
 
-TEST(MinkindrGtsamTests, testRotateVector) {
+TEST(MinkindrGtsamTests, testRotateVector1) {
   using gtsam::Expression;
   Quaternion Cval;
   Eigen::Vector3d vval;
@@ -142,14 +138,66 @@ TEST(MinkindrGtsamTests, testRotateVector) {
   Expression<Eigen::Vector3d> v(2);
   Expression<Eigen::Vector3d> Cv = C * v;
 
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Cv.value(values), Cval.rotate(vval), 1e-9));
+
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(Cv, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testRotateVector2) {
+  using gtsam::Expression;
+  Quaternion Cval;
+  Eigen::Vector3d vval;
+  Cval.setRandom();
+  vval.setRandom();
+
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, Cval);
+  values.insert(2, vval);
+
+  Expression<Quaternion> C(1);
+  Expression<Eigen::Vector3d> v(2);
+  Expression<Eigen::Vector3d> Cv = rotate(C,v);
+
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Cv.value(values), Cval.rotate(vval), 1e-9));
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(Cv, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testInverseRotateVector) {
+  using gtsam::Expression;
+  Quaternion Cval;
+  Eigen::Vector3d vval;
+  Cval.setRandom();
+  vval.setRandom();
+
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, Cval);
+  values.insert(2, vval);
+
+  Expression<Quaternion> C(1);
+  Expression<Eigen::Vector3d> v(2);
+  Expression<Eigen::Vector3d> Ctv = inverseRotate(C,v);
+
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Ctv.value(values), Cval.inverseRotate(vval), 1e-9));
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(Ctv, values, fd_step, tolerance);
 }
 
 TEST(MinkindrGtsamTests, testRotationQuaternionChart) {
   Quaternion Cval;
   Cval.setRandom();
+  SCOPED_TRACE("Testing Default Chart.");
   testDefaultChart(Cval);
 }
 
@@ -163,17 +211,42 @@ TEST(MinkindrGtsamTests, testTransformPoint) {
 
   // Create some values
   Values values;
-  //values.insert(1, Tval);
+  values.insert(1, Tval);
   values.insert(2, pval);
 
-  Expression<Transformation> T(Tval); // T(1);
+  Expression<Transformation> T(1);
   Expression<Eigen::Vector3d> p(2);
 
   Expression<Eigen::Vector3d> Tp = T * p;
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(Tp, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testInverseTransformPoint) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Eigen::Vector3d pval;
+  Tval.setRandom();
+  pval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+  values.insert(2, pval);
+
+  Expression<Transformation> T(1);
+  Expression<Eigen::Vector3d> p(2);
+
+  Expression<Eigen::Vector3d> invTp = inverseTransform(T,p);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(invTp, values, fd_step, tolerance);
 }
 
 TEST(MinkindrGtsamTests, testRotationExpression) {
@@ -186,6 +259,7 @@ TEST(MinkindrGtsamTests, testRotationExpression) {
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(C, values, fd_step, tolerance);
 }
 
@@ -200,6 +274,7 @@ TEST(MinkindrGtsamTests, testRotationInverseExpression) {
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(invC, values, fd_step, tolerance);
 }
 
@@ -218,7 +293,249 @@ TEST(MinkindrGtsamTests, testComposeRotationExpression) {
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(C1C2, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testCombineRotationTranslation) {
+  Quaternion Cval;
+  Cval.setRandom();
+  Eigen::Vector3d tval;
+  tval.setRandom();
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, Cval);
+  values.insert(2, tval);
+  gtsam::Expression<Quaternion> C(1);
+  gtsam::Expression<Eigen::Vector3d> t(2);
+  gtsam::Expression<Transformation> T = transformationFromComponents(C,t);
+
+  Transformation Tval(Cval, tval);
+  Transformation Teval = T.value(values);
+  Transformation eye = Tval * Teval.inverted();
+
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Tval.getTransformationMatrix(), Teval.getTransformationMatrix(), 1e-9));
+
+  const double fd_step = 1e-5;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(T, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testSO3Log) {
+  using gtsam::Expression;
+  Quaternion Cval;
+  Cval.setRandom();
+
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, Cval);
+
+  Expression<Quaternion> C(1);
+  Expression<Eigen::Vector3d> logC = log(C);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(logC, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testSO3LogIdentity) {
+  using gtsam::Expression;
+  Quaternion Cval;
+
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, Cval);
+
+  Expression<Quaternion> C(1);
+  Expression<Eigen::Vector3d> logC = log(C);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(logC, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testRotationFromTransformation) {
+  using namespace gtsam;
+  using ::Quaternion;
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+
+  Expression<Quaternion> q = rotationFromTransformation(T);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(q, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testTranslationFromTransformation) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+
+  Expression<Eigen::Vector3d> t = translationFromTransformation(T);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(t, values, fd_step, tolerance);
+}
+
+
+TEST(MinkindrGtsamTests, testTransform) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(T, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testInverseTransform) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+  Expression<Transformation> invT = inverse(T);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(invT, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testComposeTransform1) {
+  using namespace gtsam;
+
+  Transformation T1val;
+  T1val.setRandom();
+  Transformation T2val;
+  T2val.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, T1val);
+  values.insert(2, T2val);
+
+  Expression<Transformation> T1(1);
+  Expression<Transformation> T2(2);
+  Expression<Transformation> T1T2 = compose(T1,T2);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(T1T2, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testComposeTransform2) {
+  using namespace gtsam;
+
+  Transformation T1val;
+  T1val.setRandom();
+  Transformation T2val;
+  T2val.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, T1val);
+  values.insert(2, T2val);
+
+  Expression<Transformation> T1(1);
+  Expression<Transformation> T2(2);
+  Expression<Transformation> T1T2 = T1 * T2;
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(T1T2, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testTransformationLog) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+  Expression<Vector6> logT = log(T);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(logT, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testTransformationTranslationLog) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+  Expression<Eigen::Vector3d> logt = translationLog(T);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(logt, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testTransformationRotationLog) {
+  using namespace gtsam;
+
+  Transformation Tval;
+  Tval.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, Tval);
+
+  Expression<Transformation> T(1);
+  Expression<Eigen::Vector3d> logC = rotationLog(T);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(logC, values, fd_step, tolerance);
 }
 
 int main(int argc, char** argv) {
