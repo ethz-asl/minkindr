@@ -5,7 +5,7 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <gtsam/linear/VectorValues.h>
-#include <gtsam_unstable/nonlinear/Expression.h>
+#include <gtsam/nonlinear/Expression.h>
 #include <gtsam_unstable/nonlinear/ExpressionFactor.h>
 #include <eigen-checks/gtest.h>
 
@@ -74,6 +74,33 @@ void testExpressionJacobians(gtsam::Expression<T> expression,
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(estJ.second, Eigen::VectorXd::Zero(size), tolerance))
     << "Mismatch in the error vector.";
 
+}
+
+// Do a full concept check and test the invertibility of
+// local() vs. retract().
+template<typename T>
+void testDefaultChart(const T& value) {
+  T other = value;
+  gtsam::traits::print<T>()(value, "value");
+  gtsam::traits::print<T>()(other, "other");
+  EXPECT_TRUE(gtsam::traits::equals<T>()(value, other, 1e-12));
+
+  typedef typename gtsam::DefaultChart<T> Chart;
+  typedef typename Chart::vector Vector;
+
+  Vector dx = Chart::local(value, other);
+  EXPECT_EQ(Chart::getDimension(value), dx.size());
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Eigen::VectorXd::Zero(dx.size()), dx, 1e-9));
+
+  dx.setRandom();
+  T updated = Chart::retract(value, dx);
+  Vector invdx = Chart::local(value, updated);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(dx, invdx, 1e-9));
+
+  dx = -dx;
+  updated = Chart::retract(value, dx);
+  invdx = Chart::local(value, updated);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(dx, invdx, 1e-9));
 }
 }  // namespace gtsam
 

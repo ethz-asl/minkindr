@@ -2,7 +2,7 @@
 #define MINKINDR_QUATERNION_GTSAM_H
 
 #include <gtsam/base/Manifold.h>
-#include <gtsam_unstable/nonlinear/Expression.h>
+#include <gtsam/nonlinear/Expression.h>
 
 #include <kindr/minimal/rotation-quaternion.h>
 #include <kindr/minimal/common.h>
@@ -97,12 +97,19 @@ gtsam::Expression<Eigen::Vector3d> inverseRotate(
 
 /// \brief Expose the rotation log and Jacobian.
 Eigen::Vector3d rotationLogImplementation(const kindr::minimal::RotationQuaternion& C,
-                                          boost::optional<Jacobian3x3&> JC);
+                                          OptionalJacobian<3, 3> JC);
 
 /// \brief Compute the matrix log of SO3.
 gtsam::Expression<Eigen::Vector3d> log(
     const gtsam::Expression<kindr::minimal::RotationQuaternion>& C);
 
+/// \brief Expose the rotation log and Jacobian.
+kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
+                                                             OptionalJacobian<3, 3> Jp);
+
+/// \brief Compute the matrix log of SO3.
+gtsam::Expression<kindr::minimal::RotationQuaternion> exp(
+    const gtsam::Expression<Eigen::Vector3d>& C);
 }  // namespace gtsam
 
 #endif // MINKINDR_QUATERNION_GTSAM_H

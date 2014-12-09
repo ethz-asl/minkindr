@@ -4,8 +4,8 @@ namespace gtsam {
 
 Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation& T,
                                        const Eigen::Vector3d& p,
-                                       boost::optional<Jacobian3x6&> HT,
-                                       boost::optional<Jacobian3x3&> Hp) {
+                                       OptionalJacobian<3, 6> HT,
+                                       OptionalJacobian<3, 3> Hp) {
   Eigen::Vector3d Tp = T * p;
   if(HT) {
     // TODO(furgalep) fill in.
@@ -60,7 +60,7 @@ gtsam::Expression<kindr::minimal::QuatTransformation> transformationFromComponen
 }
 
 kindr::minimal::RotationQuaternion rotationFromTransformationImplementation(
-    const kindr::minimal::QuatTransformation& T, boost::optional<Jacobian3x6&> HT) {
+    const kindr::minimal::QuatTransformation& T, OptionalJacobian<3, 6> HT) {
   if(HT) {
     HT->leftCols<3>().setZero();
     HT->rightCols<3>().setIdentity();
@@ -75,7 +75,7 @@ Expression<kindr::minimal::RotationQuaternion> rotationFromTransformation(
 }
 
 Eigen::Vector3d translationFromTransformationImplementation(
-    const kindr::minimal::QuatTransformation& T, boost::optional<Jacobian3x6&> HT) {
+    const kindr::minimal::QuatTransformation& T, OptionalJacobian<3, 6> HT) {
   if(HT) {
     HT->leftCols<3>().setIdentity();
     HT->rightCols<3>() = -kindr::minimal::skewMatrix(T.getPosition());
@@ -91,7 +91,7 @@ gtsam::Expression<Eigen::Vector3d> translationFromTransformation(
 
 Eigen::Vector3d inverseTransformImplementation(
     const kindr::minimal::QuatTransformation& T, const Eigen::Vector3d& p,
-    boost::optional<Jacobian3x6&> HT, boost::optional<Jacobian3x3&> Hp) {
+    OptionalJacobian<3, 6> HT, OptionalJacobian<3, 3> Hp) {
   Eigen::Vector3d Tp = T.inverseTransform(p);
   if(HT || Hp) {
     Eigen::Matrix3d invC = T.getRotation().inverted().getRotationMatrix();
@@ -113,7 +113,7 @@ Expression<Eigen::Vector3d> inverseTransform(
 }
 
 kindr::minimal::QuatTransformation inverseImplementation(
-    const kindr::minimal::QuatTransformation& T, boost::optional<Jacobian6x6&> HT) {
+    const kindr::minimal::QuatTransformation& T, OptionalJacobian<6, 6> HT) {
   kindr::minimal::QuatTransformation invT = T.inverted();
   if(HT) {
     Eigen::Matrix3d ninvC = -invT.getRotationMatrix();
@@ -133,8 +133,8 @@ Expression<kindr::minimal::QuatTransformation> inverse(
 kindr::minimal::QuatTransformation composeImplementation(
     const kindr::minimal::QuatTransformation& T1,
     const kindr::minimal::QuatTransformation& T2,
-    boost::optional<Jacobian6x6&> HT1,
-    boost::optional<Jacobian6x6&> HT2) {
+    OptionalJacobian<6, 6> HT1,
+    OptionalJacobian<6, 6> HT2) {
   kindr::minimal::QuatTransformation T1T2 = T1 * T2;
   if(HT1) {
     HT1->setIdentity();
@@ -158,7 +158,7 @@ Expression<kindr::minimal::QuatTransformation> compose(
 }
 
 Vector6 transformationLogImplementation(const kindr::minimal::QuatTransformation& T,
-                                        boost::optional<Jacobian6x6&> HT) {
+                                        OptionalJacobian<6, 6> HT) {
   if(HT) {
     Vector6 logT;
     Eigen::Vector3d logC;
@@ -180,7 +180,7 @@ Expression<Vector6> log(const Expression<kindr::minimal::QuatTransformation>& T)
 }
 
 Eigen::Vector3d rotationFromTransformationLogImplementation(const kindr::minimal::QuatTransformation& T,
-                                          boost::optional<Jacobian3x6&> HT) {
+                                          OptionalJacobian<3, 6> HT) {
   if(HT) {
     Eigen::Vector3d logC;
     Jacobian3x3 HC;
@@ -198,12 +198,29 @@ Expression<Eigen::Vector3d> rotationLog(
   return Expression<Eigen::Vector3d>(&rotationFromTransformationLogImplementation, T);
 }
 
+kindr::minimal::QuatTransformation invertAndComposeImplementation(
+    const kindr::minimal::QuatTransformation& T1,
+    const kindr::minimal::QuatTransformation& T2,
+    OptionalJacobian<6, 6> HT1,
+    OptionalJacobian<6, 6> HT2) {
+  kindr::minimal::QuatTransformation invT1 = inverseImplementation(T1, HT1);
+
+  return composeImplementation(invT1, T2, boost::none, HT2);
+}
+
+/// \brief Compose two transformations as inv(T1)*T2.
+Expression<kindr::minimal::QuatTransformation> invertAndCompose(
+    const Expression<kindr::minimal::QuatTransformation>& T1,
+    const Expression<kindr::minimal::QuatTransformation>& T2) {
+  return Expression<kindr::minimal::QuatTransformation>(&invertAndComposeImplementation, T1, T2);
+}
+
 kindr::minimal::QuatTransformation slerpImplementation(
     const kindr::minimal::QuatTransformation& T0,
     const kindr::minimal::QuatTransformation& T1,
     double alpha,
-    boost::optional<Jacobian6x6&> HT1,
-    boost::optional<Jacobian6x6&> HT2) {
+    OptionalJacobian<6, 6> HT1,
+    OptionalJacobian<6, 6> HT2) {
 
   bool needsJacobians = false;
   kindr::minimal::QuatTransformation T;
@@ -213,7 +230,12 @@ kindr::minimal::QuatTransformation slerpImplementation(
     T = T1;
   } else {
     needsJacobians = true;
-    T = kindr::minimal::QuatTransformation::exp(alpha * (T0.inverted() * T1).log());
+    Jacobian6x6 HC0, HC1, HLog, Hexp;
+    kindr::minimal::QuatTransformation invT0T1 =
+        invertAndComposeImplementation(T0, T1, HC0, HC1);
+    Vector6 logInvT0T1 = transformationLogImplementation(invT0T1, HLog);
+
+    T = T0 * kindr::minimal::QuatTransformation::exp(alpha * (T0.inverted() * T1).log());
   }
 
   return T;
@@ -227,20 +249,25 @@ Expression<kindr::minimal::QuatTransformation> slerp(
       boost::bind(&slerpImplementation, _1, _2, alpha, _3, _4), T0, T1);
 }
 
-kindr::minimal::QuatTransformation invertAndComposeImplementation(
-    const kindr::minimal::QuatTransformation& T1,
-    const kindr::minimal::QuatTransformation& T2,
-    boost::optional<Jacobian6x6&> HT1,
-    boost::optional<Jacobian6x6&> HT2) {
-  kindr::minimal::QuatTransformation invT1 = inverseImplementation(T1, HT1);
 
-  return composeImplementation(invT1, T2, boost::none, HT2);
+kindr::minimal::QuatTransformation transformationExpImplementation(
+    const Vector6& params,
+    OptionalJacobian<6, 6> Hp) {
+  if(Hp) {
+    Eigen::Matrix3d S;
+    kindr::minimal::RotationQuaternion q = rotationExpImplementation(params.tail<3>(), S);
+    Hp->topLeftCorner<3,3>().setIdentity();
+    Hp->bottomLeftCorner<3,3>().setZero();
+    Hp->topRightCorner<3,3>() = kindr::minimal::skewMatrix(params.head<3>()) * S;
+    Hp->bottomRightCorner<3,3>() = S;
+    return kindr::minimal::QuatTransformation(q, params.head<3>());
+  } else {
+    return kindr::minimal::QuatTransformation::exp(params);
+  }
 }
 
-/// \brief Compose two transformations as inv(T1)*T2.
-Expression<kindr::minimal::QuatTransformation> invertAndCompose(
-    const Expression<kindr::minimal::QuatTransformation>& T1,
-    const Expression<kindr::minimal::QuatTransformation>& T2) {
-  return Expression<kindr::minimal::QuatTransformation>(&invertAndComposeImplementation, T1, T2);
+Expression<kindr::minimal::QuatTransformation> exp(const Expression<Vector6>& params) {
+  return Expression<kindr::minimal::QuatTransformation>(
+      &transformationExpImplementation, params);
 }
 }  // namespace gtsam

@@ -18,6 +18,17 @@ inline void skewMatrix(const Eigen::Vector3d& v, Eigen::Matrix3d * skew) {
   (*skew)(2,1) =  v[0];
 }
 
+inline void skewMatrix(const Eigen::Vector3d& v, Eigen::Map<Eigen::Matrix3d> * skew) {
+  CHECK_NOTNULL(skew);
+  skew->setZero();
+  (*skew)(0,1) = -v[2];
+  (*skew)(1,0) =  v[2];
+  (*skew)(0,2) =  v[1];
+  (*skew)(2,0) = -v[1];
+  (*skew)(1,2) = -v[0];
+  (*skew)(2,1) =  v[0];
+}
+
 inline Eigen::Matrix3d skewMatrix(const Eigen::Vector3d& v) {
   Eigen::Matrix3d skew;
   skewMatrix(v, &skew);

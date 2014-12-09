@@ -3,35 +3,6 @@
 #include <kindr/minimal/rotation-quaternion-gtsam.h>
 #include <kindr/minimal/testing-gtsam.h>
 
-
-// Do a full concept check and test the invertibility of
-// local() vs. retract().
-template<typename T>
-void testDefaultChart(const T& value) {
-  T other = value;
-  gtsam::traits::print<T>()(value, "value");
-  gtsam::traits::print<T>()(other, "other");
-  EXPECT_TRUE(gtsam::traits::equals<T>()(value, other, 1e-12));
-
-  typedef typename gtsam::DefaultChart<T> Chart;
-  typedef typename Chart::vector Vector;
-
-  Vector dx = Chart::local(value, other);
-  EXPECT_EQ(Chart::getDimension(value), dx.size());
-  EXPECT_TRUE(EIGEN_MATRIX_NEAR(Eigen::VectorXd::Zero(dx.size()), dx, 1e-9));
-
-  dx.setRandom();
-  T updated = Chart::retract(value, dx);
-  Vector invdx = Chart::local(value, updated);
-  EXPECT_TRUE(EIGEN_MATRIX_NEAR(dx, invdx, 1e-9));
-
-  dx = -dx;
-  updated = Chart::retract(value, dx);
-  invdx = Chart::local(value, updated);
-  EXPECT_TRUE(EIGEN_MATRIX_NEAR(dx, invdx, 1e-9));
-}
-
-
 typedef kindr::minimal::QuatTransformation Transformation;
 typedef kindr::minimal::RotationQuaternion Quaternion;
 
@@ -111,7 +82,7 @@ TEST(MinkindrGtsamTests, testRotationQuaternionChart) {
   Quaternion Cval;
   Cval.setRandom();
   SCOPED_TRACE("Testing Default Chart.");
-  testDefaultChart(Cval);
+  gtsam::testDefaultChart(Cval);
 }
 
 TEST(MinkindrGtsamTests, testTransformPoint) {
@@ -251,6 +222,42 @@ TEST(MinkindrGtsamTests, testSO3Log) {
   const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(logC, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testSO3Exp) {
+  using gtsam::Expression;
+  Eigen::Vector3d pval;
+  pval.setRandom();
+
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, pval);
+
+  Expression<Eigen::Vector3d> p(1);
+  Expression<Quaternion> C = exp(p);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(C, values, fd_step, tolerance);
+}
+
+TEST(MinkindrGtsamTests, testSE3Exp) {
+  using gtsam::Expression;
+  gtsam::Vector6 pval;
+  pval.setRandom();
+
+  // Create some values
+  gtsam::Values values;
+  values.insert(1, pval);
+
+  Expression<gtsam::Vector6> p(1);
+  Expression<Transformation> T = exp(p);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+  SCOPED_TRACE("Testing Expression Jacobians.");
+  testExpressionJacobians(T, values, fd_step, tolerance);
 }
 
 TEST(MinkindrGtsamTests, testSO3LogIdentity) {
@@ -468,13 +475,12 @@ TEST(MinkindrGtsamTests, testInvertAndComposeTransform) {
   Expression<Transformation> T2(2);
   Expression<Transformation> invT1T2 = invertAndCompose(T1,T2);
 
-  const double fd_step = 1e-9;
+  const double fd_step = 1e-6;
   const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(invT1T2, values, fd_step, tolerance);
 }
 
-/*
 TEST(MinkindrGtsamTests, testSlerp) {
   using namespace gtsam;
 
@@ -490,16 +496,17 @@ TEST(MinkindrGtsamTests, testSlerp) {
 
   Expression<Transformation> T1(1);
   Expression<Transformation> T2(2);
-
+  /*
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
+
   {
-    Expression<Transformation> slerpT1 = slerp(T1, T2, 0.0);
+    Expression<Transformation> slerpT1 = slerp(T1, T2, 1e-5);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(slerpT1, values, fd_step, tolerance);
   }
   {
-    Expression<Transformation> slerpT2 = slerp(T1, T2, 1.0);
+    Expression<Transformation> slerpT2 = slerp(T1, T2, 1.0 - 1e-5);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(slerpT2, values, fd_step, tolerance);
   }
@@ -508,13 +515,14 @@ TEST(MinkindrGtsamTests, testSlerp) {
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(slerpTa, values, fd_step, tolerance);
   }
+
   {
     Expression<Transformation> slerpTb = slerp(T1, T2, 0.75);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(slerpTb, values, fd_step, tolerance);
   }
+  */
 }
-*/
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

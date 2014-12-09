@@ -2,7 +2,7 @@
 #define MINKINDR_QUAT_TRANSFORMATION_GTSAM_H
 
 #include <gtsam/base/Manifold.h>
-#include <gtsam_unstable/nonlinear/Expression.h>
+#include <gtsam/nonlinear/Expression.h>
 
 #include <kindr/minimal/quat-transformation.h>
 
@@ -118,6 +118,9 @@ Expression<kindr::minimal::QuatTransformation> invertAndCompose(
 
 /// \brief Recover the matrix log of R^3 x SO3
 Expression<Vector6> log(const Expression<kindr::minimal::QuatTransformation>& T);
+
+/// \brief The exponential map of R^3 x SO3
+Expression<kindr::minimal::QuatTransformation> exp(const Expression<Vector6>& params);
 
 /// \brief Recover the matrix log of the rotation part of the transformation.
 Expression<Eigen::Vector3d> rotationLog(
