@@ -214,38 +214,22 @@ Expression<kindr::minimal::QuatTransformation> invertAndCompose(
   return Expression<kindr::minimal::QuatTransformation>(&invertAndComposeImplementation, T1, T2);
 }
 
-kindr::minimal::QuatTransformation slerpImplementation(
-    const kindr::minimal::QuatTransformation& T0,
-    const kindr::minimal::QuatTransformation& T1,
-    double alpha,
-    OptionalJacobian<6, 6> HT1,
-    OptionalJacobian<6, 6> HT2) {
-
-  bool needsJacobians = false;
-  kindr::minimal::QuatTransformation T;
-  if(alpha < 0.0) {
-    T = T0;
-  } else if(alpha > 1.0) {
-    T = T1;
-  } else {
-    needsJacobians = true;
-    Jacobian6x6 HC0, HC1, HLog, Hexp;
-    kindr::minimal::QuatTransformation invT0T1 =
-        invertAndComposeImplementation(T0, T1, HC0, HC1);
-    Vector6 logInvT0T1 = transformationLogImplementation(invT0T1, HLog);
-
-    T = T0 * kindr::minimal::QuatTransformation::exp(alpha * (T0.inverted() * T1).log());
+Vector6 vectorScalingImplementation(const Vector6& v, double alpha, OptionalJacobian<6, 6> H) {
+  if (H) {
+    *H = OptionalJacobian<6,6>::Jacobian::Identity()*alpha;
   }
+  return v*alpha;
+}
 
-  return T;
+Expression<Vector6> vectorScaling(const Expression<Vector6>& v, double alpha) {
+  return Expression<Vector6>(boost::bind(&vectorScalingImplementation, _1, alpha, _2), v);
 }
 
 Expression<kindr::minimal::QuatTransformation> slerp(
     const Expression<kindr::minimal::QuatTransformation>& T0,
     const Expression<kindr::minimal::QuatTransformation>& T1,
     double alpha) {
-  return Expression<kindr::minimal::QuatTransformation>(
-      boost::bind(&slerpImplementation, _1, _2, alpha, _3, _4), T0, T1);
+  return compose(T0, exp(vectorScaling(log(invertAndCompose(T0, T1)), alpha)));
 }
 
 kindr::minimal::QuatTransformation transformationExpImplementation(

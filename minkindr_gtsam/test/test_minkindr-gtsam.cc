@@ -496,7 +496,7 @@ TEST(MinkindrGtsamTests, testSlerp) {
 
   Expression<Transformation> T1(1);
   Expression<Transformation> T2(2);
-  /*
+
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
 
@@ -521,7 +521,6 @@ TEST(MinkindrGtsamTests, testSlerp) {
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(slerpTb, values, fd_step, tolerance);
   }
-  */
 }
 
 int main(int argc, char** argv) {

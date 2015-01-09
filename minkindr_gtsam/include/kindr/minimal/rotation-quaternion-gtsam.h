@@ -18,7 +18,7 @@ template<> struct traits<kindr::minimal::RotationQuaternion> {
 
   typedef kindr::minimal::RotationQuaternion type;
   // the "vector" typedef is used by gtsam.
-    typedef Eigen::Matrix<double, dimension, 1> vector;
+  typedef Eigen::Matrix<double, dimension, 1> vector;
 
   // Print the type.
   static void Print(const kindr::minimal::RotationQuaternion& q,
@@ -94,8 +94,6 @@ kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector
 /// \brief Compute the matrix log of SO3.
 gtsam::Expression<kindr::minimal::RotationQuaternion> exp(
     const gtsam::Expression<Eigen::Vector3d>& C);
-
-
 }  // namespace gtsam
 
 #endif // MINKINDR_QUATERNION_GTSAM_H
