@@ -1,11 +1,9 @@
 #include <kindr/minimal/quat-transformation-gtsam.h>
-
 namespace gtsam {
-
 Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation& T,
-                                       const Eigen::Vector3d& p,
-                                       OptionalJacobian<3, 6> HT,
-                                       OptionalJacobian<3, 3> Hp) {
+                                const Eigen::Vector3d& p,
+                                OptionalJacobian<3, 6> HT,
+                                OptionalJacobian<3, 3> Hp) {
   Eigen::Vector3d Tp = T * p;
   if(HT) {
     // TODO(furgalep) fill in.
@@ -38,7 +36,7 @@ transform(const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
 
 kindr::minimal::QuatTransformation combine_components(
     const kindr::minimal::RotationQuaternion& C_A_B, const Eigen::Vector3d& A_t_B,
-    boost::optional<Jacobian6x3&> HC, boost::optional<Jacobian6x3&> Hp) {
+    OptionalJacobian<6,3> HC, OptionalJacobian<6,3> Hp) {
   if(HC) {
     HC->topRows<3>() = kindr::minimal::skewMatrix(A_t_B);
     HC->bottomRows<3>() = Eigen::Matrix3d::Identity();
@@ -180,7 +178,8 @@ Expression<Vector6> log(const Expression<kindr::minimal::QuatTransformation>& T)
 }
 
 Eigen::Vector3d rotationFromTransformationLogImplementation(const kindr::minimal::QuatTransformation& T,
-                                          OptionalJacobian<3, 6> HT) {
+                                                            OptionalJacobian<3, 6> HT) {
+
   if(HT) {
     Eigen::Vector3d logC;
     Jacobian3x3 HC;
@@ -249,7 +248,6 @@ Expression<kindr::minimal::QuatTransformation> slerp(
       boost::bind(&slerpImplementation, _1, _2, alpha, _3, _4), T0, T1);
 }
 
-
 kindr::minimal::QuatTransformation transformationExpImplementation(
     const Vector6& params,
     OptionalJacobian<6, 6> Hp) {
@@ -270,4 +268,4 @@ Expression<kindr::minimal::QuatTransformation> exp(const Expression<Vector6>& pa
   return Expression<kindr::minimal::QuatTransformation>(
       &transformationExpImplementation, params);
 }
-}  // namespace gtsam
+} // namespace gtsam

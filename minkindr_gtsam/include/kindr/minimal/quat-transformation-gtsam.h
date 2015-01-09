@@ -10,53 +10,39 @@
 #include "rotation-quaternion-gtsam.h"
 
 namespace gtsam {
-namespace traits { // Traits define the basic interface required by gtsam.
+template<> struct traits<kindr::minimal::QuatTransformation> {
+  // The dimension of the manifold.
+  enum {
+    dimension = 6
+  };
 
-// The dimension of the manifold.
-template<>
-struct dimension<kindr::minimal::QuatTransformation> : public boost::integral_constant<int,6> {
-};
+  typedef kindr::minimal::QuatTransformation type;
+  // the "vector" typedef is used by gtsam.
+  typedef Eigen::Matrix<double, dimension, 1> vector;
 
-// Check for equality between two values.
-template<>
-struct equals<kindr::minimal::QuatTransformation>{
-  bool operator()(const kindr::minimal::QuatTransformation& T1,
-                  const kindr::minimal::QuatTransformation& T2, double tol) {
-    return (T1.getTransformationMatrix() - T2.getTransformationMatrix()).array().abs().maxCoeff() > tol;
-  }
-};
-
-// Print a value.
-template<>
-struct print<kindr::minimal::QuatTransformation>{
-  void operator()(const kindr::minimal::QuatTransformation& T, const std::string& str) {
+  // Print the type.
+  static void Print(const kindr::minimal::QuatTransformation& T,
+                    const std::string& str) {
     if(str.size() > 0) { std::cout << str << ":\n";}
     std::cout << T.getTransformationMatrix() << std::endl;
   }
-};
 
-}  // namespace traits
+  // Check the equality of two values.
+  static bool Equals(const kindr::minimal::QuatTransformation& T1,
+                     const kindr::minimal::QuatTransformation& T2, double tol) {
+    return (T1.getTransformationMatrix() - T2.getTransformationMatrix()).array().abs().maxCoeff() > tol;
+  }
 
-// Chart is a map from T -> vector, retract is its inverse
-// This is required by gtsam because our classes don't have the
-// correct interface.
-template<>
-struct DefaultChart<kindr::minimal::QuatTransformation> {
-  // the "type" typedef is used by gtsam.
-  typedef kindr::minimal::QuatTransformation type;
-  // the "vector" typedef is used by gtsam.
-  typedef Eigen::Matrix<double, traits::dimension<type>::value, 1> vector;
-
-  static vector local(const type& origin, const type& other) {
+  static vector Local(const type& origin, const type& other) {
     return (other * origin.inverted()).log();
   }
-  static type retract(const type& origin, const vector& d) {
+  static type Retract(const type& origin, const vector& d) {
     return type(d) * origin;
   }
-  static int getDimension(const type& /* origin */) {
-    return 6;
+  static int GetDimension(const type& /* origin */) {
+    return dimension;
   }
-};
+};  // traits
 
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
@@ -77,7 +63,7 @@ transform(const Expression<kindr::minimal::QuatTransformation>& T,
           const Expression<Eigen::Vector3d>& p);
 
 /// \brief Build a transformation expression from a rotation expression and a
-///        point expression.
+/// point expression.
 Expression<kindr::minimal::QuatTransformation> transformationFromComponents(
     const Expression<kindr::minimal::RotationQuaternion>& C_A_B,
     const Expression<Eigen::Vector3d>& A_t_B);

@@ -10,58 +10,42 @@
 #include "common-gtsam.h"
 
 namespace gtsam {
-namespace traits { // Traits define the basic interface required by gtsam.
+template<> struct traits<kindr::minimal::RotationQuaternion> {
+  // The dimension of the manifold.
+  enum {
+    dimension = 3
+  };
 
-// The dimension of the manifold.
-template<>
-struct dimension<kindr::minimal::RotationQuaternion> :
-    public boost::integral_constant<int, 3> {
-};
+  typedef kindr::minimal::RotationQuaternion type;
+  // the "vector" typedef is used by gtsam.
+    typedef Eigen::Matrix<double, dimension, 1> vector;
 
-// Check the equality of two values.
-template<>
-struct equals<kindr::minimal::RotationQuaternion> {
-  bool operator()(const kindr::minimal::RotationQuaternion& q1,
-                  const kindr::minimal::RotationQuaternion& q2, double tol) {
-    return (q1.getUnique().vector() - q2.getUnique().vector()).array()
-        .abs().maxCoeff() < tol;
-  }
-};
-
-// Print the type.
-template<>
-struct print<kindr::minimal::RotationQuaternion> {
-  void operator()(const kindr::minimal::RotationQuaternion& q,
-                  const std::string& str) {
+  // Print the type.
+  static void Print(const kindr::minimal::RotationQuaternion& q,
+                    const std::string& str = "") {
     if (str.size() > 0) {
       std::cout << str << ": ";
     }
     std::cout << "kindr::minimal::RotationQuaternion[" << q.vector().transpose() << "]" << std::endl;
   }
-};
 
-}  // namespace traits
+  // Check the equality of two values.
+  static bool Equals(const kindr::minimal::RotationQuaternion& q1,
+                     const kindr::minimal::RotationQuaternion& q2, double tol) {
+    return (q1.getUnique().vector() - q2.getUnique().vector()).array()
+        .abs().maxCoeff() < tol;
+  }
 
-// Chart is a map from T -> vector, retract is its inverse
-// This is required by gtsam because our classes don't have the
-// correct interface.
-template<>
-struct DefaultChart<kindr::minimal::RotationQuaternion> {
-  // the "type" typedef is used by gtsam.
-  typedef kindr::minimal::RotationQuaternion type;
-  // the "vector" typedef is used by gtsam.
-  typedef Eigen::Matrix<double, traits::dimension<type>::value, 1> vector;
-
-  static inline vector local(const type& origin, const type& other) {
+  static vector Local(const type& origin, const type& other) {
     return (other * origin.inverted()).log();
   }
-  static inline type retract(const type& origin, const vector& d) {
+  static type Retract(const type& origin, const vector& d) {
     return kindr::minimal::RotationQuaternion(d) * origin;
   }
-  static inline int getDimension(const type& /* origin */) {
-    return traits::dimension<kindr::minimal::RotationQuaternion>::value;
+  static int GetDimension(const type& /* origin */) {
+    return dimension;
   }
-};
+};  // traits
 
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
@@ -110,6 +94,8 @@ kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector
 /// \brief Compute the matrix log of SO3.
 gtsam::Expression<kindr::minimal::RotationQuaternion> exp(
     const gtsam::Expression<Eigen::Vector3d>& C);
+
+
 }  // namespace gtsam
 
 #endif // MINKINDR_QUATERNION_GTSAM_H

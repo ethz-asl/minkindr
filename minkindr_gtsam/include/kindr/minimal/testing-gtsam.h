@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <gtsam/linear/VectorValues.h>
 #include <gtsam/nonlinear/Expression.h>
-#include <gtsam_unstable/nonlinear/ExpressionFactor.h>
+#include <gtsam/nonlinear/ExpressionFactor.h>
 #include <eigen-checks/gtest.h>
 
 namespace gtsam {
@@ -54,11 +54,10 @@ void testExpressionJacobians(gtsam::Expression<T> expression,
                              double tolerance) {
   using namespace gtsam;
   // Create factor
-  size_t size = traits::dimension<T>::value;
+  size_t size = traits<T>::dimension;
   ExpressionFactor<T> f(noiseModel::Unit::Create(size), expression.value(values), expression);
 
   // Check linearization
-  //JacobianFactor expected(1, eye(3,6), 2, Tval.getRotationMatrix(), -(Tval * pval));
   JacobianFactor expected = computeFiniteDifferenceJacobians(f, values, fd_step);
   boost::shared_ptr<GaussianFactor> gf = f.linearize(values);
   boost::shared_ptr<JacobianFactor> jf = //
@@ -81,25 +80,25 @@ void testExpressionJacobians(gtsam::Expression<T> expression,
 template<typename T>
 void testDefaultChart(const T& value) {
   T other = value;
-  gtsam::traits::print<T>()(value, "value");
-  gtsam::traits::print<T>()(other, "other");
-  EXPECT_TRUE(gtsam::traits::equals<T>()(value, other, 1e-12));
+  gtsam::traits<T>::Print(value, "value");
+  gtsam::traits<T>::Print(other, "other");
+  EXPECT_TRUE(gtsam::traits<T>::Equals(value, other, 1e-12));
 
-  typedef typename gtsam::DefaultChart<T> Chart;
-  typedef typename Chart::vector Vector;
+  typedef typename gtsam::traits<T> Traits;
+  typedef typename Traits::vector Vector;
 
-  Vector dx = Chart::local(value, other);
-  EXPECT_EQ(Chart::getDimension(value), dx.size());
+  Vector dx = Traits::Local(value, other);
+  EXPECT_EQ(Traits::dimension, dx.size());
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(Eigen::VectorXd::Zero(dx.size()), dx, 1e-9));
 
   dx.setRandom();
-  T updated = Chart::retract(value, dx);
-  Vector invdx = Chart::local(value, updated);
+  T updated = Traits::Retract(value, dx);
+  Vector invdx = Traits::Local(value, updated);
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(dx, invdx, 1e-9));
 
   dx = -dx;
-  updated = Chart::retract(value, dx);
-  invdx = Chart::local(value, updated);
+  updated = Traits::Retract(value, dx);
+  invdx = Traits::Local(value, updated);
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(dx, invdx, 1e-9));
 }
 }  // namespace gtsam
