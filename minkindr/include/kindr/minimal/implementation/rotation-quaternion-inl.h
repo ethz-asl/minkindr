@@ -61,8 +61,7 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const RotationMatrix& matrix) :
     q_A_B_(matrix) {
-  CHECK_NEAR(matrix.determinant(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-8));
-  q_A_B_.normalize();
+  CHECK(isValidRotationMatrix(matrix));
 }
 
 template<typename Scalar>
@@ -349,6 +348,19 @@ template<typename Scalar>
 Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
     const AngleAxisTemplate<Scalar>& rhs) const{
   return AngleAxis(rhs * this->inverted()).getUnique().angle();
+}
+
+template<typename Scalar>
+bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(const RotationMatrix& matrix) {
+  const Scalar kThreshold = static_cast<Scalar>(1.0e-8);
+  if ((matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
+    return false;
+  }
+  if ((matrix * matrix.transpose() - RotationMatrix::Identity()).cwiseAbs().maxCoeff()
+      > kThreshold) {
+    return false;
+  }
+  return true;
 }
 
 } // namespace minimal
