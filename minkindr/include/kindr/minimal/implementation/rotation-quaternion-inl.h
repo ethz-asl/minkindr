@@ -61,9 +61,9 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const RotationMatrix& matrix) :
     q_A_B_(matrix) {
-  // \todo furgalep check that this was a real rotation matrix
+  CHECK_NEAR(matrix.determinant(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-8));
+  q_A_B_.normalize();
 }
-
 
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
