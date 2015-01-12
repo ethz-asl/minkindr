@@ -156,9 +156,18 @@ class RotationQuaternionTemplate {
     return vector() == rhs.vector();
   }
 
+  /// \brief Check the validity of a rotation matrix.
+  static bool isValidRotationMatrix(const RotationMatrix& matrix);
+
+  /// \brief Factory to construct a RotationQuaternionTemplate from a near
+  ///        orthonormal rotation matrix.
+  inline static RotationQuaternionTemplate<Scalar> constructAndRenormalize(
+      const RotationMatrix& R) {
+    return RotationQuaternionTemplate<Scalar>(Implementation(R).normalized());
+  }
+
  private:
   Implementation q_A_B_;
-
 };
 
 typedef RotationQuaternionTemplate<double> RotationQuaternion;
