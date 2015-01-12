@@ -353,7 +353,7 @@ Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
 template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(const RotationMatrix& matrix) {
   const Scalar kThreshold = static_cast<Scalar>(1.0e-8);
-  if ((matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
+  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
     return false;
   }
   if ((matrix * matrix.transpose() - RotationMatrix::Identity()).cwiseAbs().maxCoeff()
