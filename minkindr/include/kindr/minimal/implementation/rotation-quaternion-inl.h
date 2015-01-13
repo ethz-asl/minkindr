@@ -247,7 +247,7 @@ template<typename Scalar>
 typename RotationQuaternionTemplate<Scalar>::Matrix3X
 RotationQuaternionTemplate<Scalar>::rotateVectorized(
     const typename RotationQuaternionTemplate<Scalar>::Matrix3X& v) const {
-  return q_A_B_.toRotationMatrix()*v;
+  return q_A_B_.toRotationMatrix() * v;
 }
 
 /// \brief rotate a vector, v

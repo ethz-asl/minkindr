@@ -32,6 +32,7 @@ TEST(MinKindrTests, testTransform) {
   Eigen::Matrix3Xd vv(3, 2);
   vv.block<3, 1>(0, 0) = v;
   vv.block<3, 1>(0, 1) = v;
+  Eigen::Matrix3Xd vempty(3, 0);
 
   Eigen::Vector3d Tv( 9.53512701,  15.88020996,   7.53669644);
   Eigen::Vector4d Tvh(9.53512701,  15.88020996,   7.53669644, 1.0);
@@ -55,6 +56,7 @@ TEST(MinKindrTests, testTransform) {
   Eigen::Vector3d Tv4 = fromHomogeneous(Tvh4);
 
   Eigen::Matrix3Xd Tvv1 = T.transform(vv);
+  Eigen::Matrix3Xd Tvempty = T.transform(vempty);
 
   for(int i = 0; i < 3; ++i) {
     EXPECT_NEAR(Tv1[i], Tv[i], 1e-4);
@@ -65,6 +67,8 @@ TEST(MinKindrTests, testTransform) {
     EXPECT_NEAR(Tvv1(i, 0), Tv[i], 1e-4);
     EXPECT_NEAR(Tvv1(i, 1), Tv[i], 1e-4);
   }
+
+  EXPECT_EQ(0, Tvempty.cols());
 
   {
     Eigen::Vector3d invTv1 = T.inverted().transform(v);

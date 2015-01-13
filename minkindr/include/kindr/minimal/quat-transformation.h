@@ -90,13 +90,12 @@ class QuatTransformationTemplate {
 
   /// \brief transform a point.
   Vector3 operator*(const Vector3& rhs) const;
-  /// \brief transform points.
-  Matrix3X operator*(const Matrix3X& rhs) const;
 
   /// \brief transform a point.
   Vector3 transform(const Vector3& rhs) const;
+
   /// \brief transform points.
-  Matrix3X transform(const Matrix3X& rhs) const;
+  Matrix3X transformVectorized(const Matrix3X& rhs) const;
 
   /// \brief transform a point.
   Vector4 transform4(const Vector4& rhs) const;
