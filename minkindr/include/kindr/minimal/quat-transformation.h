@@ -27,6 +27,8 @@ class QuatTransformationTemplate {
   typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
   typedef Eigen::Matrix<Scalar, 6, 1> Vector6;
 
+  typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Matrix3X;
+
   typedef Eigen::Matrix<Scalar, 3, 1> Position;
   typedef RotationQuaternionTemplate<Scalar> Rotation;
   typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
@@ -91,6 +93,9 @@ class QuatTransformationTemplate {
 
   /// \brief transform a point.
   Vector3 transform(const Vector3& rhs) const;
+
+  /// \brief transform points.
+  Matrix3X transformVectorized(const Matrix3X& rhs) const;
 
   /// \brief transform a point.
   Vector4 transform4(const Vector4& rhs) const;

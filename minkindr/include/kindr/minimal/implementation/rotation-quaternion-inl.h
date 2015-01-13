@@ -242,6 +242,14 @@ RotationQuaternionTemplate<Scalar>::rotate(
   return q_A_B_*v;
 }
 
+/// \brief rotate vectors, v
+template<typename Scalar>
+typename RotationQuaternionTemplate<Scalar>::Matrix3X
+RotationQuaternionTemplate<Scalar>::rotateVectorized(
+    const typename RotationQuaternionTemplate<Scalar>::Matrix3X& v) const {
+  CHECK_GT(v.cols(), 0);
+  return q_A_B_.toRotationMatrix() * v;
+}
 
 /// \brief rotate a vector, v
 template<typename Scalar>
