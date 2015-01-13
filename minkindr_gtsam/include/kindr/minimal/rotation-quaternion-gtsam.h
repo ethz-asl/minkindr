@@ -46,7 +46,11 @@ template<> struct traits<kindr::minimal::RotationQuaternion> {
     return dimension;
   }
 };  // traits
+} //namespace gtsam
 
+using namespace gtsam;
+namespace kindr {
+namespace minimal {
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
 
@@ -94,6 +98,8 @@ kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector
 /// \brief Compute the matrix log of SO3.
 gtsam::Expression<kindr::minimal::RotationQuaternion> exp(
     const gtsam::Expression<Eigen::Vector3d>& C);
-}  // namespace gtsam
+
+}  // namespace minimal
+}  // namespace kindr
 
 #endif // MINKINDR_QUATERNION_GTSAM_H

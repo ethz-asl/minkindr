@@ -1,5 +1,6 @@
 #include <kindr/minimal/quat-transformation-gtsam.h>
-namespace gtsam {
+namespace kindr {
+namespace minimal {
 Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation& T,
                                 const Eigen::Vector3d& p,
                                 OptionalJacobian<3, 6> HT,
@@ -252,4 +253,6 @@ Expression<kindr::minimal::QuatTransformation> exp(const Expression<Vector6>& pa
   return Expression<kindr::minimal::QuatTransformation>(
       &transformationExpImplementation, params);
 }
-} // namespace gtsam
+
+}  // namespace minimal
+}  // namespace kindr

@@ -43,7 +43,11 @@ template<> struct traits<kindr::minimal::QuatTransformation> {
     return dimension;
   }
 };  // traits
+} // namespace gtsam
 
+using namespace gtsam;
+namespace kindr {
+namespace minimal {
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
 
@@ -124,6 +128,7 @@ Expression<kindr::minimal::QuatTransformation> slerp(
     double alpha);
 
 
-}  // namespace gtsam
+}  // namespace minimal
+}  // namespace kindr
 
 #endif // MINKINDR_QUAT_TRANSFORMATION_GTSAM_H
