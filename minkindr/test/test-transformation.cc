@@ -55,8 +55,8 @@ TEST(MinKindrTests, testTransform) {
   Eigen::Vector3d Tv3 = fromHomogeneous(Tvh3);
   Eigen::Vector3d Tv4 = fromHomogeneous(Tvh4);
 
-  Eigen::Matrix3Xd Tvv1 = T.transform(vv);
-  Eigen::Matrix3Xd Tvempty = T.transform(vempty);
+  Eigen::Matrix3Xd Tvv1 = T.transformVectorized(vv);
+  EXPECT_DEATH(T.transform(vempty), "^");
 
   for(int i = 0; i < 3; ++i) {
     EXPECT_NEAR(Tv1[i], Tv[i], 1e-4);
@@ -67,8 +67,6 @@ TEST(MinKindrTests, testTransform) {
     EXPECT_NEAR(Tvv1(i, 0), Tv[i], 1e-4);
     EXPECT_NEAR(Tvv1(i, 1), Tv[i], 1e-4);
   }
-
-  EXPECT_EQ(0, Tvempty.cols());
 
   {
     Eigen::Vector3d invTv1 = T.inverted().transform(v);
