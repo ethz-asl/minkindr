@@ -33,6 +33,8 @@ class RotationQuaternionTemplate {
 
   typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
 
+  typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Matrix3X;
+
   typedef Eigen::Quaternion<Scalar> Implementation;
 
   typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
@@ -105,6 +107,9 @@ class RotationQuaternionTemplate {
 
   /// \brief rotate a vector, v.
   Vector3 rotate(const Vector3& v) const;
+
+  /// \brief rotate vectors v.
+  Matrix3X rotateVectorized(const Matrix3X& v) const;
 
   /// \brief rotate a vector, v.
   Vector4 rotate4(const Vector4& v) const;

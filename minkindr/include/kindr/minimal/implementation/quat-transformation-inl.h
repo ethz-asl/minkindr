@@ -125,9 +125,23 @@ QuatTransformationTemplate<Scalar>::transform(
 }
 
 template<typename Scalar>
+typename QuatTransformationTemplate<Scalar>::Matrix3X
+QuatTransformationTemplate<Scalar>::transform(
+    const typename QuatTransformationTemplate<Scalar>::Matrix3X& rhs) const {
+  return q_A_B_.rotateVectorized(rhs).colwise() + A_t_A_B_;
+}
+
+template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector3
 QuatTransformationTemplate<Scalar>::operator*(
     const typename QuatTransformationTemplate<Scalar>::Vector3& rhs) const {
+  return transform(rhs);
+}
+
+template<typename Scalar>
+typename QuatTransformationTemplate<Scalar>::Matrix3X
+QuatTransformationTemplate<Scalar>::operator*(
+    const typename QuatTransformationTemplate<Scalar>::Matrix3X& rhs) const {
   return transform(rhs);
 }
 
