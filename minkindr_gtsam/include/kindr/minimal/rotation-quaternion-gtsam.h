@@ -48,20 +48,19 @@ template<> struct traits<kindr::minimal::RotationQuaternion> {
 };  // traits
 } //namespace gtsam
 
-using namespace gtsam;
 namespace kindr {
 namespace minimal {
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
 
 /// \brief Invert a rotation quaternion expression.
-Expression<kindr::minimal::RotationQuaternion> invert(
-    const Expression<kindr::minimal::RotationQuaternion>& q);
+gtsam::Expression<kindr::minimal::RotationQuaternion> invert(
+    const gtsam::Expression<kindr::minimal::RotationQuaternion>& q);
 
 /// \brief Compose two quaternion expressions.
-Expression<kindr::minimal::RotationQuaternion>
-operator*(const Expression<kindr::minimal::RotationQuaternion>& C1,
-          const Expression<kindr::minimal::RotationQuaternion>& C2);
+gtsam::Expression<kindr::minimal::RotationQuaternion>
+operator*(const gtsam::Expression<kindr::minimal::RotationQuaternion>& C1,
+          const gtsam::Expression<kindr::minimal::RotationQuaternion>& C2);
 
 /// \brief Rotate a point.
 ///
@@ -85,7 +84,7 @@ gtsam::Expression<Eigen::Vector3d> inverseRotate(
 
 /// \brief Expose the rotation log and Jacobian.
 Eigen::Vector3d rotationLogImplementation(const kindr::minimal::RotationQuaternion& C,
-                                          OptionalJacobian<3, 3> JC);
+                                          gtsam::OptionalJacobian<3, 3> JC);
 
 /// \brief Compute the matrix log of SO3.
 gtsam::Expression<Eigen::Vector3d> log(
@@ -93,7 +92,7 @@ gtsam::Expression<Eigen::Vector3d> log(
 
 /// \brief Expose the rotation log and Jacobian.
 kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
-                                                             OptionalJacobian<3, 3> Jp);
+                                                             gtsam::OptionalJacobian<3, 3> Jp);
 
 /// \brief Compute the matrix log of SO3.
 gtsam::Expression<kindr::minimal::RotationQuaternion> exp(

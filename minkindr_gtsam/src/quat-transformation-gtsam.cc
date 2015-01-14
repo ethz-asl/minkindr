@@ -1,4 +1,7 @@
 #include <kindr/minimal/quat-transformation-gtsam.h>
+
+using namespace gtsam;
+
 namespace kindr {
 namespace minimal {
 Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation& T,

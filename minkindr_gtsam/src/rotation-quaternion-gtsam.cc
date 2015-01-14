@@ -1,5 +1,7 @@
 #include <kindr/minimal/rotation-quaternion-gtsam.h>
 
+using namespace gtsam;
+
 namespace kindr {
 namespace minimal {
 Eigen::Vector3d rotate_point(
