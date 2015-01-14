@@ -30,7 +30,7 @@ template<> struct traits<kindr::minimal::QuatTransformation> {
   // Check the equality of two values.
   static bool Equals(const kindr::minimal::QuatTransformation& T1,
                      const kindr::minimal::QuatTransformation& T2, double tol) {
-    return (T1.getTransformationMatrix() - T2.getTransformationMatrix()).array().abs().maxCoeff() > tol;
+    return (T1.getTransformationMatrix() - T2.getTransformationMatrix()).array().abs().maxCoeff() < tol;
   }
 
   static vector Local(const type& origin, const type& other) {
