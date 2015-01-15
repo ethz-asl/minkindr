@@ -113,12 +113,12 @@ class QuatTransformationTemplate {
   ///                part and the last three the rotational part.
   /// \return The corresponding Transformation.
   static QuatTransformationTemplate<Scalar> exp(const Vector6& vec);
+
   /// \brief get the logarithmic map of the transformation
   /// note: this is the log map of SO(3)xR(3) and not SE(3)
   /// \return vector form of log map with first 3 components the translational
   ///         part and the last three the rotational part.
   static Vector6 log(const QuatTransformationTemplate<Scalar>& vec);
-
 
   /// \brief return a copy of the transformation inverted.
   QuatTransformationTemplate<Scalar> inverted() const;

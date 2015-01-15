@@ -45,7 +45,7 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
 
 namespace detail {
 
-template <typename Scalar_ = double>
+template <typename Scalar_>
 inline bool isLessThenEpsilons4thRoot(Scalar_ x){
   static const Scalar_ epsilon4thRoot = pow(std::numeric_limits<Scalar_>::epsilon(), 1.0/4.0);
   return x < epsilon4thRoot;

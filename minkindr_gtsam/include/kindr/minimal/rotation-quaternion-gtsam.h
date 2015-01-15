@@ -52,15 +52,17 @@ namespace kindr {
 namespace minimal {
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
+typedef gtsam::Expression<RotationQuaternion> EQuaternion;
+typedef gtsam::Expression<Eigen::Vector3d> EVector3;
 
 /// \brief Invert a rotation quaternion expression.
-gtsam::Expression<kindr::minimal::RotationQuaternion> invert(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& q);
+EQuaternion invert(
+    const EQuaternion& q);
 
 /// \brief Compose two quaternion expressions.
-gtsam::Expression<kindr::minimal::RotationQuaternion>
-operator*(const gtsam::Expression<kindr::minimal::RotationQuaternion>& C1,
-          const gtsam::Expression<kindr::minimal::RotationQuaternion>& C2);
+EQuaternion
+operator*(const EQuaternion& C1,
+          const EQuaternion& C2);
 
 /// \brief Rotate a point.
 ///
@@ -68,35 +70,27 @@ operator*(const gtsam::Expression<kindr::minimal::RotationQuaternion>& C1,
 /// Expression<Eigen::Vector3d> Cp = C * p;
 /// instead of
 /// Expression<Eigen::Vector3d> Cp = Expression<Eigen::Vector3d>(&rotate_point, C, p);
-gtsam::Expression<Eigen::Vector3d> operator*(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& C,
-    const gtsam::Expression<Eigen::Vector3d>& p);
+gtsam::Expression<Eigen::Vector3d> operator*(const EQuaternion& C, const EVector3& p);
 
 /// \brief Rotate a point.
-gtsam::Expression<Eigen::Vector3d> rotate(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& C,
-    const gtsam::Expression<Eigen::Vector3d>& p);
+EVector3 rotate(const EQuaternion& C, const EVector3& p);
 
 /// \brief Rotate a point by the inverse of the rotation.
-gtsam::Expression<Eigen::Vector3d> inverseRotate(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& C,
-    const gtsam::Expression<Eigen::Vector3d>& p);
+EVector3 inverseRotate(const EQuaternion& C, const EVector3& p);
 
 /// \brief Expose the rotation log and Jacobian.
 Eigen::Vector3d rotationLogImplementation(const kindr::minimal::RotationQuaternion& C,
                                           gtsam::OptionalJacobian<3, 3> JC);
 
 /// \brief Compute the matrix log of SO3.
-gtsam::Expression<Eigen::Vector3d> log(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& C);
+EVector3 quaternionLog(const EQuaternion& C);
 
 /// \brief Expose the rotation log and Jacobian.
 kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
                                                              gtsam::OptionalJacobian<3, 3> Jp);
 
 /// \brief Compute the matrix log of SO3.
-gtsam::Expression<kindr::minimal::RotationQuaternion> exp(
-    const gtsam::Expression<Eigen::Vector3d>& C);
+EQuaternion quaternionExp(const EVector3& C);
 
 }  // namespace minimal
 }  // namespace kindr

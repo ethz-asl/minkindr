@@ -23,19 +23,19 @@ Eigen::Vector3d transform_point(const kindr::minimal::QuatTransformation& T,
 }
 
 // This is syntatic sugar to be able to write
-// Expression<Eigen::Vector3d> Tp = T * p;
+// EVector3 Tp = T * p;
 // instead of
-// Expression<Eigen::Vector3d> Tp = Expression<Eigen::Vector3d>(&transform_point, T, p);
-gtsam::Expression<Eigen::Vector3d>
-operator*(const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
-          const gtsam::Expression<Eigen::Vector3d>& p) {
-  return Expression<Eigen::Vector3d>(&transform_point, T, p);
+// EVector3 Tp = EVector3(&transform_point, T, p);
+EVector3
+operator*(const ETransformation& T,
+          const EVector3& p) {
+  return EVector3(&transform_point, T, p);
 }
 
-gtsam::Expression<Eigen::Vector3d>
-transform(const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
-          const gtsam::Expression<Eigen::Vector3d>& p) {
-  return Expression<Eigen::Vector3d>(&transform_point, T, p);
+EVector3
+transform(const ETransformation& T,
+          const EVector3& p) {
+  return EVector3(&transform_point, T, p);
 }
 
 kindr::minimal::QuatTransformation combine_components(
@@ -55,10 +55,10 @@ kindr::minimal::QuatTransformation combine_components(
 }
 
 // Build a transformation expression from a rotation expression and a point expression.
-gtsam::Expression<kindr::minimal::QuatTransformation> transformationFromComponents(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& C_A_B,
-    const gtsam::Expression<Eigen::Vector3d>& A_t_B) {
-  return Expression<kindr::minimal::QuatTransformation>(&combine_components, C_A_B, A_t_B);
+ETransformation transformationFromComponents(
+    const EQuaternion& C_A_B,
+    const EVector3& A_t_B) {
+  return ETransformation(&combine_components, C_A_B, A_t_B);
 }
 
 kindr::minimal::RotationQuaternion rotationFromTransformationImplementation(
@@ -70,9 +70,9 @@ kindr::minimal::RotationQuaternion rotationFromTransformationImplementation(
   return T.getRotation();
 }
 
-Expression<kindr::minimal::RotationQuaternion> rotationFromTransformation(
-    const Expression<kindr::minimal::QuatTransformation>& T) {
-  return Expression<kindr::minimal::RotationQuaternion>(
+EQuaternion rotationFromTransformation(
+    const ETransformation& T) {
+  return EQuaternion(
       &rotationFromTransformationImplementation, T);
 }
 
@@ -85,9 +85,9 @@ Eigen::Vector3d translationFromTransformationImplementation(
   return T.getPosition();
 }
 
-gtsam::Expression<Eigen::Vector3d> translationFromTransformation(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T) {
-  return Expression<Eigen::Vector3d>(
+EVector3 translationFromTransformation(
+    const ETransformation& T) {
+  return EVector3(
       &translationFromTransformationImplementation, T);
 }
 
@@ -108,10 +108,10 @@ Eigen::Vector3d inverseTransformImplementation(
   return Tp;
 }
 
-Expression<Eigen::Vector3d> inverseTransform(
-    const Expression<kindr::minimal::QuatTransformation>& T,
-    const Expression<Eigen::Vector3d>& p) {
-  return Expression<Eigen::Vector3d>(&inverseTransformImplementation, T, p);
+EVector3 inverseTransform(
+    const ETransformation& T,
+    const EVector3& p) {
+  return EVector3(&inverseTransformImplementation, T, p);
 }
 
 kindr::minimal::QuatTransformation inverseImplementation(
@@ -127,9 +127,9 @@ kindr::minimal::QuatTransformation inverseImplementation(
   return invT;
 }
 
-Expression<kindr::minimal::QuatTransformation> inverse(
-    const Expression<kindr::minimal::QuatTransformation>& T) {
-  return Expression<kindr::minimal::QuatTransformation>(&inverseImplementation, T);
+ETransformation inverse(
+    const ETransformation& T) {
+  return ETransformation(&inverseImplementation, T);
 }
 
 kindr::minimal::QuatTransformation composeImplementation(
@@ -153,10 +153,10 @@ kindr::minimal::QuatTransformation composeImplementation(
   return T1T2;
 }
 
-Expression<kindr::minimal::QuatTransformation> compose(
-    const Expression<kindr::minimal::QuatTransformation>& T1,
-    const Expression<kindr::minimal::QuatTransformation>& T2) {
-  return Expression<kindr::minimal::QuatTransformation>(&composeImplementation, T1, T2);
+ETransformation compose(
+    const ETransformation& T1,
+    const ETransformation& T2) {
+  return ETransformation(&composeImplementation, T1, T2);
 }
 
 Vector6 transformationLogImplementation(const kindr::minimal::QuatTransformation& T,
@@ -177,8 +177,8 @@ Vector6 transformationLogImplementation(const kindr::minimal::QuatTransformation
   }
 }
 
-Expression<Vector6> log(const Expression<kindr::minimal::QuatTransformation>& T) {
-  return Expression<Vector6>(&transformationLogImplementation, T);
+EVector6 transformationLog(const ETransformation& T) {
+  return EVector6(&transformationLogImplementation, T);
 }
 
 Eigen::Vector3d rotationFromTransformationLogImplementation(const kindr::minimal::QuatTransformation& T,
@@ -196,9 +196,9 @@ Eigen::Vector3d rotationFromTransformationLogImplementation(const kindr::minimal
   }
 }
 
-Expression<Eigen::Vector3d> rotationLog(
-    const Expression<kindr::minimal::QuatTransformation>& T) {
-  return Expression<Eigen::Vector3d>(&rotationFromTransformationLogImplementation, T);
+EVector3 rotationLog(
+    const ETransformation& T) {
+  return EVector3(&rotationFromTransformationLogImplementation, T);
 }
 
 kindr::minimal::QuatTransformation invertAndComposeImplementation(
@@ -212,28 +212,17 @@ kindr::minimal::QuatTransformation invertAndComposeImplementation(
 }
 
 /// \brief Compose two transformations as inv(T1)*T2.
-Expression<kindr::minimal::QuatTransformation> invertAndCompose(
-    const Expression<kindr::minimal::QuatTransformation>& T1,
-    const Expression<kindr::minimal::QuatTransformation>& T2) {
-  return Expression<kindr::minimal::QuatTransformation>(&invertAndComposeImplementation, T1, T2);
+ETransformation invertAndCompose(
+    const ETransformation& T1,
+    const ETransformation& T2) {
+  return ETransformation(&invertAndComposeImplementation, T1, T2);
 }
 
-Vector6 vectorScalingImplementation(const Vector6& v, double alpha, OptionalJacobian<6, 6> H) {
-  if (H) {
-    *H = OptionalJacobian<6,6>::Jacobian::Identity()*alpha;
-  }
-  return v*alpha;
-}
-
-Expression<Vector6> vectorScaling(const Expression<Vector6>& v, double alpha) {
-  return Expression<Vector6>(boost::bind(&vectorScalingImplementation, _1, alpha, _2), v);
-}
-
-Expression<kindr::minimal::QuatTransformation> slerp(
-    const Expression<kindr::minimal::QuatTransformation>& T0,
-    const Expression<kindr::minimal::QuatTransformation>& T1,
+ETransformation slerp(
+    const ETransformation& T0,
+    const ETransformation& T1,
     double alpha) {
-  return compose(T0, exp(vectorScaling(log(invertAndCompose(T0, T1)), alpha)));
+  return compose(T0, transformationExp(vectorScaling(transformationLog(invertAndCompose(T0, T1)), alpha)));
 }
 
 kindr::minimal::QuatTransformation transformationExpImplementation(
@@ -252,8 +241,8 @@ kindr::minimal::QuatTransformation transformationExpImplementation(
   }
 }
 
-Expression<kindr::minimal::QuatTransformation> exp(const Expression<Vector6>& params) {
-  return Expression<kindr::minimal::QuatTransformation>(
+ETransformation transformationExp(const EVector6& params) {
+  return ETransformation(
       &transformationExpImplementation, params);
 }
 
