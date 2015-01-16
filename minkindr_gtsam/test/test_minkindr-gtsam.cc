@@ -593,6 +593,58 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternion) {
   }
 }
 
+TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
+  using namespace gtsam;
+
+  Quaternion qaVal;  qaVal.setRandom();
+  Quaternion qbVal;  qbVal.setRandom();
+  Eigen::Vector3d waVal; waVal.setRandom() *= 10.0;
+  Eigen::Vector3d wbVal; waVal.setRandom() *= 10.0;
+
+  // Create some values
+  Values values;
+  values.insert(1, qaVal);
+  values.insert(2, qbVal);
+  values.insert(3, waVal);
+  values.insert(4, wbVal);
+
+  EQuaternion qA(1), qB(2);
+  EVector3 wA(3), wB(4);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+
+  {
+    EQuaternion interpQ = hermiteInterpolation(qA, wA, qB, wB, 1e-5);
+    EVector3 interpV = hermiteInterpolationDerivative(qA, wA, qB, wB, 1e-5);
+
+    Quaternion qI = interpQ.value(values);
+    Eigen::Vector3d vI = interpV.value(values);
+
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(vI,waVal,1e-3));
+    Eigen::Vector3d dq = (qI * qaVal.inverted()).log()/1e-5;
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(vI,dq,1e-3));
+
+  }
+
+  {
+    const int N = 100;
+    for (int i = 0; i < N; ++i) {
+      double alpha = double(i)/(N-1);
+      EQuaternion interpQ = hermiteInterpolation(qA, wA, qB, wB, alpha);
+      EQuaternion interpQp = hermiteInterpolation(qA, wA, qB, wB, alpha+fd_step);
+      EVector3 interpV = hermiteInterpolationDerivative(qA, wA, qB, wB, alpha);
+
+      Eigen::Vector3d dq = (interpQp.value(values) * interpQ.value(values).inverted()).log()/fd_step;
+      Eigen::Vector3d v = interpV.value(values);
+
+      EXPECT_TRUE(EIGEN_MATRIX_NEAR(v,dq,tolerance*5));
+    }
+
+  }
+
+}
+
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
