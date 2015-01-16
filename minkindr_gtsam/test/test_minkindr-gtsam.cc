@@ -535,7 +535,7 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternion) {
   Quaternion qaVal;  qaVal.setRandom();
   Quaternion qbVal;  qbVal.setRandom();
   Eigen::Vector3d waVal; waVal.setRandom();
-  Eigen::Vector3d wbVal; waVal.setRandom();
+  Eigen::Vector3d wbVal; wbVal.setRandom();
 
   // Create some values
   Values values;
@@ -599,7 +599,7 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
   Quaternion qaVal;  qaVal.setRandom();
   Quaternion qbVal;  qbVal.setRandom();
   Eigen::Vector3d waVal; waVal.setRandom() *= 10.0;
-  Eigen::Vector3d wbVal; waVal.setRandom() *= 10.0;
+  Eigen::Vector3d wbVal; wbVal.setRandom() *= 10.0;
 
   // Create some values
   Values values;

@@ -2,6 +2,7 @@
 #include <kindr/minimal/rotation-quaternion.h>
 #include <kindr/minimal/angle-axis.h>
 #include <cmath>
+#include <eigen-checks/gtest.h>
 
 #ifndef TEST
 #define TEST(a, b) int Test_##a##_##b()
@@ -176,5 +177,26 @@ TEST(MinKindrTests, testRotationExpLog) {
         EXPECT_NEAR(CC1(r,c), CC2(r,c), 1e-6) << "Failed at (" << r << "," << c << ")";
       }
     }
+  }
+
+  RotationQuaternion::Vector3 axis;
+  axis << 0.0,0.0,1.0;
+  axis /= axis.norm();
+  for (double angle = -M_PI; angle <= M_PI; angle+=M_PI/100) {
+    RotationQuaternion::Vector3 axisAngle = axis*angle;
+    RotationQuaternion C2 = RotationQuaternion::exp(axisAngle);
+    RotationQuaternion::Vector3 v = C2.log();
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(v,axisAngle,1e-6));
+  }
+
+  Eigen::Matrix<double,4,1> q;
+  for(int i=0; i < 1000; ++i) {
+    q.setRandom();
+    q /=q.norm();
+    RotationQuaternion C1(q[0], q[1], q[2], q[3]);
+    RotationQuaternion::Vector3 v1 = C1.log();
+    RotationQuaternion C2(-q[0], -q[1], -q[2], -q[3]);
+    RotationQuaternion::Vector3 v2 = C2.log();
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(v1,v2,1e-6));
   }
 }

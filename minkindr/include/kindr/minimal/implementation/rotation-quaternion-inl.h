@@ -370,7 +370,11 @@ RotationQuaternionTemplate<Scalar>::log(const RotationQuaternionTemplate<Scalar>
   const Scalar eta = q.w();
   Scalar scale;
   if(fabs(eta) < na){ // use eta because it is more precise than na to calculate the scale. No singularities here.
-    scale = acos(eta) / na;
+    if (eta >= 0) {
+      scale = acos(eta) / na;
+    } else {
+      scale = -acos(-eta) / na;
+    }
   } else {
     /*
      * In this case more precision is in na than in eta so lets use na only to calculate the scale:
@@ -396,7 +400,8 @@ RotationQuaternionTemplate<Scalar>::log(const RotationQuaternionTemplate<Scalar>
     } else {
       // (pi - asin(na))/ na has a pole at na == 0. So we cannot remove this singularity.
       // It is just the cut locus of the unit quaternion manifold at identity and thus the axis angle description becomes necessarily unstable there.
-      scale = (M_PI - asin(na)) / na;
+      //scale = (M_PI - asin(na)) / na;
+      scale = -detail::arcSinXOverX(na);
     }
   }
   return a * (Scalar(2.0) * scale);
