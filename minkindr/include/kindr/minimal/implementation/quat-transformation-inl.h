@@ -110,7 +110,6 @@ QuatTransformationTemplate<Scalar>::asVector() const {
       q_A_B_.w(), q_A_B_.x(), q_A_B_.y(), q_A_B_.z(), A_t_A_B_).finished();
 }
 
-
 template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::RotationMatrix
 QuatTransformationTemplate<Scalar>::getRotationMatrix() const {
