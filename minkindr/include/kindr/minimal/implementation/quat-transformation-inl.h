@@ -104,6 +104,14 @@ QuatTransformationTemplate<Scalar>::getTransformationMatrix() const {
 }
 
 template<typename Scalar>
+Eigen::Matrix<Scalar, 7, 1>
+QuatTransformationTemplate<Scalar>::asVector() const {
+  return (Eigen::Matrix<Scalar, 7, 1>() <<
+      q_A_B_.w(), q_A_B_.x(), q_A_B_.y(), q_A_B_.z(), A_t_A_B_).finished();
+}
+
+
+template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::RotationMatrix
 QuatTransformationTemplate<Scalar>::getRotationMatrix() const {
   return q_A_B_.getRotationMatrix();

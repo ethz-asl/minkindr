@@ -82,6 +82,9 @@ class QuatTransformationTemplate {
   /// \brief get the rotation matrix.
   RotationMatrix getRotationMatrix() const;
 
+  /// \brief get the quaternion of rotation and position as a vector.
+  Eigen::Matrix<Scalar, 7, 1> asVector() const;
+
   /// \brief compose two transformations.
   QuatTransformationTemplate<Scalar> operator*(
       const QuatTransformationTemplate<Scalar>& rhs) const;
