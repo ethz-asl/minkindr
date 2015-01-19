@@ -161,3 +161,20 @@ TEST(MinKindrTests, testRotate) {
      EXPECT_NEAR(Ctv[i], Ctv4[i], 1e-4);
   }
 }
+
+TEST(MinKindrTests, testRotationExpLog) {
+  using namespace kindr::minimal;
+  for(int i = 0; i < 10; ++i) {
+    RotationQuaternion C1;
+    C1.setRandom();
+    RotationQuaternion::Vector3 v = C1.log();
+    RotationQuaternion C2 = RotationQuaternion::exp(v);
+    Eigen::Matrix3d CC1 = C1.getRotationMatrix();
+    Eigen::Matrix3d CC2 = C2.getRotationMatrix();
+    for(int r = 0; r < 3; ++r) {
+      for(int c = 0; c < 3; ++c) {
+        EXPECT_NEAR(CC1(r,c), CC2(r,c), 1e-6) << "Failed at (" << r << "," << c << ")";
+      }
+    }
+  }
+}

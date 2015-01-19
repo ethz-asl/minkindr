@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>minkindr_gtsam</name>
+  <version>0.0.1</version>
+  <description>minkindr_gtsam</description>
+
+  <maintainer email="paul.furgale@gmail.com">Paul Furgale</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>eigen_catkin</depend>
+  <depend>gtsam_catkin</depend>
+  <depend>minkindr</depend>
+  <depend>glog_catkin</depend>
+  <depend>gflags_catkin</depend>
+  <depend>eigen_checks</depend>
+
+</package>
+
