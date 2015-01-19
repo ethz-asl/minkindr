@@ -104,6 +104,13 @@ QuatTransformationTemplate<Scalar>::getTransformationMatrix() const {
 }
 
 template<typename Scalar>
+Eigen::Matrix<Scalar, 7, 1>
+QuatTransformationTemplate<Scalar>::asVector() const {
+  return (Eigen::Matrix<Scalar, 7, 1>() <<
+      q_A_B_.w(), q_A_B_.x(), q_A_B_.y(), q_A_B_.z(), A_t_A_B_).finished();
+}
+
+template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::RotationMatrix
 QuatTransformationTemplate<Scalar>::getRotationMatrix() const {
   return q_A_B_.getRotationMatrix();
@@ -122,6 +129,14 @@ typename QuatTransformationTemplate<Scalar>::Vector3
 QuatTransformationTemplate<Scalar>::transform(
     const typename QuatTransformationTemplate<Scalar>::Vector3& rhs) const {
   return q_A_B_.rotate(rhs) + A_t_A_B_;
+}
+
+template<typename Scalar>
+typename QuatTransformationTemplate<Scalar>::Matrix3X
+QuatTransformationTemplate<Scalar>::transformVectorized(
+    const typename QuatTransformationTemplate<Scalar>::Matrix3X& rhs) const {
+  CHECK_GT(rhs.cols(), 0);
+  return q_A_B_.rotateVectorized(rhs).colwise() + A_t_A_B_;
 }
 
 template<typename Scalar>

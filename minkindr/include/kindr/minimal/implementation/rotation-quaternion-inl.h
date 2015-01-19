@@ -72,9 +72,8 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const RotationMatrix& matrix) :
     q_A_B_(matrix) {
-  // \todo furgalep check that this was a real rotation matrix
+  CHECK(isValidRotationMatrix(matrix));
 }
-
 
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
@@ -254,6 +253,14 @@ RotationQuaternionTemplate<Scalar>::rotate(
   return q_A_B_*v;
 }
 
+/// \brief rotate vectors, v
+template<typename Scalar>
+typename RotationQuaternionTemplate<Scalar>::Matrix3X
+RotationQuaternionTemplate<Scalar>::rotateVectorized(
+    const typename RotationQuaternionTemplate<Scalar>::Matrix3X& v) const {
+  CHECK_GT(v.cols(), 0);
+  return q_A_B_.toRotationMatrix() * v;
+}
 
 /// \brief rotate a vector, v
 template<typename Scalar>
@@ -427,6 +434,19 @@ template<typename Scalar>
 typename RotationQuaternionTemplate<Scalar>::Vector3
 RotationQuaternionTemplate<Scalar>::log() const {
   return log(*this);
+}
+
+template<typename Scalar>
+bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(const RotationMatrix& matrix) {
+  const Scalar kThreshold = static_cast<Scalar>(1.0e-8);
+  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
+    return false;
+  }
+  if ((matrix * matrix.transpose() - RotationMatrix::Identity()).cwiseAbs().maxCoeff()
+      > kThreshold) {
+    return false;
+  }
+  return true;
 }
 
 } // namespace minimal
