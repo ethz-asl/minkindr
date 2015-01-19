@@ -1,7 +1,9 @@
 #include <kindr/minimal/rotation-quaternion-gtsam.h>
 
-namespace gtsam {
+using namespace gtsam;
 
+namespace kindr {
+namespace minimal {
 Eigen::Vector3d rotate_point(
     const kindr::minimal::RotationQuaternion& C, const Eigen::Vector3d& p,
     OptionalJacobian<3, 3> HC, OptionalJacobian<3, 3> Hp) {
@@ -131,4 +133,5 @@ Expression<kindr::minimal::RotationQuaternion> exp(
   return Expression<kindr::minimal::RotationQuaternion>(&rotationExpImplementation, C);
 }
 
-}  // namespace gtsam
+}  // namespace minimal
+}  // namespace kindr

@@ -234,7 +234,7 @@ TEST(MinkindrGtsamTests, testSO3Exp) {
   values.insert(1, pval);
 
   Expression<Eigen::Vector3d> p(1);
-  Expression<Quaternion> C = exp(p);
+  Expression<Quaternion> C = kindr::minimal::exp(p);
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
@@ -252,7 +252,7 @@ TEST(MinkindrGtsamTests, testSE3Exp) {
   values.insert(1, pval);
 
   Expression<gtsam::Vector6> p(1);
-  Expression<Transformation> T = exp(p);
+  Expression<Transformation> T = kindr::minimal::exp(p);
 
   const double fd_step = 1e-9;
   const double tolerance = 1e-6;
