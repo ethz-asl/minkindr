@@ -37,11 +37,11 @@ class AngleAxisTemplate {
   /// \brief initialize to identity.
   AngleAxisTemplate();
 
-  /// \brief initialize from real and imaginary components (real first).
+  /// \brief initialize from the angle and rotation axis (angle first).
   AngleAxisTemplate(Scalar angle, Scalar v1, Scalar v2, Scalar v3);
   
-  /// \brief initialize from real and imaginary components.
-  AngleAxisTemplate(Scalar real, const Vector3& imaginary);
+  /// \brief initialize from the angle and rotation axis.
+  AngleAxisTemplate(Scalar angle, const Vector3& axis);
 
   /// \brief initialize from an Eigen angleAxis.
   AngleAxisTemplate(const Implementation& angleAxis);

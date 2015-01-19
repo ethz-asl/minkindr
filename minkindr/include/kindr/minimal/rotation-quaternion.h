@@ -161,6 +161,14 @@ class RotationQuaternionTemplate {
     return vector() == rhs.vector();
   }
 
+  // Compute the matrix log of the quaternion.
+  static Vector3 log(const RotationQuaternionTemplate<Scalar>& q);
+
+  // Compute the matrix exponential of the quaternion.
+  static RotationQuaternionTemplate<Scalar> exp(const Vector3& dx);
+
+  Vector3 log() const;
+
   /// \brief Check the validity of a rotation matrix.
   static bool isValidRotationMatrix(const RotationMatrix& matrix);
 
