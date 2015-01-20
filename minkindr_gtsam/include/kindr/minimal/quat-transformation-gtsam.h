@@ -123,11 +123,49 @@ inline EVector3 translationLog(
   return translationFromTransformation(T);
 }
 
+/// \brief Perform a slerp interpolation between two transformations
 ETransformation slerp(
     const ETransformation& T0,
     const ETransformation& T1,
     double alpha);
 
+////////////////////////////////////////////////////////////////////////////////
+// Expose the convenience functions implementation for evaluation outside of GTSAM.
+
+kindr::minimal::RotationQuaternion rotationFromTransformationImplementation(
+    const QuatTransformation& T, gtsam::OptionalJacobian<3, 6> HT);
+
+Eigen::Vector3d translationFromTransformationImplementation(
+    const QuatTransformation& T, gtsam::OptionalJacobian<3, 6> HT);
+
+Eigen::Vector3d inverseTransformImplementation(
+    const QuatTransformation& T, const Eigen::Vector3d& p,
+    gtsam::OptionalJacobian<3, 6> HT, gtsam::OptionalJacobian<3, 3> Hp);
+
+QuatTransformation inverseImplementation(
+    const QuatTransformation& T, gtsam::OptionalJacobian<6, 6> HT);
+
+QuatTransformation composeImplementation(
+    const QuatTransformation& T1,
+    const QuatTransformation& T2,
+    gtsam::OptionalJacobian<6, 6> HT1,
+    gtsam::OptionalJacobian<6, 6> HT2);
+
+gtsam::Vector6 transformationLogImplementation(const QuatTransformation& T,
+                                               gtsam::OptionalJacobian<6, 6> HT);
+
+Eigen::Vector3d rotationFromTransformationLogImplementation(const QuatTransformation& T,
+                                                            gtsam::OptionalJacobian<3, 6> HT);
+
+QuatTransformation invertAndComposeImplementation(
+    const QuatTransformation& T1,
+    const QuatTransformation& T2,
+    gtsam::OptionalJacobian<6, 6> HT1,
+    gtsam::OptionalJacobian<6, 6> HT2);
+
+QuatTransformation transformationExpImplementation(
+    const gtsam::Vector6& params,
+    gtsam::OptionalJacobian<6, 6> Hp);
 
 }  // namespace minimal
 }  // namespace kindr

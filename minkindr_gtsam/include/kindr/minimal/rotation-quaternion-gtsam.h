@@ -79,15 +79,15 @@ EVector3 rotate(const EQuaternion& C, const EVector3& p);
 EVector3 inverseRotate(const EQuaternion& C, const EVector3& p);
 
 /// \brief Expose the rotation log and Jacobian.
-Eigen::Vector3d rotationLogImplementation(const kindr::minimal::RotationQuaternion& C,
+Eigen::Vector3d rotationLogImplementation(const RotationQuaternion& C,
                                           gtsam::OptionalJacobian<3, 3> JC);
 
 /// \brief Compute the matrix log of SO3.
 EVector3 quaternionLog(const EQuaternion& C);
 
 /// \brief Expose the rotation log and Jacobian.
-kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
-                                                             gtsam::OptionalJacobian<3, 3> Jp);
+RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
+                                             gtsam::OptionalJacobian<3, 3> Jp);
 
 /// \brief Compute the matrix log of SO3.
 EQuaternion quaternionExp(const EVector3& C);

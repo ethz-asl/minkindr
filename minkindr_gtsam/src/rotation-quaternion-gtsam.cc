@@ -5,7 +5,7 @@ using namespace gtsam;
 namespace kindr {
 namespace minimal {
 Eigen::Vector3d rotate_point(
-    const kindr::minimal::RotationQuaternion& C, const Eigen::Vector3d& p,
+    const RotationQuaternion& C, const Eigen::Vector3d& p,
     OptionalJacobian<3, 3> HC, OptionalJacobian<3, 3> Hp) {
   Eigen::Vector3d Cp = C.rotate(p);
   if (HC) {
@@ -18,7 +18,7 @@ Eigen::Vector3d rotate_point(
 }
 
 Eigen::Vector3d inverse_rotate_point(
-    const kindr::minimal::RotationQuaternion& C, const Eigen::Vector3d& p,
+    const RotationQuaternion& C, const Eigen::Vector3d& p,
     OptionalJacobian<3, 3> HC, OptionalJacobian<3, 3> Hp) {
   Eigen::Vector3d Ctp = C.inverseRotate(p);
   if(HC || Hp) {
@@ -33,8 +33,8 @@ Eigen::Vector3d inverse_rotate_point(
   return Ctp;
 }
 
-kindr::minimal::RotationQuaternion invert_rotation_quaternion(
-    const kindr::minimal::RotationQuaternion& C,
+RotationQuaternion invert_rotation_quaternion(
+    const RotationQuaternion& C,
     OptionalJacobian<3, 3> HC) {
   if(HC) {
     *HC = -C.getRotationMatrix().transpose();
@@ -42,9 +42,9 @@ kindr::minimal::RotationQuaternion invert_rotation_quaternion(
   return C.inverted();
 }
 
-kindr::minimal::RotationQuaternion compose_rotation_quaternion(
-    const kindr::minimal::RotationQuaternion& C1,
-    const kindr::minimal::RotationQuaternion& C2,
+RotationQuaternion compose_rotation_quaternion(
+    const RotationQuaternion& C1,
+    const RotationQuaternion& C2,
     OptionalJacobian<3, 3> HC1,
     OptionalJacobian<3, 3> HC2) {
   if(HC1) {
@@ -75,7 +75,7 @@ EVector3 inverseRotate(const EQuaternion& C, const EVector3& p) {
   return EVector3(&inverse_rotate_point, C, p);
 }
 
-Eigen::Vector3d rotationLogImplementation(const kindr::minimal::RotationQuaternion& C,
+Eigen::Vector3d rotationLogImplementation(const RotationQuaternion& C,
                                           OptionalJacobian<3, 3> JC) {
   Eigen::Vector3d aa = C.log();
   if(JC) {
@@ -97,26 +97,26 @@ EVector3 quaternionLog(const EQuaternion& C) {
 }
 
 /// \brief Expose the rotation log and Jacobian.
-kindr::minimal::RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
-                                                             OptionalJacobian<3, 3> Jp) {
+RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
+                                             OptionalJacobian<3, 3> Jp) {
   if(Jp) {
     double angle = p.norm();
     if(angle < 1e-14) {
-        Jp->setIdentity();
+      Jp->setIdentity();
     } else {
-        double recip_angle = 1.0/angle;
-        Eigen::Vector3d axis = p * recip_angle;
-        double st2 = sin(angle * 0.5);
-        double st  = sin(angle);
+      double recip_angle = 1.0/angle;
+      Eigen::Vector3d axis = p * recip_angle;
+      double st2 = sin(angle * 0.5);
+      double st  = sin(angle);
 
-        double c1 = -2.0 * st2 * st2 * recip_angle;
-        double c2 = (angle - st) * recip_angle;
-        Eigen::Matrix3d crossA = kindr::minimal::skewMatrix(axis);
+      double c1 = -2.0 * st2 * st2 * recip_angle;
+      double c2 = (angle - st) * recip_angle;
+      Eigen::Matrix3d crossA = kindr::minimal::skewMatrix(axis);
 
-        (*Jp) = Eigen::Matrix3d::Identity() - (c1 * crossA) + (c2 * crossA * crossA);
+      (*Jp) = Eigen::Matrix3d::Identity() - (c1 * crossA) + (c2 * crossA * crossA);
     }
   }
-  return kindr::minimal::RotationQuaternion::exp(p);
+  return RotationQuaternion::exp(p);
 }
 
 /// \brief Compute the matrix log of SO3.
