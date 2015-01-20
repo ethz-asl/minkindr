@@ -191,12 +191,11 @@ TEST(MinKindrTests, testRotationExpLog) {
 
   Eigen::Matrix<double,4,1> q;
   for(int i=0; i < 1000; ++i) {
-    q.setRandom();
-    q /=q.norm();
-    RotationQuaternion C1(q[0], q[1], q[2], q[3]);
+    RotationQuaternion C1;
+    C1.setRandom();
     RotationQuaternion::Vector3 v1 = C1.log();
-    RotationQuaternion C2(-q[0], -q[1], -q[2], -q[3]);
-    RotationQuaternion::Vector3 v2 = C2.log();
+    C1.setParts(-C1.w(), -C1.imaginary());
+    RotationQuaternion::Vector3 v2 = C1.log();
     EXPECT_TRUE(EIGEN_MATRIX_NEAR(v1,v2,1e-6));
   }
 }

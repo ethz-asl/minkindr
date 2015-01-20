@@ -2,6 +2,7 @@
 #include <kindr/minimal/quat-transformation-gtsam.h>
 #include <kindr/minimal/rotation-quaternion-gtsam.h>
 #include <kindr/minimal/cubic-hermite-quaternion-gtsam.h>
+#include <kindr/minimal/common-gtsam.h>
 #include <kindr/minimal/testing-gtsam.h>
 
 typedef kindr::minimal::QuatTransformation Transformation;
@@ -643,6 +644,55 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
 
   }
 
+}
+
+TEST(MinkindrGtsamTests, testVectorScaling) {
+  using namespace gtsam;
+  Eigen::Vector3d v; v.setRandom();
+  double a = (double)rand()/RAND_MAX*10;
+
+  // Create some values
+  Values values;
+  values.insert(1, v);
+
+  EVector3 w(1);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+
+  {
+    EVector3 wScaled = kindr::minimal::vectorScaling(w, a);
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(wScaled.value(values),v*a,tolerance));
+    testExpressionJacobians(wScaled, values, fd_step, tolerance);
+  }
+}
+
+TEST(MinkindrGtsamTests, testVectorSumAndDifference) {
+  using namespace gtsam;
+  Eigen::Vector3d vA; vA.setRandom();
+  Eigen::Vector3d vB; vB.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, vA);
+  values.insert(2, vB);
+
+  EVector3 wA(1), wB(2);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+
+  {
+    EVector3 sum = kindr::minimal::vectorSum(wA, wB);
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(sum.value(values),vA+vB,tolerance));
+    testExpressionJacobians(sum, values, fd_step, tolerance);
+  }
+
+  {
+    EVector3 difference = kindr::minimal::vectorDifference(wA, wB);
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(difference.value(values),vA-vB,tolerance));
+    testExpressionJacobians(difference, values, fd_step, tolerance);
+  }
 }
 
 

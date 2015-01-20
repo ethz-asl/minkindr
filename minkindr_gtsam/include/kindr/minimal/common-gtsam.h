@@ -42,6 +42,25 @@ gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorSum(const gtsam::Expressio
   return gtsam::Expression<Eigen::Matrix<double, N, 1> >(vectorSumImplementation<N>, v1, v2);
 }
 
+template <int N>
+Eigen::Matrix<double, N, 1> vectorDifferenceImplementation(const Eigen::Matrix<double, N, 1> & v1,
+                                                           const Eigen::Matrix<double, N, 1> & v2,
+                                                           gtsam::OptionalJacobian<N, N> H1, gtsam::OptionalJacobian<N, N> H2) {
+  if (H1) {
+    H1->setIdentity();
+  }
+  if (H2) {
+    H2->setIdentity();
+    *H2 = -*H2;
+  }
+  return v1-v2;
+}
+
+template <int N>
+gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorDifference(const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v1,
+                                                                 const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v2) {
+  return gtsam::Expression<Eigen::Matrix<double, N, 1> >(vectorDifferenceImplementation<N>, v1, v2);
+}
 
 template <int N>
 gtsam::Expression<Eigen::Matrix<double, N, 1> > operator*(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v, double alpha) {
@@ -64,6 +83,11 @@ gtsam::Expression<Eigen::Matrix<double, N, 1> > operator+(const gtsam::Expressio
   return vectorSum(v1, v2);
 }
 
+template <int N>
+gtsam::Expression<Eigen::Matrix<double, N, 1> > operator-(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v1,
+                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v2) {
+  return vectorDifference(v1, v2);
+}
 
 }
 }
