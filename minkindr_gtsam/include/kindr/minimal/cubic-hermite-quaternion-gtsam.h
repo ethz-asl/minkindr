@@ -42,8 +42,8 @@ EQuaternion hermiteInterpolation(const EQuaternion& quat_W_A, const EVector3& W_
   EVector3 w2 = quaternionLog( quaternionExp(-w1) * invert(quat_W_A) * quat_W_B * quaternionExp(-w3));
   double alpha2 = alpha * alpha;
   double alpha3 = alpha2 * alpha;
-  double beta1 = alpha3 - 3 * alpha2 + 3 * alpha;
-  double beta2 = -2.0 * alpha3 + 3 * alpha2;
+  double beta1 = alpha3 - 3.0 * alpha2 + 3.0 * alpha;
+  double beta2 = -2.0 * alpha3 + 3.0 * alpha2;
   double beta3 = alpha3;
 
   return quat_W_A * quaternionExp(w1 * beta1) * quaternionExp(w2 * beta2) * quaternionExp(w3 * beta3);

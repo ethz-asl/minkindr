@@ -123,7 +123,8 @@ inline EVector3 translationLog(
   return translationFromTransformation(T);
 }
 
-/// \brief Perform a slerp interpolation between two transformations
+/// \brief Perform a spherical linear interpolation between two transformations.
+/// Alpha ranges from 0 to 1 and respectively from T0 to T1.
 ETransformation slerp(
     const ETransformation& T0,
     const ETransformation& T1,
