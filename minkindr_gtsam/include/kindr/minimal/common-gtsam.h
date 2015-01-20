@@ -3,6 +3,9 @@
 
 #include <Eigen/Core>
 
+#include <gtsam/base/Manifold.h>
+#include <gtsam/nonlinear/Expression.h>
+
 typedef Eigen::Matrix<double, 3, 6> Jacobian3x6;
 typedef Eigen::Matrix<double, 3, 3> Jacobian3x3;
 typedef Eigen::Matrix<double, 6, 3> Jacobian6x3;
@@ -14,88 +17,53 @@ namespace minimal {
 template <int N>
 Eigen::Matrix<double, N, 1> vectorScalingImplementation(const Eigen::Matrix<double, N, 1> & v, double alpha,
                                                         gtsam::OptionalJacobian<N, N> H1,
-                                                        gtsam::OptionalJacobian<N, 1> H2) {
-  if (H1) {
-    *H1 = gtsam::OptionalJacobian<N,N>::Jacobian::Identity()*alpha;
-  }
-
-  if (H2) {
-    *H2 = v;
-  }
-
-  return v*alpha;
-}
+                                                        gtsam::OptionalJacobian<N, 1> H2);
 
 template <int N>
-gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorScaling(const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v, double alpha) {
-  return gtsam::Expression<Eigen::Matrix<double, N, 1> >(boost::bind(&vectorScalingImplementation<N>, _1, alpha, _2, boost::none), v);
-}
+gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorScaling(const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v,
+                                                              double alpha);
 
 template <int N>
-Eigen::Matrix<double, N, 1> vectorSumImplementation(const Eigen::Matrix<double, N, 1> & v1, const Eigen::Matrix<double, N, 1> & v2,
-                                                    gtsam::OptionalJacobian<N, N> H1, gtsam::OptionalJacobian<N, N> H2) {
-  if (H1) {
-    H1->setIdentity();
-  }
-  if (H2) {
-    H2->setIdentity();
-  }
-  return v1+v2;
-}
+Eigen::Matrix<double, N, 1> vectorSumImplementation(const Eigen::Matrix<double, N, 1> & v1,
+                                                    const Eigen::Matrix<double, N, 1> & v2,
+                                                    gtsam::OptionalJacobian<N, N> H1,
+                                                    gtsam::OptionalJacobian<N, N> H2);
 
 template <int N>
 gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorSum(const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v1,
-                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v2) {
-  return gtsam::Expression<Eigen::Matrix<double, N, 1> >(vectorSumImplementation<N>, v1, v2);
-}
+                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v2);
 
 template <int N>
 Eigen::Matrix<double, N, 1> vectorDifferenceImplementation(const Eigen::Matrix<double, N, 1> & v1,
                                                            const Eigen::Matrix<double, N, 1> & v2,
-                                                           gtsam::OptionalJacobian<N, N> H1, gtsam::OptionalJacobian<N, N> H2) {
-  if (H1) {
-    H1->setIdentity();
-  }
-  if (H2) {
-    H2->setIdentity();
-    *H2 = -*H2;
-  }
-  return v1-v2;
-}
+                                                           gtsam::OptionalJacobian<N, N> H1,
+                                                           gtsam::OptionalJacobian<N, N> H2);
 
 template <int N>
 gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorDifference(const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v1,
-                                                                 const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v2) {
-  return gtsam::Expression<Eigen::Matrix<double, N, 1> >(vectorDifferenceImplementation<N>, v1, v2);
-}
+                                                                 const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v2);
 
 template <int N>
-gtsam::Expression<Eigen::Matrix<double, N, 1> > operator*(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v, double alpha) {
-  return vectorScaling(v, alpha);
-}
+gtsam::Expression<Eigen::Matrix<double, N, 1> > operator*(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v,
+                                                          double alpha);
 
 template <int N>
-gtsam::Expression<Eigen::Matrix<double, N, 1> > operator/(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v, double alpha) {
-  return vectorScaling(v, 1.0/alpha);
-}
+gtsam::Expression<Eigen::Matrix<double, N, 1> > operator/(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v, double alpha);
 
 template <int N>
-gtsam::Expression<Eigen::Matrix<double, N, 1> > operator-(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v) {
-  return vectorScaling(v, -1.0);
-}
+gtsam::Expression<Eigen::Matrix<double, N, 1> > operator-(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v);
 
 template <int N>
 gtsam::Expression<Eigen::Matrix<double, N, 1> > operator+(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v1,
-                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v2) {
-  return vectorSum(v1, v2);
-}
+                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v2);
 
 template <int N>
 gtsam::Expression<Eigen::Matrix<double, N, 1> > operator-(const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v1,
-                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v2) {
-  return vectorDifference(v1, v2);
-}
+                                                          const gtsam::Expression<Eigen::Matrix<double, N, 1> >&v2);
 
 }
 }
+
+#include <kindr/minimal/implementation/common-gtsam-inl.h>
+
 #endif // MINKINDR_COMMON_GTSAM_H
