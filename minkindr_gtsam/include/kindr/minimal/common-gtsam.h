@@ -12,16 +12,23 @@ namespace kindr {
 namespace minimal {
 
 template <int N>
-Eigen::Matrix<double, N, 1> vectorScalingImplementation(const Eigen::Matrix<double, N, 1> & v, double alpha, gtsam::OptionalJacobian<N, N> H) {
-  if (H) {
-    *H = gtsam::OptionalJacobian<N,N>::Jacobian::Identity()*alpha;
+Eigen::Matrix<double, N, 1> vectorScalingImplementation(const Eigen::Matrix<double, N, 1> & v, double alpha,
+                                                        gtsam::OptionalJacobian<N, N> H1,
+                                                        gtsam::OptionalJacobian<N, 1> H2) {
+  if (H1) {
+    *H1 = gtsam::OptionalJacobian<N,N>::Jacobian::Identity()*alpha;
   }
+
+  if (H2) {
+    *H2 = v;
+  }
+
   return v*alpha;
 }
 
 template <int N>
 gtsam::Expression<Eigen::Matrix<double, N, 1> > vectorScaling(const gtsam::Expression<Eigen::Matrix<double, N, 1> >& v, double alpha) {
-  return gtsam::Expression<Eigen::Matrix<double, N, 1> >(boost::bind(&vectorScalingImplementation<N>, _1, alpha, _2), v);
+  return gtsam::Expression<Eigen::Matrix<double, N, 1> >(boost::bind(&vectorScalingImplementation<N>, _1, alpha, _2, boost::none), v);
 }
 
 template <int N>
