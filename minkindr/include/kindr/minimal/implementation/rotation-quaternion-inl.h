@@ -45,7 +45,7 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
 
 namespace detail {
 
-template <typename Scalar_ = double>
+template <typename Scalar_>
 inline bool isLessThenEpsilons4thRoot(Scalar_ x){
   static const Scalar_ epsilon4thRoot = pow(std::numeric_limits<Scalar_>::epsilon(), 1.0/4.0);
   return x < epsilon4thRoot;
@@ -377,7 +377,12 @@ RotationQuaternionTemplate<Scalar>::log(const RotationQuaternionTemplate<Scalar>
   const Scalar eta = q.w();
   Scalar scale;
   if(fabs(eta) < na){ // use eta because it is more precise than na to calculate the scale. No singularities here.
-    scale = acos(eta) / na;
+    // check sign of eta so that we can be sure that log(-q) = log(q)
+    if (eta >= 0) {
+      scale = acos(eta) / na;
+    } else {
+      scale = -acos(-eta) / na;
+    }
   } else {
     /*
      * In this case more precision is in na than in eta so lets use na only to calculate the scale:
@@ -401,9 +406,8 @@ RotationQuaternionTemplate<Scalar>::log(const RotationQuaternionTemplate<Scalar>
       // For asin(na)/ na the singularity na == 0 can be removed. We can ask (e.g. Wolfram alpha) for its series expansion at na = 0. And that is done in the following function.
       scale = detail::arcSinXOverX(na);
     } else {
-      // (pi - asin(na))/ na has a pole at na == 0. So we cannot remove this singularity.
-      // It is just the cut locus of the unit quaternion manifold at identity and thus the axis angle description becomes necessarily unstable there.
-      scale = (M_PI - asin(na)) / na;
+      // the negative is here so that log(-q) == log(q)
+      scale = -detail::arcSinXOverX(na);
     }
   }
   return a * (Scalar(2.0) * scale);

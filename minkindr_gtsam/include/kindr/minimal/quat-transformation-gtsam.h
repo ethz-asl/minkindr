@@ -49,6 +49,8 @@ namespace kindr {
 namespace minimal {
 ////////////////////////////////////////////////////////////////////////////////
 // Convenience functions to make working with expressions easy and fun!
+typedef gtsam::Expression<QuatTransformation> ETransformation;
+typedef gtsam::Expression<gtsam::Vector6> EVector6;
 
 /// \brief Transform a point.
 ///
@@ -56,76 +58,115 @@ namespace minimal {
 /// Expression<Eigen::Vector3d> Tp = T * p;
 /// instead of
 /// Expression<Eigen::Vector3d> Tp = Expression<Eigen::Vector3d>(&transform_point, T, p);
-gtsam::Expression<Eigen::Vector3d>
-operator*(const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
-          const gtsam::Expression<Eigen::Vector3d>& p);
+EVector3
+operator*(const ETransformation& T,
+          const EVector3& p);
 
 /// \brief Transform a point.
-gtsam::Expression<Eigen::Vector3d>
-transform(const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
-          const gtsam::Expression<Eigen::Vector3d>& p);
+EVector3
+transform(const ETransformation& T,
+          const EVector3& p);
 
 /// \brief Build a transformation expression from a rotation expression and a
 /// point expression.
-gtsam::Expression<kindr::minimal::QuatTransformation> transformationFromComponents(
-    const gtsam::Expression<kindr::minimal::RotationQuaternion>& C_A_B,
-    const gtsam::Expression<Eigen::Vector3d>& A_t_B);
+ETransformation transformationFromComponents(
+    const EQuaternion& C_A_B,
+    const EVector3& A_t_B);
 
 /// \brief Recover the rotation part of a transformation.
-gtsam::Expression<kindr::minimal::RotationQuaternion> rotationFromTransformation(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T);
+EQuaternion rotationFromTransformation(
+    const ETransformation& T);
 
 /// \brief Recover the translation part of a transformation.
-gtsam::Expression<Eigen::Vector3d> translationFromTransformation(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T);
+EVector3 translationFromTransformation(
+    const ETransformation& T);
 
 /// \brief Transform a point by the inverse of a transformation.
-gtsam::Expression<Eigen::Vector3d> inverseTransform(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T,
-    const gtsam::Expression<Eigen::Vector3d>& p);
+EVector3 inverseTransform(
+    const ETransformation& T,
+    const EVector3& p);
 
 /// \brief Invert a transformation.
-gtsam::Expression<kindr::minimal::QuatTransformation> inverse(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T);
+ETransformation inverse(
+    const ETransformation& T);
 
 /// \brief Compose two transformations.
-gtsam::Expression<kindr::minimal::QuatTransformation> compose(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T1,
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T2);
+ETransformation compose(
+    const ETransformation& T1,
+    const ETransformation& T2);
 
 /// \brief Compose two transformations.
-inline gtsam::Expression<kindr::minimal::QuatTransformation> operator*(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T1,
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T2) {
+inline ETransformation operator*(
+    const ETransformation& T1,
+    const ETransformation& T2) {
   return compose(T1,T2);
 }
 
 /// \brief Compose two transformations as inv(T1)*T2.
-gtsam::Expression<kindr::minimal::QuatTransformation> invertAndCompose(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T1,
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T2);
+ETransformation invertAndCompose(
+    const ETransformation& T1,
+    const ETransformation& T2);
 
 /// \brief Recover the matrix log of R^3 x SO3
-gtsam::Expression<gtsam::Vector6> log(const gtsam::Expression<kindr::minimal::QuatTransformation>& T);
+EVector6 transformationLog(const ETransformation& T);
 
 /// \brief The exponential map of R^3 x SO3
-gtsam::Expression<kindr::minimal::QuatTransformation> exp(const gtsam::Expression<gtsam::Vector6>& params);
+ETransformation transformationExp(const EVector6& params);
 
 /// \brief Recover the matrix log of the rotation part of the transformation.
-gtsam::Expression<Eigen::Vector3d> rotationLog(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T);
+EVector3 rotationLog(
+    const ETransformation& T);
 
 /// \brief Recover the matrix log of the translation part of the transformation.
-inline gtsam::Expression<Eigen::Vector3d> translationLog(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T) {
+inline EVector3 translationLog(
+    const ETransformation& T) {
   return translationFromTransformation(T);
 }
 
-gtsam::Expression<kindr::minimal::QuatTransformation> slerp(
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T0,
-    const gtsam::Expression<kindr::minimal::QuatTransformation>& T1,
+/// \brief Perform a spherical linear interpolation between two transformations.
+/// Alpha ranges from 0 to 1 and respectively from T0 to T1.
+ETransformation slerp(
+    const ETransformation& T0,
+    const ETransformation& T1,
     double alpha);
 
+////////////////////////////////////////////////////////////////////////////////
+// Expose the convenience functions implementation for evaluation outside of GTSAM.
+
+kindr::minimal::RotationQuaternion rotationFromTransformationImplementation(
+    const QuatTransformation& T, gtsam::OptionalJacobian<3, 6> HT);
+
+Eigen::Vector3d translationFromTransformationImplementation(
+    const QuatTransformation& T, gtsam::OptionalJacobian<3, 6> HT);
+
+Eigen::Vector3d inverseTransformImplementation(
+    const QuatTransformation& T, const Eigen::Vector3d& p,
+    gtsam::OptionalJacobian<3, 6> HT, gtsam::OptionalJacobian<3, 3> Hp);
+
+QuatTransformation inverseImplementation(
+    const QuatTransformation& T, gtsam::OptionalJacobian<6, 6> HT);
+
+QuatTransformation composeImplementation(
+    const QuatTransformation& T1,
+    const QuatTransformation& T2,
+    gtsam::OptionalJacobian<6, 6> HT1,
+    gtsam::OptionalJacobian<6, 6> HT2);
+
+gtsam::Vector6 transformationLogImplementation(const QuatTransformation& T,
+                                               gtsam::OptionalJacobian<6, 6> HT);
+
+Eigen::Vector3d rotationFromTransformationLogImplementation(const QuatTransformation& T,
+                                                            gtsam::OptionalJacobian<3, 6> HT);
+
+QuatTransformation invertAndComposeImplementation(
+    const QuatTransformation& T1,
+    const QuatTransformation& T2,
+    gtsam::OptionalJacobian<6, 6> HT1,
+    gtsam::OptionalJacobian<6, 6> HT2);
+
+QuatTransformation transformationExpImplementation(
+    const gtsam::Vector6& params,
+    gtsam::OptionalJacobian<6, 6> Hp);
 
 }  // namespace minimal
 }  // namespace kindr
