@@ -4,6 +4,7 @@
 #include <kindr/minimal/cubic-hermite-quaternion-gtsam.h>
 #include <kindr/minimal/common-gtsam.h>
 #include <kindr/minimal/testing-gtsam.h>
+#include "../include/kindr/minimal/cubic-hermite-translation-gtsam.h"
 
 typedef kindr::minimal::QuatTransformation Transformation;
 typedef kindr::minimal::RotationQuaternion Quaternion;
@@ -640,6 +641,123 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
       Eigen::Vector3d v = interpV.value(values);
 
       EXPECT_TRUE(EIGEN_MATRIX_NEAR(v,dq,tolerance*5));
+    }
+
+  }
+
+}
+
+TEST(MinkindrGtsamTests, testCubicHermiteTranslation) {
+  using namespace gtsam;
+
+  Eigen::Vector3d taVal; taVal.setRandom();
+  Eigen::Vector3d tbVal; tbVal.setRandom();
+  Eigen::Vector3d vaVal; vaVal.setRandom();
+  Eigen::Vector3d vbVal; vbVal.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, taVal);
+  values.insert(2, tbVal);
+  values.insert(3, vaVal);
+  values.insert(4, vbVal);
+
+  EVector3 tA(1), tB(2);
+  EVector3 vA(3), vB(4);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+
+  {
+    EVector3 interpT1 = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 1e-5);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpT1, values, fd_step, tolerance);
+  }
+  {
+    EVector3 interpT2 = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 1.0 - 1e-5);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpT2, values, fd_step, tolerance);
+  }
+  {
+    EVector3 interpTa = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 0.25);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpTa, values, fd_step, tolerance);
+  }
+  {
+    EVector3 interpTb = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 0.75);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpTb, values, fd_step, tolerance);
+  }
+
+  {
+    EVector3 interpT1 = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 1e-5);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpT1, values, fd_step, tolerance);
+  }
+  {
+    EVector3 interpT2 = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 1.0 - 1e-5);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpT2, values, fd_step, tolerance);
+  }
+  {
+    EVector3 interpTa = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 0.25);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpTa, values, fd_step, tolerance);
+  }
+  {
+    EVector3 interpTb = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 0.75);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(interpTb, values, fd_step, tolerance);
+  }
+}
+
+TEST(MinkindrGtsamTests, testCubicHermiteTranslationDerivative) {
+  using namespace gtsam;
+
+
+  Eigen::Vector3d  taVal;  taVal.setRandom();
+  Eigen::Vector3d  tbVal;  tbVal.setRandom();
+  Eigen::Vector3d vaVal; vaVal.setRandom() *= 10.0;
+  Eigen::Vector3d vbVal; vbVal.setRandom() *= 10.0;
+
+  // Create some values
+  Values values;
+  values.insert(1, taVal);
+  values.insert(2, tbVal);
+  values.insert(3, vaVal);
+  values.insert(4, vbVal);
+
+  EVector3 tA(1), tB(2);
+  EVector3 vA(3), vB(4);
+
+  const double fd_step = 1e-9;
+  const double tolerance = 1e-6;
+
+  {
+    EVector3 interpTrans = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 1e-5);
+    EVector3 interpV = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 1e-5);
+
+    Eigen::Vector3d tI = interpTrans.value(values);
+    Eigen::Vector3d vI = interpV.value(values);
+
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(vI,vaVal,1e-3));
+    Eigen::Vector3d dtrans = (tI - taVal)/1e-5;
+    EXPECT_TRUE(EIGEN_MATRIX_NEAR(vI,dtrans,1e-3));
+
+  }
+
+  {
+    const int N = 100;
+    for (int i = 0; i < N; ++i) {
+      double alpha = double(i)/(N-1);
+      EVector3 interpTrans = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, alpha);
+      EVector3 interpTransp = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, alpha+fd_step);
+      EVector3 interpV = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, alpha);
+
+      Eigen::Vector3d dtrans = (interpTransp.value(values) - interpTrans.value(values))/fd_step;
+      Eigen::Vector3d v = interpV.value(values);
+
+      EXPECT_TRUE(EIGEN_MATRIX_NEAR(v,dtrans,tolerance*5));
     }
 
   }
