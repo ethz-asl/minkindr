@@ -92,6 +92,27 @@ RotationQuaternion rotationExpImplementation(const Eigen::Vector3d& p,
 /// \brief Compute the matrix log of SO3.
 EQuaternion quaternionExp(const EVector3& C);
 
+////////////////////////////////////////////////////////////////////////////////
+// Expose the convenience functions implementation for evaluation outside of GTSAM.
+
+Eigen::Vector3d rotate_point(
+    const RotationQuaternion& C, const Eigen::Vector3d& p,
+    gtsam::OptionalJacobian<3, 3> HC, gtsam::OptionalJacobian<3, 3> Hp);
+
+Eigen::Vector3d inverse_rotate_point(
+    const RotationQuaternion& C, const Eigen::Vector3d& p,
+    gtsam::OptionalJacobian<3, 3> HC, gtsam::OptionalJacobian<3, 3> Hp);
+
+RotationQuaternion invert_rotation_quaternion(
+    const RotationQuaternion& C,
+    gtsam::OptionalJacobian<3, 3> HC);
+
+RotationQuaternion compose_rotation_quaternion(
+    const RotationQuaternion& C1,
+    const RotationQuaternion& C2,
+    gtsam::OptionalJacobian<3, 3> HC1,
+    gtsam::OptionalJacobian<3, 3> HC2);
+
 }  // namespace minimal
 }  // namespace kindr
 
