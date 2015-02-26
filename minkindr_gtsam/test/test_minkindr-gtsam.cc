@@ -6,6 +6,8 @@
 #include <kindr/minimal/testing-gtsam.h>
 #include "../include/kindr/minimal/cubic-hermite-interpolation-gtsam.h"
 
+#define N_TEST_ITERATIONS 10000
+
 typedef kindr::minimal::QuatTransformation Transformation;
 typedef kindr::minimal::RotationQuaternion Quaternion;
 
@@ -13,6 +15,9 @@ using kindr::minimal::ETransformation;
 using kindr::minimal::EQuaternion;
 using kindr::minimal::EVector3;
 using kindr::minimal::EVector6;
+
+const double tolerance = 1e-5;
+const double fd_step = 1e-9;
 
 TEST(MinkindrGtsamTests, testRotateVector1) {
   using gtsam::Expression;
@@ -32,8 +37,6 @@ TEST(MinkindrGtsamTests, testRotateVector1) {
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(Cv.value(values), Cval.rotate(vval), 1e-9));
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(Cv, values, fd_step, tolerance);
 }
@@ -56,8 +59,6 @@ TEST(MinkindrGtsamTests, testRotateVector2) {
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(Cv.value(values), Cval.rotate(vval), 1e-9));
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(Cv, values, fd_step, tolerance);
 }
@@ -80,8 +81,6 @@ TEST(MinkindrGtsamTests, testInverseRotateVector) {
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(Ctv.value(values), Cval.inverseRotate(vval), 1e-9));
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(Ctv, values, fd_step, tolerance);
 }
@@ -111,10 +110,15 @@ TEST(MinkindrGtsamTests, testTransformPoint) {
 
   EVector3 Tp = T * p;
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
-  SCOPED_TRACE("Testing Expression Jacobians.");
-  testExpressionJacobians(Tp, values, fd_step, tolerance);
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    Tval.setRandom();
+    pval.setRandom();
+    values.update(1, Tval);
+    values.update(2, pval);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(Tp, values, fd_step, tolerance);
+  }
+
 }
 
 TEST(MinkindrGtsamTests, testInverseTransformPoint) {
@@ -135,8 +139,6 @@ TEST(MinkindrGtsamTests, testInverseTransformPoint) {
 
   EVector3 invTp = inverseTransform(T,p);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(invTp, values, fd_step, tolerance);
 }
@@ -149,8 +151,6 @@ TEST(MinkindrGtsamTests, testRotationExpression) {
   values.insert(1, Cval);
   EQuaternion C(1);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(C, values, fd_step, tolerance);
 }
@@ -164,8 +164,6 @@ TEST(MinkindrGtsamTests, testRotationInverseExpression) {
   EQuaternion C(1);
   EQuaternion invC = invert(C);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(invC, values, fd_step, tolerance);
 }
@@ -183,8 +181,6 @@ TEST(MinkindrGtsamTests, testComposeRotationExpression) {
   EQuaternion C2(1);
   EQuaternion C1C2 = C1 * C2;
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(C1C2, values, fd_step, tolerance);
 }
@@ -208,8 +204,6 @@ TEST(MinkindrGtsamTests, testCombineRotationTranslation) {
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(Tval.getTransformationMatrix(), Teval.getTransformationMatrix(), 1e-9));
 
-  const double fd_step = 1e-5;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(T, values, fd_step, tolerance);
 }
@@ -226,10 +220,27 @@ TEST(MinkindrGtsamTests, testSO3Log) {
   EQuaternion C(1);
   EVector3 logC = kindr::minimal::quaternionLog(C);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(logC, values, fd_step, tolerance);
+
+  for(int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    Cval.setRandom();
+    values.update(1, Cval);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(logC, values, fd_step, tolerance);
+  }
+
+  // Testing at values near identity quaternion
+  Eigen::Vector3d aa(0,0,0);
+  for(int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    Cval = Quaternion(aa);
+    values.update(1, Cval);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(logC, values, fd_step, tolerance);
+    aa(0) += 0.5e-11;
+    aa(1) -= 0.4e-12;
+    aa(2) += 0.7e-12;
+  }
 }
 
 TEST(MinkindrGtsamTests, testSO3Exp) {
@@ -244,10 +255,9 @@ TEST(MinkindrGtsamTests, testSO3Exp) {
   EVector3 p(1);
   EQuaternion C = kindr::minimal::quaternionExp(p);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(C, values, fd_step, tolerance);
+
 }
 
 TEST(MinkindrGtsamTests, testSE3Exp) {
@@ -262,10 +272,13 @@ TEST(MinkindrGtsamTests, testSE3Exp) {
   Expression<gtsam::Vector6> p(1);
   ETransformation T = kindr::minimal::transformationExp(p);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
-  SCOPED_TRACE("Testing Expression Jacobians.");
-  testExpressionJacobians(T, values, fd_step, tolerance);
+  for(int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    pval.setRandom();
+    values.update(1, pval);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(T, values, fd_step, tolerance);
+  }
+
 }
 
 TEST(MinkindrGtsamTests, testSO3LogIdentity) {
@@ -279,8 +292,6 @@ TEST(MinkindrGtsamTests, testSO3LogIdentity) {
   EQuaternion C(1);
   EVector3 logC = kindr::minimal::quaternionLog(C);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(logC, values, fd_step, tolerance);
 }
@@ -299,8 +310,6 @@ TEST(MinkindrGtsamTests, testRotationFromTransformation) {
 
   EQuaternion q = rotationFromTransformation(T);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(q, values, fd_step, tolerance);
 }
@@ -319,8 +328,6 @@ TEST(MinkindrGtsamTests, testTranslationFromTransformation) {
 
   EVector3 t = translationFromTransformation(T);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(t, values, fd_step, tolerance);
 }
@@ -338,8 +345,6 @@ TEST(MinkindrGtsamTests, testTransform) {
 
   ETransformation T(1);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(T, values, fd_step, tolerance);
 }
@@ -356,11 +361,13 @@ TEST(MinkindrGtsamTests, testInverseTransform) {
 
   ETransformation T(1);
   ETransformation invT = inverse(T);
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    Tval.setRandom();
+    values.update(1, Tval);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(invT, values, fd_step, tolerance);
+  }
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
-  SCOPED_TRACE("Testing Expression Jacobians.");
-  testExpressionJacobians(invT, values, fd_step, tolerance);
 }
 
 TEST(MinkindrGtsamTests, testComposeTransform1) {
@@ -380,10 +387,15 @@ TEST(MinkindrGtsamTests, testComposeTransform1) {
   ETransformation T2(2);
   ETransformation T1T2 = compose(T1,T2);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
-  SCOPED_TRACE("Testing Expression Jacobians.");
-  testExpressionJacobians(T1T2, values, fd_step, tolerance);
+  for(int i=0; i < N_TEST_ITERATIONS; ++i) {
+    T1val.setRandom();
+    T2val.setRandom();
+    values.update(1, T1val);
+    values.update(2, T2val);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(T1T2, values, fd_step, tolerance);
+  }
+
 }
 
 TEST(MinkindrGtsamTests, testComposeTransform2) {
@@ -403,8 +415,6 @@ TEST(MinkindrGtsamTests, testComposeTransform2) {
   ETransformation T2(2);
   ETransformation T1T2 = T1 * T2;
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(T1T2, values, fd_step, tolerance);
 }
@@ -422,10 +432,13 @@ TEST(MinkindrGtsamTests, testTransformationLog) {
   ETransformation T(1);
   Expression<Vector6> logT = kindr::minimal::transformationLog(T);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
-  SCOPED_TRACE("Testing Expression Jacobians.");
-  testExpressionJacobians(logT, values, fd_step, tolerance);
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    Tval.setRandom();
+    values.update(1, Tval);
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(logT, values, fd_step, tolerance);
+  }
+
 }
 
 TEST(MinkindrGtsamTests, testTransformationTranslationLog) {
@@ -441,8 +454,6 @@ TEST(MinkindrGtsamTests, testTransformationTranslationLog) {
   ETransformation T(1);
   EVector3 logt = translationLog(T);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(logt, values, fd_step, tolerance);
 }
@@ -460,8 +471,6 @@ TEST(MinkindrGtsamTests, testTransformationRotationLog) {
   ETransformation T(1);
   EVector3 logC = rotationLog(T);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
   SCOPED_TRACE("Testing Expression Jacobians.");
   testExpressionJacobians(logC, values, fd_step, tolerance);
 }
@@ -483,10 +492,16 @@ TEST(MinkindrGtsamTests, testInvertAndComposeTransform) {
   ETransformation T2(2);
   ETransformation invT1T2 = invertAndCompose(T1,T2);
 
-  const double fd_step = 1e-6;
-  const double tolerance = 1e-6;
-  SCOPED_TRACE("Testing Expression Jacobians.");
-  testExpressionJacobians(invT1T2, values, fd_step, tolerance);
+  for(int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    T1val.setRandom();
+    T2val.setRandom();
+    values.update(1, T1val);
+    values.update(2, T2val);
+
+    SCOPED_TRACE("Testing Expression Jacobians.");
+    testExpressionJacobians(invT1T2, values, fd_step, tolerance);
+  }
+
 }
 
 TEST(MinkindrGtsamTests, testSlerp) {
@@ -505,30 +520,34 @@ TEST(MinkindrGtsamTests, testSlerp) {
   ETransformation T1(1);
   ETransformation T2(2);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    T1val.setRandom();
+    T2val.setRandom();
+    values.update(1, T1val);
+    values.update(2, T2val);
+    {
+      ETransformation slerpT1 = slerp(T1, T2, 1e-5);
+      SCOPED_TRACE("Testing Expression Jacobians.");
+      testExpressionJacobians(slerpT1, values, fd_step, tolerance);
+    }
+    {
+      ETransformation slerpT2 = slerp(T1, T2, 1.0 - 1e-5);
+      SCOPED_TRACE("Testing Expression Jacobians.");
+      testExpressionJacobians(slerpT2, values, fd_step, tolerance);
+    }
+    {
+      ETransformation slerpTa = slerp(T1, T2, 0.25);
+      SCOPED_TRACE("Testing Expression Jacobians.");
+      testExpressionJacobians(slerpTa, values, fd_step, tolerance);
+    }
 
-  {
-    ETransformation slerpT1 = slerp(T1, T2, 1e-5);
-    SCOPED_TRACE("Testing Expression Jacobians.");
-    testExpressionJacobians(slerpT1, values, fd_step, tolerance);
-  }
-  {
-    ETransformation slerpT2 = slerp(T1, T2, 1.0 - 1e-5);
-    SCOPED_TRACE("Testing Expression Jacobians.");
-    testExpressionJacobians(slerpT2, values, fd_step, tolerance);
-  }
-  {
-    ETransformation slerpTa = slerp(T1, T2, 0.25);
-    SCOPED_TRACE("Testing Expression Jacobians.");
-    testExpressionJacobians(slerpTa, values, fd_step, tolerance);
+    {
+      ETransformation slerpTb = slerp(T1, T2, 0.75);
+      SCOPED_TRACE("Testing Expression Jacobians.");
+      testExpressionJacobians(slerpTb, values, fd_step, tolerance);
+    }
   }
 
-  {
-    ETransformation slerpTb = slerp(T1, T2, 0.75);
-    SCOPED_TRACE("Testing Expression Jacobians.");
-    testExpressionJacobians(slerpTb, values, fd_step, tolerance);
-  }
 }
 
 TEST(MinkindrGtsamTests, testCubicHermiteQuaternion) {
@@ -548,9 +567,6 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternion) {
 
   EQuaternion qA(1), qB(2);
   EVector3 wA(3), wB(4);
-
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
 
   {
     EQuaternion interpT1 = hermiteQuaternionInterpolation(qA, wA, qB, wB, 1e-5, 1);
@@ -612,9 +628,6 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
 
   EQuaternion qA(1), qB(2);
   EVector3 wA(3), wB(4);
-
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
 
   {
     EQuaternion interpQ = hermiteQuaternionInterpolation(qA, wA, qB, wB, 1e-5, 1);
@@ -775,10 +788,9 @@ TEST(MinkindrGtsamTests, testVectorScaling) {
 
   EVector3 w(1);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
-
-  {
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    v.setRandom();
+    values.update(1, v);
     EVector3 wScaled = kindr::minimal::vectorScaling(w, a);
     EXPECT_TRUE(EIGEN_MATRIX_NEAR(wScaled.value(values),v*a,tolerance));
     testExpressionJacobians(wScaled, values, fd_step, tolerance);
@@ -797,19 +809,80 @@ TEST(MinkindrGtsamTests, testVectorSumAndDifference) {
 
   EVector3 wA(1), wB(2);
 
-  const double fd_step = 1e-9;
-  const double tolerance = 1e-6;
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    vA.setRandom();
+    vB.setRandom();
+    values.update(1, vA);
+    values.update(2, vB);
+    {
+      EVector3 sum = kindr::minimal::vectorSum(wA, wB);
+      EXPECT_TRUE(EIGEN_MATRIX_NEAR(sum.value(values),vA+vB,tolerance));
+      testExpressionJacobians(sum, values, fd_step, tolerance);
+    }
 
-  {
-    EVector3 sum = kindr::minimal::vectorSum(wA, wB);
-    EXPECT_TRUE(EIGEN_MATRIX_NEAR(sum.value(values),vA+vB,tolerance));
-    testExpressionJacobians(sum, values, fd_step, tolerance);
+    {
+      EVector3 difference = kindr::minimal::vectorDifference(wA, wB);
+      EXPECT_TRUE(EIGEN_MATRIX_NEAR(difference.value(values),vA-vB,tolerance));
+      testExpressionJacobians(difference, values, fd_step, tolerance);
+    }
   }
 
-  {
-    EVector3 difference = kindr::minimal::vectorDifference(wA, wB);
-    EXPECT_TRUE(EIGEN_MATRIX_NEAR(difference.value(values),vA-vB,tolerance));
-    testExpressionJacobians(difference, values, fd_step, tolerance);
+}
+
+//This test simulates having a match constraint between two pairs of
+//transformations. The result is a complex expression tree
+TEST(MinkindrGtsamTests, expressionCombination) {
+  using namespace gtsam;
+
+  Transformation T1aVal, T1bVal, T2aVal, T2bVal, Tconst1Val, Tconst2Val;
+  Eigen::Vector3d v1Val, v2Val;
+  Tconst1Val.setRandom();
+  Tconst2Val.setRandom();
+  v1Val.setRandom();
+  v2Val.setRandom();
+
+  // Create some values
+  Values values;
+  values.insert(1, T1aVal);
+  values.insert(2, T1bVal);
+  values.insert(3, T2aVal);
+  values.insert(4, T2bVal);
+
+
+  ETransformation T1a(1);
+  ETransformation T1b(2);
+  ETransformation T2a(3);
+  ETransformation T2b(4);
+
+  ETransformation Tconst1(Tconst1Val);
+  ETransformation Tconst2(Tconst2Val);
+
+  EVector3 v1(v1Val);
+  EVector3 v2(v2Val);
+
+  ETransformation slerpT1 = slerp(T1a, T1b, 0.2154);
+  ETransformation slerpT2 = slerp(T2a, T2b, 0.3658);
+
+  ETransformation composedT1 = compose(slerpT1, Tconst1);
+  ETransformation composedT2 = compose(slerpT2, Tconst2);
+
+  EVector3 transformedV1 = transform(composedT1, v1);
+  EVector3 transformedV2 = transform(composedT2, v2);
+
+  EVector3 diff = kindr::minimal::vectorDifference(transformedV1, transformedV2);
+
+  for (int i = 0; i < N_TEST_ITERATIONS; ++i) {
+    T1aVal.setRandom();
+    T1bVal.setRandom();
+    T2aVal.setRandom();
+    T2bVal.setRandom();
+
+    values.update(1, T1aVal);
+    values.update(2, T1bVal);
+    values.update(3, T2aVal);
+    values.update(4, T2bVal);
+
+    testExpressionJacobians(diff, values, fd_step, tolerance);
   }
 }
 
