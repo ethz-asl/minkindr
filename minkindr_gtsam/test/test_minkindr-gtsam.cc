@@ -4,7 +4,7 @@
 #include <kindr/minimal/cubic-hermite-quaternion-gtsam.h>
 #include <kindr/minimal/common-gtsam.h>
 #include <kindr/minimal/testing-gtsam.h>
-#include "../include/kindr/minimal/cubic-hermite-translation-gtsam.h"
+#include "../include/kindr/minimal/cubic-hermite-interpolation-gtsam.h"
 
 typedef kindr::minimal::QuatTransformation Transformation;
 typedef kindr::minimal::RotationQuaternion Quaternion;
@@ -553,43 +553,43 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternion) {
   const double tolerance = 1e-6;
 
   {
-    EQuaternion interpT1 = hermiteInterpolation(qA, wA, qB, wB, 1e-5);
+    EQuaternion interpT1 = hermiteQuaternionInterpolation(qA, wA, qB, wB, 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT1, values, fd_step, tolerance);
   }
   {
-    EQuaternion interpT2 = hermiteInterpolation(qA, wA, qB, wB, 1.0 - 1e-5);
+    EQuaternion interpT2 = hermiteQuaternionInterpolation(qA, wA, qB, wB, 1.0 - 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT2, values, fd_step, tolerance);
   }
   {
-    EQuaternion interpTa = hermiteInterpolation(qA, wA, qB, wB, 0.25);
+    EQuaternion interpTa = hermiteQuaternionInterpolation(qA, wA, qB, wB, 0.25, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTa, values, fd_step, tolerance);
   }
   {
-    EQuaternion interpTb = hermiteInterpolation(qA, wA, qB, wB, 0.75);
+    EQuaternion interpTb = hermiteQuaternionInterpolation(qA, wA, qB, wB, 0.75, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTb, values, fd_step, tolerance);
   }
 
   {
-    EVector3 interpT1 = hermiteInterpolationDerivative(qA, wA, qB, wB, 1e-5);
+    EVector3 interpT1 = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT1, values, fd_step, tolerance);
   }
   {
-    EVector3 interpT2 = hermiteInterpolationDerivative(qA, wA, qB, wB, 1.0 - 1e-5);
+    EVector3 interpT2 = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, 1.0 - 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT2, values, fd_step, tolerance);
   }
   {
-    EVector3 interpTa = hermiteInterpolationDerivative(qA, wA, qB, wB, 0.25);
+    EVector3 interpTa = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, 0.25, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTa, values, fd_step, tolerance);
   }
   {
-    EVector3 interpTb = hermiteInterpolationDerivative(qA, wA, qB, wB, 0.75);
+    EVector3 interpTb = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, 0.75, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTb, values, fd_step, tolerance);
   }
@@ -617,8 +617,8 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
   const double tolerance = 1e-6;
 
   {
-    EQuaternion interpQ = hermiteInterpolation(qA, wA, qB, wB, 1e-5);
-    EVector3 interpV = hermiteInterpolationDerivative(qA, wA, qB, wB, 1e-5);
+    EQuaternion interpQ = hermiteQuaternionInterpolation(qA, wA, qB, wB, 1e-5, 1);
+    EVector3 interpV = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, 1e-5, 1);
 
     Quaternion qI = interpQ.value(values);
     Eigen::Vector3d vI = interpV.value(values);
@@ -633,9 +633,9 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
     const int N = 100;
     for (int i = 0; i < N; ++i) {
       double alpha = double(i)/(N-1);
-      EQuaternion interpQ = hermiteInterpolation(qA, wA, qB, wB, alpha);
-      EQuaternion interpQp = hermiteInterpolation(qA, wA, qB, wB, alpha+fd_step);
-      EVector3 interpV = hermiteInterpolationDerivative(qA, wA, qB, wB, alpha);
+      EQuaternion interpQ = hermiteQuaternionInterpolation(qA, wA, qB, wB, alpha, 1);
+      EQuaternion interpQp = hermiteQuaternionInterpolation(qA, wA, qB, wB, alpha+fd_step, 1);
+      EVector3 interpV = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, alpha, 1);
 
       Eigen::Vector3d dq = (interpQp.value(values) * interpQ.value(values).inverted()).log()/fd_step;
       Eigen::Vector3d v = interpV.value(values);
@@ -669,43 +669,43 @@ TEST(MinkindrGtsamTests, testCubicHermiteTranslation) {
   const double tolerance = 1e-6;
 
   {
-    EVector3 interpT1 = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 1e-5);
+    EVector3 interpT1 = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT1, values, fd_step, tolerance);
   }
   {
-    EVector3 interpT2 = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 1.0 - 1e-5);
+    EVector3 interpT2 = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, 1.0 - 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT2, values, fd_step, tolerance);
   }
   {
-    EVector3 interpTa = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 0.25);
+    EVector3 interpTa = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, 0.25, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTa, values, fd_step, tolerance);
   }
   {
-    EVector3 interpTb = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 0.75);
+    EVector3 interpTb = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, 0.75, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTb, values, fd_step, tolerance);
   }
 
   {
-    EVector3 interpT1 = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 1e-5);
+    EVector3 interpT1 = kindr::minimal::hermiteInterpolationDerivative<Vector3>(tA, vA, tB, vB, 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT1, values, fd_step, tolerance);
   }
   {
-    EVector3 interpT2 = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 1.0 - 1e-5);
+    EVector3 interpT2 = kindr::minimal::hermiteInterpolationDerivative<Vector3>(tA, vA, tB, vB, 1.0 - 1e-5, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpT2, values, fd_step, tolerance);
   }
   {
-    EVector3 interpTa = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 0.25);
+    EVector3 interpTa = kindr::minimal::hermiteInterpolationDerivative<Vector3>(tA, vA, tB, vB, 0.25, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTa, values, fd_step, tolerance);
   }
   {
-    EVector3 interpTb = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 0.75);
+    EVector3 interpTb = kindr::minimal::hermiteInterpolationDerivative<Vector3>(tA, vA, tB, vB, 0.75, 1);
     SCOPED_TRACE("Testing Expression Jacobians.");
     testExpressionJacobians(interpTb, values, fd_step, tolerance);
   }
@@ -734,8 +734,8 @@ TEST(MinkindrGtsamTests, testCubicHermiteTranslationDerivative) {
   const double tolerance = 1e-6;
 
   {
-    EVector3 interpTrans = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, 1e-5);
-    EVector3 interpV = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, 1e-5);
+    EVector3 interpTrans = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, 1e-5, 1);
+    EVector3 interpV = kindr::minimal::hermiteInterpolationDerivative<Vector3>(tA, vA, tB, vB, 1e-5, 1);
 
     Eigen::Vector3d tI = interpTrans.value(values);
     Eigen::Vector3d vI = interpV.value(values);
@@ -750,9 +750,9 @@ TEST(MinkindrGtsamTests, testCubicHermiteTranslationDerivative) {
     const int N = 100;
     for (int i = 0; i < N; ++i) {
       double alpha = double(i)/(N-1);
-      EVector3 interpTrans = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, alpha);
-      EVector3 interpTransp = kindr::minimal::hermiteTranslationInterpolation(tA, vA, tB, vB, alpha+fd_step);
-      EVector3 interpV = kindr::minimal::hermiteTranslationInterpolationDerivative(tA, vA, tB, vB, alpha);
+      EVector3 interpTrans = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, alpha, 1);
+      EVector3 interpTransp = kindr::minimal::hermiteInterpolation<Vector3>(tA, vA, tB, vB, alpha+fd_step, 1);
+      EVector3 interpV = kindr::minimal::hermiteInterpolationDerivative<Vector3>(tA, vA, tB, vB, alpha, 1);
 
       Eigen::Vector3d dtrans = (interpTransp.value(values) - interpTrans.value(values))/fd_step;
       Eigen::Vector3d v = interpV.value(values);

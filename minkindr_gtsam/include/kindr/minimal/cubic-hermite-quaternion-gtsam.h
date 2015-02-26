@@ -23,9 +23,9 @@ namespace minimal {
 /// param[in] W_omega_W_B, expression for the rotational velocity at the end of the interval (in world coordinate frame)
 /// param[in] alpha, the interpolation coefficient [0 .. 1]
 /// param[in] dt, the time difference between A and B
-EQuaternion hermiteInterpolation(const EQuaternion& quat_W_A, const EVector3& W_omega_W_A,
+static EQuaternion hermiteQuaternionInterpolation(const EQuaternion& quat_W_A, const EVector3& W_omega_W_A,
                                   const EQuaternion& quat_W_B, const EVector3& W_omega_W_B,
-                                  double alpha, const double dt) {
+                                  double alpha, const double dt_sec) {
 
   /// Equations for the unit interval:
     // Let quat_W_A, quat_W_B denote the control point values (=unit quaternions) and va, vb
@@ -38,8 +38,8 @@ EQuaternion hermiteInterpolation(const EQuaternion& quat_W_A, const EVector3& W_
     // Spline equation:
     // q(t) = p_1 * exp(w_1*b_1) * exp(w_2*b_2) * exp(w_3*b_3)
   const double one_third = 1.0 / 3.0;
-  EVector3 w1 = inverseRotate(quat_W_A, W_omega_W_A * dt * one_third);
-  EVector3 w3 = inverseRotate(quat_W_B, W_omega_W_B * dt * one_third);
+  EVector3 w1 = inverseRotate(quat_W_A, W_omega_W_A * dt_sec * one_third);
+  EVector3 w3 = inverseRotate(quat_W_B, W_omega_W_B * dt_sec * one_third);
   EVector3 w2 = quaternionLog( quaternionExp(-w1) * invert(quat_W_A) * quat_W_B * quaternionExp(-w3));
   double alpha2 = alpha * alpha;
   double alpha3 = alpha2 * alpha;
@@ -58,15 +58,15 @@ EQuaternion hermiteInterpolation(const EQuaternion& quat_W_A, const EVector3& W_
 /// param[in] alpha, the interpolation coefficient [0 .. 1]
 /// param[in] dt, the time difference between A and B
 /// output is rotational velocity in world coordinate frame.
-EVector3 hermiteInterpolationDerivative(const EQuaternion& quat_W_A, const EVector3& W_omega_W_A,
+static EVector3 hermiteQuaternionInterpolationDerivative(const EQuaternion& quat_W_A, const EVector3& W_omega_W_A,
                                           const EQuaternion& quat_W_B, const EVector3& W_omega_W_B,
-                                          double alpha, const double dt)  {
+                                          double alpha, const double dt_sec)  {
   // In order to obtain the spline's derivative apply the chain rule. Pro memoria the spline equation:
   // q(t) = p_1 * exp(w_1*b_1) * exp(w_2*b_2) * exp(w_3*b_3)
   // Thus, the derivatives of b_1, b_2, b_3 have to be calculated.
   const double one_third = 1.0 / 3.0;
-  EVector3 w1 = inverseRotate(quat_W_A, W_omega_W_A * one_third * dt);
-  EVector3 w3 = inverseRotate(quat_W_B, W_omega_W_B * one_third * dt);
+  EVector3 w1 = inverseRotate(quat_W_A, W_omega_W_A * one_third * dt_sec);
+  EVector3 w3 = inverseRotate(quat_W_B, W_omega_W_B * one_third * dt_sec);
   EVector3 w2 = quaternionLog( quaternionExp(-w1) * invert(quat_W_A) * quat_W_B * quaternionExp(-w3));
 
   double alpha2 = alpha * alpha;

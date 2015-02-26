@@ -1,5 +1,5 @@
-#ifndef MINKINDR_CUBIC_HERMITE_TRANSFORMATION_GTSAM_H
-#define MINKINDR_CUBIC_HERMITE_TRANSFORMATION_GTSAM_H
+#ifndef MINKINDR_CUBIC_HERMITE_INTERPOLATION_GTSAM_H
+#define MINKINDR_CUBIC_HERMITE_INTERPOLATION_GTSAM_H
 
 #include <gtsam/base/Manifold.h>
 #include <gtsam/nonlinear/Expression.h>
@@ -22,9 +22,14 @@ typedef Eigen::Matrix<double, 6, 1> Vector6d;
 /// param[in] W_v_W_B, expression for the velocity at the end of the interval (in world coordinate frame)
 /// param[in] alpha, the interpolation coefficient [0 .. 1]
 /// param[in] dt, the time difference between A and B
-EVector3 hermiteTranslationInterpolation(const EVector3& t_W_A, const EVector3& W_v_W_A,
-                                         const EVector3& t_W_B, const EVector3& W_v_W_B,
-                                         double alpha, double dt) {
+template<typename type>
+static gtsam::Expression<type> hermiteInterpolation(
+    const gtsam::Expression<type>& t_W_A,
+    const gtsam::Expression<type>& v_W_A,
+    const gtsam::Expression<type>& t_W_B,
+    const gtsam::Expression<type>& v_W_B,
+    double alpha,
+    double dt_sec) {
 
   /// Equations for the unit interval:
   // Let t_W_A, t_W_B denote the control point values (=translations) and W_v_W_A, W_v_W_B
@@ -43,7 +48,7 @@ EVector3 hermiteTranslationInterpolation(const EVector3& t_W_A, const EVector3& 
   double beta2 = alpha3 - 2.0 * alpha2 + alpha;
   double beta3 = alpha3 - alpha2;
 
-  return t_W_A * beta0 + t_W_B * beta1 + W_v_W_A * beta2 * dt + W_v_W_B * beta3 * dt;
+  return t_W_A * beta0 + t_W_B * beta1 + v_W_A * (beta2 * dt_sec) + v_W_B * (beta3 * dt_sec);
 }
 
 /// derivative of cubic hermite interpolation on the unit interval for translations
@@ -54,9 +59,14 @@ EVector3 hermiteTranslationInterpolation(const EVector3& t_W_A, const EVector3& 
 /// param[in] alpha, the interpolation coefficient [0 .. 1]
 /// param[in] dt, the time difference between A and B
 /// output is velocity in world coordinate frame.
-EVector3 hermiteTranslationInterpolationDerivative(const EVector3& t_W_A, const EVector3& W_v_W_A,
-                                                   const EVector3& t_W_B, const EVector3& W_v_W_B,
-                                                   double alpha, double dt)  {
+template<typename type>
+static gtsam::Expression<type> hermiteInterpolationDerivative(
+    const gtsam::Expression<type>& t_W_A,
+    const gtsam::Expression<type>& W_v_W_A,
+    const gtsam::Expression<type>& t_W_B,
+    const gtsam::Expression<type>& W_v_W_B,
+    double alpha,
+    double dt_sec)  {
   // In order to obtain the spline's derivative apply the chain rule. Pro memoria the spline equation:
   // p(t) = p_0 * b_0 + p_1 * b_1 + p_2 * b_2 + p_3 * b_3
   // Thus, the derivatives of b_0, b_1, b_2, b_3 have to be calculated.
@@ -69,10 +79,10 @@ EVector3 hermiteTranslationInterpolationDerivative(const EVector3& t_W_A, const 
   double dotBeta2 = 3.0 * alpha2 - 4.0 * alpha + 1.0;
   double dotBeta3 = 3.0 * alpha2 - 2.0 * alpha;
 
-  return t_W_A * dotBeta0 + t_W_B * dotBeta1 + W_v_W_A * dotBeta2 * dt + W_v_W_B * dotBeta3 * dt;
+  return t_W_A * dotBeta0 + t_W_B * dotBeta1 + W_v_W_A * (dotBeta2 * dt_sec) + W_v_W_B * (dotBeta3 * dt_sec);
 }
 
 }  // namespace minimal
 }  // namespace kindr
 
-#endif // MINKINDR_CUBIC_HERMITE_TRANSFORMATION_GTSAM_H
+#endif // MINKINDR_CUBIC_HERMITE_INTERPOLATION_GTSAM_H
