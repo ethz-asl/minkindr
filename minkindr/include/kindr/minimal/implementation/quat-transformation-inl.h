@@ -182,6 +182,12 @@ QuatTransformationTemplate<Scalar>::inverted() const {
 }
 
 template<typename Scalar>
+QuatTransformationTemplate<Scalar>
+QuatTransformationTemplate<Scalar>::inverse() const {
+  return QuatTransformation(q_A_B_.inverse(), -q_A_B_.inverseRotate(A_t_A_B_));
+}
+
+template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::Vector6 
 QuatTransformationTemplate<Scalar>::log() const {
   return log(*this);

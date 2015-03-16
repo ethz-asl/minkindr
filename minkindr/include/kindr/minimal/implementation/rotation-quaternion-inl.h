@@ -234,6 +234,13 @@ RotationQuaternionTemplate<Scalar>::inverted() const {
   return conjugated();
 }
 
+/// \brief get a copy of the quaternion inverted.
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>
+RotationQuaternionTemplate<Scalar>::inverse() const {
+  return conjugated();
+}
+
 /// \brief get a copy of the conjugate of the quaternion.
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>

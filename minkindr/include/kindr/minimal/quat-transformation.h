@@ -34,6 +34,7 @@ class QuatTransformationTemplate {
   typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
   typedef Eigen::Matrix<Scalar, 4, 4> TransformationMatrix;
 
+  /// \brief Constructor of identity tranformation.
   QuatTransformationTemplate();
 
   explicit QuatTransformationTemplate(
@@ -131,6 +132,9 @@ class QuatTransformationTemplate {
 
   /// \brief return a copy of the transformation inverted.
   QuatTransformationTemplate<Scalar> inverted() const;
+
+  /// \brief return a copy of the transformation inverted.
+  QuatTransformationTemplate<Scalar> inverse() const;
 
   /// \brief check for binary equality.
   bool operator==(const QuatTransformationTemplate<Scalar>& rhs) const;

@@ -102,6 +102,9 @@ class RotationQuaternionTemplate {
   /// \brief get a copy of the quaternion inverted.
   RotationQuaternionTemplate<Scalar> inverted() const;
 
+  /// \brief get a copy of the quaternion inverted.
+  RotationQuaternionTemplate<Scalar> inverse() const;
+
   /// \brief get a copy of the conjugate of the quaternion.
   RotationQuaternionTemplate<Scalar> conjugated() const;
 
