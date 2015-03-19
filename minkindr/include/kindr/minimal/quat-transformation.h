@@ -138,7 +138,7 @@ class QuatTransformationTemplate {
   /// \brief get the logarithmic map of the transformation
   /// note: this is the log map of SO(3)xR(3) and not SE(3)
   /// \return vector form of log map with first 3 components the translational
-  //          part and the last three the rotational part.
+  ///         part and the last three the rotational part.
   Vector6 log() const;
 
   /// \brief get the exponential map of the parameters, resulting in a valid
@@ -155,10 +155,10 @@ class QuatTransformationTemplate {
   static Vector6 log(const QuatTransformationTemplate<Scalar>& vec);
 
   /// \brief return a copy of the transformation inverted.
-  QuatTransformationTemplate<Scalar> inverted() const;
-
-  /// \brief return a copy of the transformation inverted.
   QuatTransformationTemplate<Scalar> inverse() const;
+
+  /// \deprecated use inverse() instead.
+  QuatTransformationTemplate<Scalar> inverted() const __attribute__((deprecated));
 
   /// \brief check for binary equality.
   bool operator==(const QuatTransformationTemplate<Scalar>& rhs) const;
