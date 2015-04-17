@@ -156,14 +156,11 @@ TEST(MinKindrTests, testCompose) {
   Eigen::Vector3d invTTv(-8.16137069,  -6.14469052, -14.34176544);
   Eigen::Vector3d TTv(5.52009598,  24.34170933,  18.9197339);
 
-  
-  Transformation TT = T*T;
-  Transformation Id1 = T*T.inverse();
+  Transformation TT = T * T;
+  Transformation Id1 = T * T.inverse();
   Transformation Id2 = T.inverse() * T;
   Transformation iTiT1 = T.inverse() * T.inverse();
   Transformation iTiT2 = TT.inverse();
-
-  
 
   Eigen::Vector3d TTv1 = TT.transform(v);
   for(int i = 0; i < 3; ++i) {
