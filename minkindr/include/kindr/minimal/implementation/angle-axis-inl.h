@@ -167,8 +167,13 @@ AngleAxisTemplate<Scalar>& AngleAxisTemplate<Scalar>::setIdentity() {
 }
 
 template<typename Scalar>
-AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::inverted() const {
+AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::inverse() const {
   return AngleAxisTemplate(C_A_B_.inverse());
+}
+
+template<typename Scalar>
+AngleAxisTemplate<Scalar> AngleAxisTemplate<Scalar>::inverted() const {
+  return inverse();
 }
 
 template<typename Scalar>
