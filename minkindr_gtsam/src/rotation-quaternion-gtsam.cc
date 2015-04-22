@@ -99,18 +99,33 @@ EVector3 inverseRotate(const EQuaternion& C, const EVector3& p) {
   return EVector3(&inverse_rotate_point, C, p);
 }
 
+template <typename Scalar_ = double>
+inline bool isLessThanEpsilons4thRoot(Scalar_ x){
+  static const Scalar_ epsilon4thRoot = pow(std::numeric_limits<Scalar_>::epsilon(), 1.0/4.0);
+  return x < epsilon4thRoot;
+}
+
 Eigen::Vector3d rotationLogImplementation(const RotationQuaternion& C,
                                           OptionalJacobian<3, 3> JC) {
   Eigen::Vector3d aa = C.log();
   if(JC) {
     double phi = aa.norm();
-    if(phi < 1e-10) {
+    if(phi == 0) {
       JC->setIdentity();
     } else {
-      double cot = - std::sin(phi)/(std::cos(phi)-1);
-      double a1 = 1/(phi*phi) * (1.0 - 0.5*phi*cot);
+
+      double phiAbs = fabs(phi);
       Eigen::Matrix3d px = kindr::minimal::skewMatrix(aa);
-      (*JC) = Eigen::Matrix3d::Identity() - 0.5 * px + a1 * px * px;
+
+      double a;
+      if(!isLessThanEpsilons4thRoot(phiAbs)) {
+        double phiHalf = 0.5 * phi;
+        a = ((1 - phiHalf / tan(phiHalf))/phi/phi);
+      } else {
+        a = 1.0 / 12 * (1 + 1.0 / 60 * phi * phi);
+      }
+
+      (*JC) = Eigen::Matrix3d::Identity() - 0.5 * px + a * px * px;
     }
   }
   return aa;
