@@ -120,7 +120,7 @@ Eigen::Vector3d inverseTransformImplementation(
     OptionalJacobian<3, 6> HT, OptionalJacobian<3, 3> Hp) {
   Eigen::Vector3d Tp = T.inverseTransform(p);
   if(HT || Hp) {
-    Eigen::Matrix3d invC = T.getRotation().inverted().getRotationMatrix();
+    Eigen::Matrix3d invC = T.getRotation().inverse().getRotationMatrix();
     if(HT) {
       HT->leftCols<3>() = -invC;
       HT->rightCols<3>() = invC * kindr::minimal::skewMatrix(p);
@@ -140,7 +140,7 @@ EVector3 inverseTransform(
 
 QuatTransformation inverseImplementation(
     const QuatTransformation& T, OptionalJacobian<6, 6> HT) {
-  QuatTransformation invT = T.inverted();
+  QuatTransformation invT = T.inverse();
   if(HT) {
     Eigen::Matrix3d ninvC = -invT.getRotationMatrix();
     HT->topLeftCorner<3,3>() = ninvC;

@@ -63,7 +63,7 @@ RotationQuaternion invert_rotation_quaternion(
   if(HC) {
     *HC = -C.getRotationMatrix().transpose();
   }
-  return C.inverted();
+  return C.inverse();
 }
 
 RotationQuaternion compose_rotation_quaternion(

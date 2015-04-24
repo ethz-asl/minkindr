@@ -124,7 +124,10 @@ class RotationQuaternionTemplate {
   RotationQuaternionTemplate<Scalar>& setRandom(Scalar angle_rad);
 
   /// \brief get a copy of the quaternion inverted.
-  RotationQuaternionTemplate<Scalar> inverted() const;
+  RotationQuaternionTemplate<Scalar> inverse() const;
+
+  /// \deprecated use inverse instead.
+  RotationQuaternionTemplate<Scalar> inverted() const __attribute__((deprecated));
 
   /// \brief get a copy of the conjugate of the quaternion.
   RotationQuaternionTemplate<Scalar> conjugated() const;
