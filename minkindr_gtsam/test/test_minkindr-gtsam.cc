@@ -224,7 +224,7 @@ TEST(MinkindrGtsamTests, testCombineRotationTranslation) {
 
   Transformation Tval(Cval, tval);
   Transformation Teval = T.value(values);
-  Transformation eye = Tval * Teval.inverted();
+  Transformation eye = Tval * Teval.inverse();
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(Tval.getTransformationMatrix(), Teval.getTransformationMatrix(), 1e-9));
 
@@ -661,7 +661,7 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
     Eigen::Vector3d vI = interpV.value(values);
 
     EXPECT_TRUE(EIGEN_MATRIX_NEAR(vI,waVal,1e-3));
-    Eigen::Vector3d dq = (qI * qaVal.inverted()).log()/1e-5;
+    Eigen::Vector3d dq = (qI * qaVal.inverse()).log() / 1e-5;
     EXPECT_TRUE(EIGEN_MATRIX_NEAR(vI,dq,1e-3));
 
   }
@@ -674,7 +674,7 @@ TEST(MinkindrGtsamTests, testCubicHermiteQuaternionDerivative) {
       EQuaternion interpQp = hermiteQuaternionInterpolation(qA, wA, qB, wB, alpha+fd_step, 1);
       EVector3 interpV = hermiteQuaternionInterpolationDerivative(qA, wA, qB, wB, alpha, 1);
 
-      Eigen::Vector3d dq = (interpQp.value(values) * interpQ.value(values).inverted()).log()/fd_step;
+      Eigen::Vector3d dq = (interpQp.value(values) * interpQ.value(values).inverse()).log() / fd_step;
       Eigen::Vector3d v = interpV.value(values);
 
       EXPECT_TRUE(EIGEN_MATRIX_NEAR(v,dq,tolerance*5));

@@ -47,7 +47,7 @@ TEST(MinKindrTests, testTransform) {
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
   Transformation T(q1,t);
-  Transformation invT = T.inverted();
+  Transformation invT = T.inverse();
   Eigen::Vector3d v(6.26257419,  1.58356548,  6.05772983);
   Eigen::Vector4d vh(6.26257419,  1.58356548,  6.05772983, 1.0);
   Eigen::Vector4d vh2 = vh * 0.2;
@@ -93,10 +93,10 @@ TEST(MinKindrTests, testTransform) {
   }
 
   {
-    Eigen::Vector3d invTv1 = T.inverted().transform(v);
-    Eigen::Vector4d invTvh2 = T.inverted().transform4(vh);
-    Eigen::Vector4d invTvh3 = T.inverted().transform4(vh2);
-    Eigen::Vector4d invTvh4 = T.inverted().transform4(vh3);
+    Eigen::Vector3d invTv1 = T.inverse().transform(v);
+    Eigen::Vector4d invTvh2 = T.inverse().transform4(vh);
+    Eigen::Vector4d invTvh3 = T.inverse().transform4(vh2);
+    Eigen::Vector4d invTvh4 = T.inverse().transform4(vh3);
     Eigen::Vector3d invTv2 = fromHomogeneous(invTvh2);
     Eigen::Vector3d invTv3 = fromHomogeneous(invTvh3);
     Eigen::Vector3d invTv4 = fromHomogeneous(invTvh4);
@@ -151,19 +151,16 @@ TEST(MinKindrTests, testCompose) {
   Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
 
   Transformation T(q1,t);
-  Transformation invT = T.inverted();
+  Transformation invT = T.inverse();
   Eigen::Vector3d v(6.26257419,  1.58356548,  6.05772983);
   Eigen::Vector3d invTTv(-8.16137069,  -6.14469052, -14.34176544);
   Eigen::Vector3d TTv(5.52009598,  24.34170933,  18.9197339);
 
-  
-  Transformation TT = T*T;
-  Transformation Id1 = T*T.inverted();
-  Transformation Id2 = T.inverted() * T;
-  Transformation iTiT1 = T.inverted() * T.inverted();
-  Transformation iTiT2 = TT.inverted();
-
-  
+  Transformation TT = T * T;
+  Transformation Id1 = T * T.inverse();
+  Transformation Id2 = T.inverse() * T;
+  Transformation iTiT1 = T.inverse() * T.inverse();
+  Transformation iTiT2 = TT.inverse();
 
   Eigen::Vector3d TTv1 = TT.transform(v);
   for(int i = 0; i < 3; ++i) {

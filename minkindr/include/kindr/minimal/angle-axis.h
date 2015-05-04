@@ -109,7 +109,10 @@ class AngleAxisTemplate {
   AngleAxisTemplate<Scalar>& setIdentity();
 
   /// \brief get a copy of the rotation inverted.
-  AngleAxisTemplate<Scalar> inverted() const;
+  AngleAxisTemplate<Scalar> inverse() const;
+
+  /// \deprecated use inverse() instead.
+  AngleAxisTemplate<Scalar> inverted() const __attribute__((deprecated));
 
   /// \brief rotate a vector, v.
   Vector3 rotate(const Vector3& v) const;

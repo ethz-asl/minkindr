@@ -78,26 +78,26 @@ TEST(MinKindrTests,testQuatAxisAngle) {
   EXPECT_NEAR(a1.getDisparityAngle(a3), 0.0, 1e-3);
   EXPECT_NEAR(a1.getDisparityAngle(a4), 0.0, 1e-3);
 
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(q2.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(q3.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(q4.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(q5.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(q6.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(a1.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(a2.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(a2.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(a3.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(q1.inverted().getDisparityAngle(a4.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(q2.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(q3.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(q4.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(q5.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(q6.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(q1.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(a2.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(a2.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(a3.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR(a1.inverted().getDisparityAngle(a4.inverted()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(q2.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(q3.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(q4.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(q5.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(q6.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(a1.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(a2.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(a2.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(a3.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(q1.inverse().getDisparityAngle(a4.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(q2.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(q3.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(q4.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(q5.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(q6.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(q1.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(a2.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(a2.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(a3.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(a4.inverse()), 0.0, 1e-3);
 
 
 }
@@ -129,10 +129,10 @@ TEST(MinKindrTests,testComposition) {
   EXPECT_NEAR((q1*a1).getDisparityAngle(qsquared), 0.0, 1e-3);
   EXPECT_NEAR((a1*q1).getDisparityAngle(qsquared), 0.0, 1e-3);
   EXPECT_NEAR((a1*a1).getDisparityAngle(qsquared), 0.0, 1e-3);
-  EXPECT_NEAR((a1.inverted()*a1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR((q1.inverted()*a1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR((a1.inverted()*q1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
-  EXPECT_NEAR((q1.inverted()*q1.inverted()).getDisparityAngle(qsquared.inverted()), 0.0, 1e-3);
+  EXPECT_NEAR((a1.inverse()*a1.inverse()).getDisparityAngle(qsquared.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR((q1.inverse()*a1.inverse()).getDisparityAngle(qsquared.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR((a1.inverse()*q1.inverse()).getDisparityAngle(qsquared.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR((q1.inverse()*q1.inverse()).getDisparityAngle(qsquared.inverse()), 0.0, 1e-3);
 
 }
 
@@ -173,8 +173,8 @@ TEST(MinKindrTests, testRotate) {
   Eigen::Vector3d Cv2 = a1.rotate(v);
   Eigen::Vector3d Ctv1 = q1.inverseRotate(v);
   Eigen::Vector3d Ctv2 = a1.inverseRotate(v);
-  Eigen::Vector3d Ctv3 = q1.inverted().rotate(v);
-  Eigen::Vector3d Ctv4 = a1.inverted().rotate(v);
+  Eigen::Vector3d Ctv3 = q1.inverse().rotate(v);
+  Eigen::Vector3d Ctv4 = a1.inverse().rotate(v);
 
 
   for(int i = 0; i < 3; ++i) {

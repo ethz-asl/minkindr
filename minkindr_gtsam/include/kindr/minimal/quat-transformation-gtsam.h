@@ -58,7 +58,7 @@ template<> struct traits<kindr::minimal::QuatTransformation> {
   }
 
   static vector Local(const type& origin, const type& other) {
-    return (other * origin.inverted()).log();
+    return (other * origin.inverse()).log();
   }
   static type Retract(const type& origin, const vector& d) {
     return type(d) * origin;
