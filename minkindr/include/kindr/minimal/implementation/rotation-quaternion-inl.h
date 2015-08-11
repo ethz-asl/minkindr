@@ -473,7 +473,7 @@ RotationQuaternionTemplate<Scalar>::log() const {
 
 template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(const RotationMatrix& matrix) {
-  const Scalar kThreshold = static_cast<Scalar>(1.0e-8);
+  const Scalar kThreshold = static_cast<Scalar>(1.0e-7);
   if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
     return false;
   }
