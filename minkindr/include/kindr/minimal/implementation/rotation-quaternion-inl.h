@@ -96,7 +96,7 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const RotationMatrix& matrix) :
     q_A_B_(matrix) {
-  CHECK(isValidRotationMatrix(matrix));
+  CHECK(isValidRotationMatrix(matrix)) << matrix;
 }
 
 template<typename Scalar>
