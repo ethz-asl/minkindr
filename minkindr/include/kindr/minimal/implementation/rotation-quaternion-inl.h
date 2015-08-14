@@ -34,9 +34,8 @@ namespace minimal {
 
 /// \brief initialize to identity
 template<typename Scalar>
-RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate() :
-q_A_B_(Implementation::Identity()) {
-}
+RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate()
+: q_A_B_(Implementation::Identity()) {}
 
 /// \brief initialize from real and imaginary components (real first)
 template<typename Scalar>
@@ -45,7 +44,6 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     q_A_B_(w,x,y,z) {
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-4));
 }
-
 
 /// \brief initialize from real and imaginary components
 template<typename Scalar>
@@ -56,7 +54,6 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0),
              static_cast<Scalar>(1e-4));
 }
-
 
 /// \brief initialize from an Eigen quaternion
 template<typename Scalar>
@@ -506,14 +503,14 @@ template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
     const RotationMatrix& matrix, const Scalar threshold) {
   if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > threshold) {
-    VLOG(5) << matrix.determinant();
-    VLOG(5) << matrix.determinant() - static_cast<Scalar>(1.0);
+    VLOG(200) << matrix.determinant();
+    VLOG(200) << matrix.determinant() - static_cast<Scalar>(1.0);
     return false;
   }
   if ((matrix * matrix.transpose() -
       RotationMatrix::Identity()).cwiseAbs().maxCoeff() > threshold) {
-    VLOG(5) << matrix * matrix.transpose();
-    VLOG(5) << matrix * matrix.transpose() - RotationMatrix::Identity();
+    VLOG(200) << matrix * matrix.transpose();
+    VLOG(200) << matrix * matrix.transpose() - RotationMatrix::Identity();
     return false;
   }
   return true;
