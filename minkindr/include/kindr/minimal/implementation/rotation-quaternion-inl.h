@@ -100,6 +100,27 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
 }
 
 template<typename Scalar>
+RotationQuaternionTemplate<Scalar>
+RotationQuaternionTemplate<Scalar>::fromApproximateRotationMatrix(
+      const RotationMatrix& matrix) {
+  // http://people.csail.mit.edu/bkph/articles/Nearest_Orthonormal_Matrix.pdf
+  // as discussed in https://github.com/ethz-asl/kindr/issues/55 ,
+  // code by Pascal Kruesi.
+  Eigen::JacobiSVD<RotationMatrix> svd(matrix, Eigen::ComputeFullV);
+
+  RotationMatrix correction =
+      svd.matrixV().col(0) * svd.matrixV().col(0).transpose() /
+      svd.singularValues()(0) +
+      svd.matrixV().col(1) * svd.matrixV().col(1).transpose() /
+      svd.singularValues()(1) +
+      svd.matrixV().col(2) * svd.matrixV().col(2).transpose() /
+      svd.singularValues()(2);
+
+  return RotationQuaternionTemplate<Scalar>(
+      RotationMatrix(matrix * correction));
+}
+
+template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const AngleAxisTemplate<Scalar>& angleAxis) :
     q_A_B_(angleAxis.toImplementation()){
@@ -474,16 +495,14 @@ RotationQuaternionTemplate<Scalar>::log() const {
 template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
     const RotationMatrix& matrix) {
-  constexpr Scalar kDeterminantThreshold = static_cast<Scalar>(1.0e-7);
-  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0))
-  >  kDeterminantThreshold) {
+  const Scalar kThreshold = static_cast<Scalar>(1.0e-8);
+  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
     VLOG(5) << matrix.determinant();
     VLOG(5) << matrix.determinant() - static_cast<Scalar>(1.0);
     return false;
   }
-  constexpr Scalar kSelfAdjointThreshold = static_cast<Scalar>(1.0e-6);
-  if ((matrix * matrix.transpose() - RotationMatrix::Identity())
-      .cwiseAbs().maxCoeff() > kSelfAdjointThreshold) {
+  if ((matrix * matrix.transpose() -
+      RotationMatrix::Identity()).cwiseAbs().maxCoeff() > kThreshold) {
     VLOG(5) << matrix * matrix.transpose();
     VLOG(5) << matrix * matrix.transpose() - RotationMatrix::Identity();
     return false;

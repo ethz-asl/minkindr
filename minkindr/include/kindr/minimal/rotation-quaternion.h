@@ -81,6 +81,11 @@ class RotationQuaternionTemplate {
   /// \brief initialize from a rotation matrix.
   explicit RotationQuaternionTemplate(const RotationMatrix& matrix);
 
+  /// \brief take an approximate rotation matrix, recover the closest matrix
+  /// in SO(3) and construct.
+  static RotationQuaternionTemplate<Scalar> fromApproximateRotationMatrix(
+      const RotationMatrix& matrix);
+
   /// \brief initialize from an AngleAxis.
   explicit RotationQuaternionTemplate(
       const AngleAxisTemplate<Scalar>& angleAxis);
