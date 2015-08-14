@@ -34,9 +34,8 @@ namespace minimal {
 
 /// \brief initialize to identity
 template<typename Scalar>
-RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate() :
-    q_A_B_(Implementation::Identity()) {
-}
+RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate()
+: q_A_B_(Implementation::Identity()) {}
 
 /// \brief initialize from real and imaginary components (real first)
 template<typename Scalar>
@@ -46,7 +45,6 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-4));
 }
 
-  
 /// \brief initialize from real and imaginary components
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
@@ -56,7 +54,6 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0),
              static_cast<Scalar>(1e-4));
 }
-
 
 /// \brief initialize from an Eigen quaternion
 template<typename Scalar>
@@ -97,6 +94,30 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const RotationMatrix& matrix) :
     q_A_B_(matrix) {
   CHECK(isValidRotationMatrix(matrix)) << matrix;
+}
+
+template<typename Scalar>
+RotationQuaternionTemplate<Scalar>
+RotationQuaternionTemplate<Scalar>::fromApproximateRotationMatrix(
+    const RotationMatrix& matrix) {
+  // We still want the input matrix to resemble a rotation matrix to avoid
+  // bug hiding.
+  CHECK(isValidRotationMatrix(matrix, 1.e-5));
+  // http://people.csail.mit.edu/bkph/articles/Nearest_Orthonormal_Matrix.pdf
+  // as discussed in https://github.com/ethz-asl/kindr/issues/55 ,
+  // code by Philipp Krüsi.
+  Eigen::JacobiSVD<RotationMatrix> svd(matrix, Eigen::ComputeFullV);
+
+  RotationMatrix correction =
+      svd.matrixV().col(0) * svd.matrixV().col(0).transpose() /
+      svd.singularValues()(0) +
+      svd.matrixV().col(1) * svd.matrixV().col(1).transpose() /
+      svd.singularValues()(1) +
+      svd.matrixV().col(2) * svd.matrixV().col(2).transpose() /
+      svd.singularValues()(2);
+
+  return RotationQuaternionTemplate<Scalar>(
+      RotationMatrix(matrix * correction));
 }
 
 template<typename Scalar>
@@ -472,13 +493,24 @@ RotationQuaternionTemplate<Scalar>::log() const {
 }
 
 template<typename Scalar>
-bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(const RotationMatrix& matrix) {
-  const Scalar kThreshold = static_cast<Scalar>(1.0e-7);
-  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
+bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
+    const RotationMatrix& matrix) {
+  constexpr Scalar kThreshold = static_cast<Scalar>(1.0e-8);
+  return isValidRotationMatrix(matrix, kThreshold);
+}
+
+template<typename Scalar>
+bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
+    const RotationMatrix& matrix, const Scalar threshold) {
+  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > threshold) {
+    VLOG(200) << matrix.determinant();
+    VLOG(200) << matrix.determinant() - static_cast<Scalar>(1.0);
     return false;
   }
-  if ((matrix * matrix.transpose() - RotationMatrix::Identity()).cwiseAbs().maxCoeff()
-      > kThreshold) {
+  if ((matrix * matrix.transpose() -
+      RotationMatrix::Identity()).cwiseAbs().maxCoeff() > threshold) {
+    VLOG(200) << matrix * matrix.transpose();
+    VLOG(200) << matrix * matrix.transpose() - RotationMatrix::Identity();
     return false;
   }
   return true;
