@@ -35,7 +35,7 @@ namespace minimal {
 /// \brief initialize to identity
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate() :
-    q_A_B_(Implementation::Identity()) {
+q_A_B_(Implementation::Identity()) {
 }
 
 /// \brief initialize from real and imaginary components (real first)
@@ -46,7 +46,7 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-4));
 }
 
-  
+
 /// \brief initialize from real and imaginary components
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
@@ -102,10 +102,13 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::fromApproximateRotationMatrix(
-      const RotationMatrix& matrix) {
+    const RotationMatrix& matrix) {
+  // We still want the input matrix to resemble a rotation matrix to avoid
+  // bug hiding.
+  CHECK(isValidRotationMatrix(matrix, 1.e-5));
   // http://people.csail.mit.edu/bkph/articles/Nearest_Orthonormal_Matrix.pdf
   // as discussed in https://github.com/ethz-asl/kindr/issues/55 ,
-  // code by Pascal Kruesi.
+  // code by Philipp Krüsi.
   Eigen::JacobiSVD<RotationMatrix> svd(matrix, Eigen::ComputeFullV);
 
   RotationMatrix correction =
@@ -495,14 +498,20 @@ RotationQuaternionTemplate<Scalar>::log() const {
 template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
     const RotationMatrix& matrix) {
-  const Scalar kThreshold = static_cast<Scalar>(1.0e-8);
-  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
+  constexpr Scalar kThreshold = static_cast<Scalar>(1.0e-8);
+  return isValidRotationMatrix(matrix, kThreshold);
+}
+
+template<typename Scalar>
+bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
+    const RotationMatrix& matrix, const double threshold) {
+  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > threshold) {
     VLOG(5) << matrix.determinant();
     VLOG(5) << matrix.determinant() - static_cast<Scalar>(1.0);
     return false;
   }
   if ((matrix * matrix.transpose() -
-      RotationMatrix::Identity()).cwiseAbs().maxCoeff() > kThreshold) {
+      RotationMatrix::Identity()).cwiseAbs().maxCoeff() > threshold) {
     VLOG(5) << matrix * matrix.transpose();
     VLOG(5) << matrix * matrix.transpose() - RotationMatrix::Identity();
     return false;

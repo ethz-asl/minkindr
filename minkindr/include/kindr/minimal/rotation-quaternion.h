@@ -203,6 +203,8 @@ class RotationQuaternionTemplate {
 
   /// \brief Check the validity of a rotation matrix.
   static bool isValidRotationMatrix(const RotationMatrix& matrix);
+  static bool isValidRotationMatrix(const RotationMatrix& matrix,
+                                    const double threshold);
 
   /// \brief Factory to construct a RotationQuaternionTemplate from a near
   ///        orthonormal rotation matrix.
