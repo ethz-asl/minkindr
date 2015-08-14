@@ -472,13 +472,20 @@ RotationQuaternionTemplate<Scalar>::log() const {
 }
 
 template<typename Scalar>
-bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(const RotationMatrix& matrix) {
-  const Scalar kThreshold = static_cast<Scalar>(1.0e-7);
-  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > kThreshold) {
+bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
+    const RotationMatrix& matrix) {
+  constexpr Scalar kDeterminantThreshold = static_cast<Scalar>(1.0e-7);
+  if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0))
+  >  kDeterminantThreshold) {
+    VLOG(5) << matrix.determinant();
+    VLOG(5) << matrix.determinant() - static_cast<Scalar>(1.0);
     return false;
   }
-  if ((matrix * matrix.transpose() - RotationMatrix::Identity()).cwiseAbs().maxCoeff()
-      > kThreshold) {
+  constexpr Scalar kSelfAdjointThreshold = static_cast<Scalar>(1.0e-6);
+  if ((matrix * matrix.transpose() - RotationMatrix::Identity())
+      .cwiseAbs().maxCoeff() > kSelfAdjointThreshold) {
+    VLOG(5) << matrix * matrix.transpose();
+    VLOG(5) << matrix * matrix.transpose() - RotationMatrix::Identity();
     return false;
   }
   return true;
