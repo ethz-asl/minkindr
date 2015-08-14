@@ -504,7 +504,7 @@ bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
 
 template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
-    const RotationMatrix& matrix, const double threshold) {
+    const RotationMatrix& matrix, const Scalar threshold) {
   if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > threshold) {
     VLOG(5) << matrix.determinant();
     VLOG(5) << matrix.determinant() - static_cast<Scalar>(1.0);
