@@ -202,7 +202,7 @@ QuatTransformationTemplate<Scalar>::inverseTransform4(
 template<typename Scalar>
 QuatTransformationTemplate<Scalar>
 QuatTransformationTemplate<Scalar>::inverse() const {
-  return QuatTransformation(q_A_B_.inverse(), -q_A_B_.inverseRotate(A_t_A_B_));
+  return QuatTransformationTemplate<Scalar>(q_A_B_.inverse(), -q_A_B_.inverseRotate(A_t_A_B_));
 }
 
 template<typename Scalar>
