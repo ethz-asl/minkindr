@@ -1,6 +1,6 @@
 // Copyright (c) 2015, Autonomous Systems Lab, ETH Zurich
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //     * Redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 //     * Neither the name of the <organization> nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -70,11 +70,11 @@ class QuatTransformationTemplate {
       const Position& A_t_A_B, const Rotation& q_A_B);
   explicit QuatTransformationTemplate(
       const Position& A_t_A_B, const typename Rotation::Implementation& q_A_B);
-  
+
   explicit QuatTransformationTemplate(const TransformationMatrix& T);
 
   /// \brief a constructor based on the exponential map.
-  /// translational part in the first 3 dimensions, 
+  /// translational part in the first 3 dimensions,
   /// rotational part in the last 3 dimensions.
   QuatTransformationTemplate(const Vector6& x_t_r);
 
@@ -93,7 +93,7 @@ class QuatTransformationTemplate {
 
   /// \brief get the position component.
   Position& getPosition();
-  
+
   /// \brief get the position component.
   const Position& getPosition() const;
 
@@ -102,7 +102,10 @@ class QuatTransformationTemplate {
 
   /// \brief get the rotation component.
   const Rotation& getRotation() const;
-  
+
+  /// \brief get the rotation component as an Eigen Quaternion directly.
+  const Eigen::Quaterniond& getEigenQuaternion() const;
+
   /// \brief get the transformation matrix.
   TransformationMatrix getTransformationMatrix() const;
 
