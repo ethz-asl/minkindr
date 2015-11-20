@@ -117,7 +117,7 @@ QuatTransformationTemplate<Scalar>::getRotation() const {
 }
 
 template <typename Scalar>
-const Eigen::Quaterniond&
+const Eigen::Quaternion<Scalar>&
 QuatTransformationTemplate<Scalar>::getEigenQuaternion() const {
   return getRotation().toImplementation();
 }

@@ -104,7 +104,7 @@ class QuatTransformationTemplate {
   const Rotation& getRotation() const;
 
   /// \brief get the rotation component as an Eigen Quaternion directly.
-  const Eigen::Quaterniond& getEigenQuaternion() const;
+  const Eigen::Quaternion<Scalar>& getEigenQuaternion() const;
 
   /// \brief get the transformation matrix.
   TransformationMatrix getTransformationMatrix() const;
