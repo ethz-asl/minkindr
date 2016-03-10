@@ -116,6 +116,14 @@ class QuatTransformationTemplate {
   ///  [w x y z, x y z]
   Eigen::Matrix<Scalar, 7, 1> asVector() const;
 
+  /// \brief get the quaternion of rotation and the position as a vector.
+  /// [w x y z, x y z]
+  Eigen::Matrix<Scalar, 7, 1> asHamiltonianVector() const;
+
+  // \brief get the quaternion of rotation and the position as a vector.
+  /// [x y z w, x y z]
+  Eigen::Matrix<Scalar, 7, 1> asJPLVector() const;
+
   /// \brief compose two transformations.
   QuatTransformationTemplate<Scalar> operator*(
       const QuatTransformationTemplate<Scalar>& rhs) const;

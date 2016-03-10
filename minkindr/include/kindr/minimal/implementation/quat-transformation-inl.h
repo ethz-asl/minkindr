@@ -141,6 +141,19 @@ QuatTransformationTemplate<Scalar>::asVector() const {
 }
 
 template<typename Scalar>
+Eigen::Matrix<Scalar, 7, 1>
+QuatTransformationTemplate<Scalar>::asHamiltonianVector() const{
+  return asVector();
+}
+
+template<typename Scalar>
+Eigen::Matrix<Scalar, 7, 1>
+QuatTransformationTemplate<Scalar>::asJPLVector() const{
+  return (Eigen::Matrix<Scalar, 7, 1>() <<
+      q_A_B_.x(), q_A_B_.y(), q_A_B_.z(), q_A_B_.w(), A_t_A_B_).finished();
+}
+
+template<typename Scalar>
 typename QuatTransformationTemplate<Scalar>::RotationMatrix
 QuatTransformationTemplate<Scalar>::getRotationMatrix() const {
   return q_A_B_.getRotationMatrix();
