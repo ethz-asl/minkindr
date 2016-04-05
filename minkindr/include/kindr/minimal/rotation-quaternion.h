@@ -90,7 +90,7 @@ class RotationQuaternionTemplate {
   explicit RotationQuaternionTemplate(
       const AngleAxisTemplate<Scalar>& angleAxis);
 
-  virtual ~RotationQuaternionTemplate();
+  ~RotationQuaternionTemplate();
 
   /// \brief the real component of the quaternion.
   Scalar w() const;
