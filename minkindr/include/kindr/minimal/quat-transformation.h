@@ -78,7 +78,7 @@ class QuatTransformationTemplate {
   /// rotational part in the last 3 dimensions.
   QuatTransformationTemplate(const Vector6& x_t_r);
 
-  virtual ~QuatTransformationTemplate();
+  ~QuatTransformationTemplate();
 
   void setIdentity();
 

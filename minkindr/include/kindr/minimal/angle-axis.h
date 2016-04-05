@@ -79,7 +79,7 @@ class AngleAxisTemplate {
   /// \brief initialize from a angle-scaled axis vector.
   AngleAxisTemplate(const Vector3& angleAxis);
 
-  virtual ~AngleAxisTemplate();
+  ~AngleAxisTemplate();
 
   /// \brief Returns the rotation angle.
   Scalar angle() const;
