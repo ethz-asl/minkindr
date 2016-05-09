@@ -24,6 +24,9 @@ public:
 
   QuatSimTransformTemplate<Scalar> inverse() const;
 
+  Transform getTransform() const { return T_A_B_; }
+  Scalar getScale() const { return scale_A_B_; }
+
 private:
   Transform T_A_B_;
   Scalar scale_A_B_;
