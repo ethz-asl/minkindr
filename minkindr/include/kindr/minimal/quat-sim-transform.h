@@ -6,7 +6,7 @@
 namespace kindr {
 namespace minimal {
 
-// First translation then rotation then scale = first transform then scale.
+// Scale & rotate then translate = scale then transform.
 template <typename Scalar>
 class QuatSimTransformTemplate {
 public:
@@ -22,12 +22,22 @@ public:
 
   Vectors operator*(const Vectors& rhs) const;
 
+  QuatSimTransformTemplate<Scalar> inverse() const;
+
 private:
   Transform T_A_B_;
   Scalar scale_A_B_;
+
+  template <typename FriendScalar>
+  friend std::ostream & operator<<(
+      std::ostream &, const QuatSimTransformTemplate<FriendScalar>&);
 };
 
 typedef QuatSimTransformTemplate<double> QuatSimTransform;
+
+template<typename Scalar>
+std::ostream & operator<<(std::ostream & out,
+                          const QuatSimTransformTemplate<Scalar>& sim_3);
 
 }  // namespace minimal
 }  // namespace kindr
