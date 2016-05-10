@@ -7,6 +7,10 @@ namespace kindr {
 namespace minimal {
 
 // Scale & rotate then translate = scale then transform.
+// In particular, the transformation matrix is:
+//
+//   R*s t     R t   s*I 0
+//   0   1  =  0 1 * 0   1
 template <typename Scalar>
 class QuatSimTransformTemplate {
 public:
@@ -18,12 +22,13 @@ public:
   // Creates identity similarity transform.
   QuatSimTransformTemplate();
 
-  QuatSimTransformTemplate(const Transform& T_A_B, const Scalar scale_A_B_);
+  QuatSimTransformTemplate(const Transform& T_A_B, const Scalar scale_A_B);
 
   Vectors operator*(const Vectors& rhs) const;
 
   QuatSimTransformTemplate<Scalar> inverse() const;
 
+  Eigen::Matrix<Scalar, 4, 4> getTransformationMatrix() const;
   Transform getTransform() const { return T_A_B_; }
   Scalar getScale() const { return scale_A_B_; }
 

@@ -1,6 +1,8 @@
 #ifndef KINDR_MINIMAL_IMPLEMENTATION_QUAT_SIM_TRANSFORM_INL_H_
 #define KINDR_MINIMAL_IMPLEMENTATION_QUAT_SIM_TRANSFORM_INL_H_
 
+#include <glog/logging.h>
+
 namespace kindr {
 namespace minimal {
 
@@ -9,8 +11,10 @@ QuatSimTransformTemplate<Scalar>::QuatSimTransformTemplate() : scale_A_B_(1.) {}
 
 template <typename Scalar>
 QuatSimTransformTemplate<Scalar>::QuatSimTransformTemplate(
-    const Transform& T_A_B, const Scalar scale_A_B_)
-    : T_A_B_(T_A_B), scale_A_B_(scale_A_B_) {}
+    const Transform& T_A_B, const Scalar scale_A_B)
+    : T_A_B_(T_A_B), scale_A_B_(scale_A_B) {
+  CHECK_GT(scale_A_B, 0.);
+}
 
 template <typename Scalar>
 typename QuatSimTransformTemplate<Scalar>::Vectors
@@ -25,6 +29,14 @@ QuatSimTransformTemplate<Scalar>::inverse() const {
       QuatTransformationTemplate<Scalar>(
           T_A_B_.getRotation().inverse(), -T_A_B_.getRotation().inverseRotate(
               T_A_B_.getPosition() / scale_A_B_)), 1. / scale_A_B_);
+}
+
+template <typename Scalar>
+Eigen::Matrix<Scalar, 4, 4>
+QuatSimTransformTemplate<Scalar>::getTransformationMatrix() const {
+  Eigen::Matrix<Scalar, 4, 4> result = T_A_B_.getTransformationMatrix();
+  result.template topLeftCorner<3, 3>() *= scale_A_B_;
+  return result;
 }
 
 template<typename Scalar>

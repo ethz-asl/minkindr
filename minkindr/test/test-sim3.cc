@@ -28,10 +28,11 @@ TEST(QuatSimTransformTest, Transform) {
 
 TEST(QuatSimTransformTest, Inverse) {
   const RotationQuaternion q(Eigen::Quaterniond(
-      0.64491714, 0.26382416,  0.51605132,  0.49816637));
-  const Eigen::Vector3d t( 4.67833851,  8.52053031,  6.71796159 );
+      0.64491714, 0.26382416, 0.51605132, 0.49816637));
+  const Eigen::Vector3d t(4.67833851, 8.52053031, 6.71796159 );
   const QuatSimTransform sim3(QuatTransformation(q, t), M_PI);
 
+  // 3Xd intended - it's the input type to operator*.
   const Eigen::Matrix3Xd input = Eigen::Matrix3d::Random();
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
