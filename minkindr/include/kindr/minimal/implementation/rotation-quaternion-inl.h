@@ -24,13 +24,26 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef KINDR_MIN_ROTATION_QUATERNION_INL_H_
 #define KINDR_MIN_ROTATION_QUATERNION_INL_H_
-#include <boost/math/special_functions/sinc.hpp>
 #include <glog/logging.h>
 #include <kindr/minimal/rotation-quaternion.h>
 #include <kindr/minimal/angle-axis.h>
 
 namespace kindr {
 namespace minimal {
+
+template<typename Scalar>
+struct EPS {
+  static constexpr Scalar value();
+};
+template<>
+struct EPS<double> {
+  static constexpr double value() { return 1.0e-8; }
+};
+template<>
+struct EPS<float> {
+  static constexpr float value() { return 1.0e-5f; }
+};
+
 
 /// \brief initialize to identity
 template<typename Scalar>
@@ -495,8 +508,7 @@ RotationQuaternionTemplate<Scalar>::log() const {
 template<typename Scalar>
 bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
     const RotationMatrix& matrix) {
-  constexpr Scalar kThreshold = static_cast<Scalar>(1.0e-8);
-  return isValidRotationMatrix(matrix, kThreshold);
+  return isValidRotationMatrix(matrix, EPS<Scalar>::value());
 }
 
 template<typename Scalar>
