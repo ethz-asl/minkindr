@@ -67,7 +67,7 @@ AngleAxisTemplate<Scalar>::AngleAxisTemplate(const Vector3& angleAxis) {
     Scalar norm = angleAxis.norm();
     CHECK_GT(norm, 1e-8);
     Vector3 axis = angleAxis;
-    axis.normalize();
+    axis = axis / norm;
 
     C_A_B_ = Implementation(norm, axis);
 }
