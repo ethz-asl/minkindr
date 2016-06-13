@@ -81,11 +81,16 @@ class RotationQuaternionTemplate {
   /// \brief initialize from a rotation matrix.
   explicit RotationQuaternionTemplate(const RotationMatrix& matrix);
 
+  /// \brief take an approximate rotation matrix, recover the closest matrix
+  /// in SO(3) and construct.
+  static RotationQuaternionTemplate<Scalar> fromApproximateRotationMatrix(
+      const RotationMatrix& matrix);
+
   /// \brief initialize from an AngleAxis.
   explicit RotationQuaternionTemplate(
       const AngleAxisTemplate<Scalar>& angleAxis);
 
-  virtual ~RotationQuaternionTemplate();
+  ~RotationQuaternionTemplate();
 
   /// \brief the real component of the quaternion.
   Scalar w() const;
@@ -198,6 +203,8 @@ class RotationQuaternionTemplate {
 
   /// \brief Check the validity of a rotation matrix.
   static bool isValidRotationMatrix(const RotationMatrix& matrix);
+  static bool isValidRotationMatrix(const RotationMatrix& matrix,
+                                    const Scalar threshold);
 
   /// \brief Factory to construct a RotationQuaternionTemplate from a near
   ///        orthonormal rotation matrix.
