@@ -62,6 +62,15 @@ AngleAxisTemplate<Scalar>::AngleAxisTemplate(const RotationMatrix& matrix) :
   // \todo furgalep Check that the matrix was good...
 }
 
+template<typename Scalar>
+AngleAxisTemplate<Scalar>::AngleAxisTemplate(const Vector3& angleAxis) {
+    Scalar norm = angleAxis.norm();
+    CHECK_GT(norm, 1e-8);
+    Vector3 axis = angleAxis;
+    axis = axis / norm;
+
+    C_A_B_ = Implementation(norm, axis);
+}
 
 template<typename Scalar>
 AngleAxisTemplate<Scalar>::AngleAxisTemplate(

@@ -55,6 +55,9 @@ TEST(MinKindrTests,testQuatAxisAngle) {
   AngleAxis a2(aax[0] + 2*M_PI,aax.tail<3>()); 
   AngleAxis a3(aax[0] + 4*M_PI,aax.tail<3>()); 
   AngleAxis a4(q1);
+  Eigen::Vector3d rotation_vector = aax[0]*aax.tail<3>();
+  AngleAxis a5(rotation_vector);
+
   RotationQuaternion q6(a1);
 
   EXPECT_NEAR(q1.getDisparityAngle(q2), 0.0, 1e-3);
@@ -77,6 +80,7 @@ TEST(MinKindrTests,testQuatAxisAngle) {
   EXPECT_NEAR(a1.getDisparityAngle(a2), 0.0, 1e-3);
   EXPECT_NEAR(a1.getDisparityAngle(a3), 0.0, 1e-3);
   EXPECT_NEAR(a1.getDisparityAngle(a4), 0.0, 1e-3);
+  EXPECT_NEAR(a1.getDisparityAngle(a5), 0.0, 1e-3);
 
   EXPECT_NEAR(q1.inverse().getDisparityAngle(q2.inverse()), 0.0, 1e-3);
   EXPECT_NEAR(q1.inverse().getDisparityAngle(q3.inverse()), 0.0, 1e-3);
@@ -98,6 +102,7 @@ TEST(MinKindrTests,testQuatAxisAngle) {
   EXPECT_NEAR(a1.inverse().getDisparityAngle(a2.inverse()), 0.0, 1e-3);
   EXPECT_NEAR(a1.inverse().getDisparityAngle(a3.inverse()), 0.0, 1e-3);
   EXPECT_NEAR(a1.inverse().getDisparityAngle(a4.inverse()), 0.0, 1e-3);
+  EXPECT_NEAR(a1.inverse().getDisparityAngle(a5.inverse()), 0.0, 1e-3);
 
 
 }
