@@ -39,6 +39,8 @@ class RotationQuaternionTemplate;
 /// This rotation takes vectors from frame B to frame A, written
 /// as \f${}_{A}\mathbf{v} = \mathbf{C}_{AB} {}_{B}\mathbf{v}\f$
 ///
+/// The angle is assumed to be in radians everywhere
+///
 /// In code, we write:
 ///
 /// \code{.cpp}
