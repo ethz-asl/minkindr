@@ -528,6 +528,16 @@ bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
   return true;
 }
 
+template <typename Scalar>
+template <typename ScalarAfterCast>
+RotationQuaternionTemplate<ScalarAfterCast>
+RotationQuaternionTemplate<Scalar>::cast() {
+  // renormalization needed to allow casting to increased precision
+  RotationQuaternionTemplate<ScalarAfterCast> temp;
+  return temp.constructAndRenormalize(
+      getRotationMatrix().cast<ScalarAfterCast>());
+}
+
 } // namespace minimal
 } // namespace kindr
 #endif  // KINDR_MIN_ROTATION_QUATERNION_INL_H_

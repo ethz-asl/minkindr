@@ -1,6 +1,6 @@
 // Copyright (c) 2015, Autonomous Systems Lab, ETH Zurich
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //     * Redistributions of source code must retain the above copyright
@@ -11,8 +11,9 @@
 //     * Neither the name of the <organization> nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
@@ -30,7 +31,7 @@
 namespace kindr {
 namespace minimal {
 
-template<typename Scalar>
+template <typename Scalar>
 class AngleAxisTemplate;
 
 /// \class RotationQuaternion
@@ -46,7 +47,7 @@ class AngleAxisTemplate;
 /// A_v = q_A_B.rotate(B_v);
 /// \endcode
 ///
-template<typename Scalar>
+template <typename Scalar>
 class RotationQuaternionTemplate {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -132,7 +133,8 @@ class RotationQuaternionTemplate {
   RotationQuaternionTemplate<Scalar> inverse() const;
 
   /// \deprecated use inverse instead.
-  RotationQuaternionTemplate<Scalar> inverted() const __attribute__((deprecated));
+  RotationQuaternionTemplate<Scalar> inverted() const
+      __attribute__((deprecated));
 
   /// \brief get a copy of the conjugate of the quaternion.
   RotationQuaternionTemplate<Scalar> conjugated() const;
@@ -213,13 +215,17 @@ class RotationQuaternionTemplate {
     return RotationQuaternionTemplate<Scalar>(Implementation(R).normalized());
   }
 
+  /// \brief cast scalar elements to another type
+  template <typename ScalarAfterCast>
+  RotationQuaternionTemplate<ScalarAfterCast> cast();
+
  private:
   Implementation q_A_B_;
 };
 
 typedef RotationQuaternionTemplate<double> RotationQuaternion;
 
-template<typename Scalar>
+template <typename Scalar>
 std::ostream& operator<<(std::ostream& out,
                          const RotationQuaternionTemplate<Scalar>& rhs);
 

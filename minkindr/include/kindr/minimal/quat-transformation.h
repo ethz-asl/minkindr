@@ -12,7 +12,8 @@
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
@@ -66,8 +67,8 @@ class QuatTransformationTemplate {
   explicit QuatTransformationTemplate(
       const typename Rotation::Implementation& q_A_B, const Position& A_t_A_B);
 
-  explicit QuatTransformationTemplate(
-      const Position& A_t_A_B, const Rotation& q_A_B);
+  explicit QuatTransformationTemplate(const Position& A_t_A_B,
+                                      const Rotation& q_A_B);
   explicit QuatTransformationTemplate(
       const Position& A_t_A_B, const typename Rotation::Implementation& q_A_B);
 
@@ -88,8 +89,10 @@ class QuatTransformationTemplate {
   /// \brief set to random transformation with a given translation norm.
   QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation);
 
-  /// \brief set to random transformation with a given translation norm and rotation angle.
-  QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation, Scalar angle_rad);
+  /// \brief set to random transformation with a given translation norm and
+  /// rotation angle.
+  QuatTransformationTemplate<Scalar>& setRandom(Scalar norm_translation,
+                                                Scalar angle_rad);
 
   /// \brief get the position component.
   Position& getPosition();
@@ -146,7 +149,8 @@ class QuatTransformationTemplate {
 
   /// \brief get the exponential map of the parameters, resulting in a valid
   /// transformation note: this is the exp map of SO(3)xR(3) and not SE(3)
-  /// \param[in] vec vector form of log map with first 3 components the translational
+  /// \param[in] vec vector form of log map with first 3 components the
+  /// translational
   ///                part and the last three the rotational part.
   /// \return The corresponding Transformation.
   static QuatTransformationTemplate<Scalar> exp(const Vector6& vec);
@@ -161,10 +165,20 @@ class QuatTransformationTemplate {
   QuatTransformationTemplate<Scalar> inverse() const;
 
   /// \deprecated use inverse() instead.
-  QuatTransformationTemplate<Scalar> inverted() const __attribute__((deprecated));
+  QuatTransformationTemplate<Scalar> inverted() const
+      __attribute__((deprecated));
 
   /// \brief check for binary equality.
   bool operator==(const QuatTransformationTemplate<Scalar>& rhs) const;
+
+  /// \brief Factory to construct a QuatTransformTemplate from a transformation
+  ///        matrix with a near orthonormal rotation matrix.
+  static QuatTransformationTemplate<Scalar>
+  constructAndRenormalizeRotation(const TransformationMatrix& T);
+
+  /// \brief cast scalar elements to another type
+  template <typename ScalarAfterCast>
+  QuatTransformationTemplate<ScalarAfterCast> cast();
 
  private:
   /// The quaternion that takes vectors from B to A.
@@ -180,12 +194,12 @@ class QuatTransformationTemplate {
 
 typedef QuatTransformationTemplate<double> QuatTransformation;
 
-template<typename Scalar>
-std::ostream & operator<<(std::ostream & out,
-                          const QuatTransformationTemplate<Scalar>& pose);
+template <typename Scalar>
+std::ostream& operator<<(std::ostream& out,
+                         const QuatTransformationTemplate<Scalar>& pose);
 
-} // namespace minimal
-} // namespace kindr
+}  // namespace minimal
+}  // namespace kindr
 
 #include <kindr/minimal/implementation/quat-transformation-inl.h>
 
