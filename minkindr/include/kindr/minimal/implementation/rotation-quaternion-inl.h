@@ -533,8 +533,7 @@ template <typename ScalarAfterCast>
 RotationQuaternionTemplate<ScalarAfterCast>
 RotationQuaternionTemplate<Scalar>::cast() {
   // renormalization needed to allow casting to increased precision
-  RotationQuaternionTemplate<ScalarAfterCast> temp;
-  return temp.constructAndRenormalize(
+  return RotationQuaternionTemplate<ScalarAfterCast>::constructAndRenormalize(
       getRotationMatrix().cast<ScalarAfterCast>());
 }
 
