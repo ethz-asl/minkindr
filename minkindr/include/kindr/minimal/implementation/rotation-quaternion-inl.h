@@ -534,7 +534,7 @@ RotationQuaternionTemplate<ScalarAfterCast>
 RotationQuaternionTemplate<Scalar>::cast() {
   // renormalization needed to allow casting to increased precision
   return RotationQuaternionTemplate<ScalarAfterCast>::constructAndRenormalize(
-      getRotationMatrix().cast<ScalarAfterCast>());
+      getRotationMatrix().template cast<ScalarAfterCast>());
 }
 
 } // namespace minimal

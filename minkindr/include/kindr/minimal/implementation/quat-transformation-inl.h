@@ -288,8 +288,8 @@ template <typename ScalarAfterCast>
 QuatTransformationTemplate<ScalarAfterCast>
 QuatTransformationTemplate<Scalar>::cast() {
   return QuatTransformationTemplate<ScalarAfterCast>(
-      getRotation().cast<ScalarAfterCast>(),
-      getPosition().cast<ScalarAfterCast>());
+      getRotation().template cast<ScalarAfterCast>(),
+      getPosition().template cast<ScalarAfterCast>());
 }
 
 } // namespace minimal
