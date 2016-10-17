@@ -26,6 +26,7 @@
 #define KINDR_MINIMAL_QUAT_TRANSFORMATION_H_
 
 #include <kindr/minimal/rotation-quaternion.h>
+#include <kindr/minimal/position.h>
 
 namespace kindr {
 namespace minimal {
@@ -53,7 +54,7 @@ class QuatTransformationTemplate {
 
   typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Matrix3X;
 
-  typedef Eigen::Matrix<Scalar, 3, 1> Position;
+  typedef PositionTemplate<Scalar> Position;
   typedef RotationQuaternionTemplate<Scalar> Rotation;
   typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
   typedef Eigen::Matrix<Scalar, 4, 4> TransformationMatrix;
