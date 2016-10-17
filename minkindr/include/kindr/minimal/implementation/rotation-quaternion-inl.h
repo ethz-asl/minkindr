@@ -112,8 +112,8 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
 /// \brief initialize from euler angles.
 template <typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
-    Scalar first_angle, Scalar second_angle, Scalar third_angle,
-    EulerOrder euler_order) {
+    Scalar first_euler_angle, Scalar second_euler_angle,
+    Scalar third_euler_angle, EulerOrder euler_order) {
   Vector3 first_axis, second_axis, third_axis;
 
   const Vector3 X_axis(1, 0, 0);
@@ -182,9 +182,9 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
       third_axis = Z_axis;
       break;
   }
-  q_A_B_ = (AngleAxisTemplate<Scalar>(first_angle, first_axis) *
-            AngleAxisTemplate<Scalar>(second_angle, second_axis) *
-            AngleAxisTemplate<Scalar>(third_angle, third_axis))
+  q_A_B_ = (AngleAxisTemplate<Scalar>(first_euler_angle, first_axis) *
+            AngleAxisTemplate<Scalar>(second_euler_angle, second_axis) *
+            AngleAxisTemplate<Scalar>(third_euler_angle, third_axis))
                .toImplementation();
 }
 

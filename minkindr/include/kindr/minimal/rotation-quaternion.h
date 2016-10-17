@@ -97,8 +97,9 @@ class RotationQuaternionTemplate {
   explicit RotationQuaternionTemplate(const RotationMatrix& matrix);
 
   /// \brief initialize from euler angles.
-  explicit RotationQuaternionTemplate(Scalar first_angle, Scalar second_angle,
-                                      Scalar third_angle,
+  explicit RotationQuaternionTemplate(Scalar first_euler_angle,
+                                      Scalar second_euler_angle,
+                                      Scalar third_euler_angle,
                                       EulerOrder euler_order);
 
   /// \brief take an approximate rotation matrix, recover the closest matrix
