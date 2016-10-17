@@ -63,6 +63,21 @@ class RotationQuaternionTemplate {
 
   typedef Eigen::Matrix<Scalar, 3, 3> RotationMatrix;
 
+  enum class EulerOrder {
+    XYX,
+    XYZ,
+    XZX,
+    XZY,
+    YXY,
+    YXZ,
+    YZX,
+    YZY,
+    ZXY,
+    ZXZ,
+    ZYX,
+    ZYZ
+  };
+
   /// \brief initialize to identity.
   RotationQuaternionTemplate();
 
@@ -80,6 +95,12 @@ class RotationQuaternionTemplate {
 
   /// \brief initialize from a rotation matrix.
   explicit RotationQuaternionTemplate(const RotationMatrix& matrix);
+
+  /// \brief initialize from euler angles.
+  explicit RotationQuaternionTemplate(Scalar first_euler_angle,
+                                      Scalar second_euler_angle,
+                                      Scalar third_euler_angle,
+                                      EulerOrder euler_order);
 
   /// \brief take an approximate rotation matrix, recover the closest matrix
   /// in SO(3) and construct.

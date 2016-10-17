@@ -109,6 +109,85 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
   CHECK(isValidRotationMatrix(matrix)) << matrix;
 }
 
+/// \brief initialize from euler angles.
+template <typename Scalar>
+RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
+    Scalar first_euler_angle, Scalar second_euler_angle,
+    Scalar third_euler_angle, EulerOrder euler_order) {
+  Vector3 first_axis, second_axis, third_axis;
+
+  const Vector3 X_axis(1, 0, 0);
+  const Vector3 Y_axis(0, 1, 0);
+  const Vector3 Z_axis(0, 0, 1);
+
+  switch (euler_order) {
+    case (EulerOrder::XYX):
+      first_axis = X_axis;
+      second_axis = Y_axis;
+      third_axis = X_axis;
+      break;
+    case (EulerOrder::XYZ):
+      first_axis = X_axis;
+      second_axis = Y_axis;
+      third_axis = Z_axis;
+      break;
+    case (EulerOrder::XZX):
+      first_axis = X_axis;
+      second_axis = Z_axis;
+      third_axis = X_axis;
+      break;
+    case (EulerOrder::XZY):
+      first_axis = X_axis;
+      second_axis = Z_axis;
+      third_axis = Y_axis;
+      break;
+    case (EulerOrder::YXY):
+      first_axis = Y_axis;
+      second_axis = X_axis;
+      third_axis = Y_axis;
+      break;
+    case (EulerOrder::YXZ):
+      first_axis = Y_axis;
+      second_axis = X_axis;
+      third_axis = Z_axis;
+      break;
+    case (EulerOrder::YZX):
+      first_axis = Y_axis;
+      second_axis = Z_axis;
+      third_axis = X_axis;
+      break;
+    case (EulerOrder::YZY):
+      first_axis = Y_axis;
+      second_axis = Z_axis;
+      third_axis = Y_axis;
+      break;
+    case (EulerOrder::ZXY):
+      first_axis = Z_axis;
+      second_axis = X_axis;
+      third_axis = Y_axis;
+      break;
+    case (EulerOrder::ZXZ):
+      first_axis = Z_axis;
+      second_axis = X_axis;
+      third_axis = Z_axis;
+      break;
+    case (EulerOrder::ZYX):
+      first_axis = Z_axis;
+      second_axis = Y_axis;
+      third_axis = X_axis;
+      break;
+    case (EulerOrder::ZYZ):
+      first_axis = Z_axis;
+      second_axis = Y_axis;
+      third_axis = Z_axis;
+      break;
+  }
+  q_A_B_ = (AngleAxisTemplate<Scalar>(first_euler_angle, first_axis) *
+            AngleAxisTemplate<Scalar>(second_euler_angle, second_axis) *
+            AngleAxisTemplate<Scalar>(third_euler_angle, third_axis))
+               .toImplementation();
+}
+
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::fromApproximateRotationMatrix(
