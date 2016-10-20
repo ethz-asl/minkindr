@@ -274,6 +274,24 @@ bool QuatTransformationTemplate<Scalar>::operator==(
   return q_A_B_ == rhs.q_A_B_ && A_t_A_B_ == rhs.A_t_A_B_;
 }
 
+template <typename Scalar>
+QuatTransformationTemplate<Scalar> QuatTransformationTemplate<
+    Scalar>::constructAndRenormalizeRotation(const TransformationMatrix& T) {
+  return QuatTransformationTemplate<Scalar>(
+      Rotation::constructAndRenormalize(
+          T.template topLeftCorner<3, 3>().eval()),
+      T.template topRightCorner<3, 1>().eval());
+}
+
+template <typename Scalar>
+template <typename ScalarAfterCast>
+QuatTransformationTemplate<ScalarAfterCast>
+QuatTransformationTemplate<Scalar>::cast() {
+  return QuatTransformationTemplate<ScalarAfterCast>(
+      getRotation().template cast<ScalarAfterCast>(),
+      getPosition().template cast<ScalarAfterCast>());
+}
+
 } // namespace minimal
 } // namespace kindr
 #endif  // KINDR_MINIMAL_QUAT_TRANSFORMATION_H_INL_

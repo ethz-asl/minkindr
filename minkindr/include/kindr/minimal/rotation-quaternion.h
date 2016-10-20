@@ -213,6 +213,10 @@ class RotationQuaternionTemplate {
     return RotationQuaternionTemplate<Scalar>(Implementation(R).normalized());
   }
 
+  /// \brief cast scalar elements to another type
+  template <typename ScalarAfterCast>
+  RotationQuaternionTemplate<ScalarAfterCast> cast();
+
  private:
   Implementation q_A_B_;
 };

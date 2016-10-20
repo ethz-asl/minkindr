@@ -167,6 +167,15 @@ class QuatTransformationTemplate {
   /// \brief check for binary equality.
   bool operator==(const QuatTransformationTemplate<Scalar>& rhs) const;
 
+  /// \brief Factory to construct a QuatTransformTemplate from a transformation
+  ///        matrix with a near orthonormal rotation matrix.
+  static QuatTransformationTemplate<Scalar>
+  constructAndRenormalizeRotation(const TransformationMatrix& T);
+
+  /// \brief cast scalar elements to another type
+  template <typename ScalarAfterCast>
+  QuatTransformationTemplate<ScalarAfterCast> cast();
+
  private:
   /// The quaternion that takes vectors from B to A.
   ///
