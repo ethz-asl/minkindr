@@ -215,7 +215,7 @@ class RotationQuaternionTemplate {
 
   /// \brief cast scalar elements to another type
   template <typename ScalarAfterCast>
-  RotationQuaternionTemplate<ScalarAfterCast> cast();
+  RotationQuaternionTemplate<ScalarAfterCast> cast() const;
 
  private:
   Implementation q_A_B_;

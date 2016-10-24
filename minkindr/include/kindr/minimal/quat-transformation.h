@@ -174,7 +174,7 @@ class QuatTransformationTemplate {
 
   /// \brief cast scalar elements to another type
   template <typename ScalarAfterCast>
-  QuatTransformationTemplate<ScalarAfterCast> cast();
+  QuatTransformationTemplate<ScalarAfterCast> cast() const;
 
  private:
   /// The quaternion that takes vectors from B to A.

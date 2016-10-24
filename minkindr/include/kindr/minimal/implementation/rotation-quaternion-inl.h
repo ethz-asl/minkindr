@@ -531,7 +531,7 @@ bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
 template <typename Scalar>
 template <typename ScalarAfterCast>
 RotationQuaternionTemplate<ScalarAfterCast>
-RotationQuaternionTemplate<Scalar>::cast() {
+RotationQuaternionTemplate<Scalar>::cast() const {
   // renormalization needed to allow casting to increased precision
   return RotationQuaternionTemplate<ScalarAfterCast>::constructAndRenormalize(
       getRotationMatrix().template cast<ScalarAfterCast>());
