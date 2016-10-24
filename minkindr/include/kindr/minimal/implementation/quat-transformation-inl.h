@@ -286,7 +286,7 @@ QuatTransformationTemplate<Scalar> QuatTransformationTemplate<
 template <typename Scalar>
 template <typename ScalarAfterCast>
 QuatTransformationTemplate<ScalarAfterCast>
-QuatTransformationTemplate<Scalar>::cast() {
+QuatTransformationTemplate<Scalar>::cast() const {
   return QuatTransformationTemplate<ScalarAfterCast>(
       getRotation().template cast<ScalarAfterCast>(),
       getPosition().template cast<ScalarAfterCast>());
