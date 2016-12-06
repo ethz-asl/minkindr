@@ -20,9 +20,9 @@ public:
 
   typedef QuatTransformationTemplate<Scalar> Transform;
   typedef QuatSimTransformTemplate<Scalar> Sim3;
-  typedef Eigen::Matrix<Scalar, 3, 1> Vector;
+  typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
   typedef Eigen::Matrix<Scalar, 7, 1> Vector7;
-  typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Vectors;
+  typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Matrix3X;
 
   // Creates identity similarity transform.
   QuatSimTransformTemplate();
@@ -31,9 +31,10 @@ public:
 
   QuatSimTransformTemplate(const Vector7& log_vector);
 
-  inline Vector operator*(const Vector& rhs) const;
+  inline Vector3 operator*(const Vector3& rhs) const;
 
-  inline Vectors operator*(const Vectors& rhs) const;
+  // Vectorized, applies operator * to each column vector.
+  inline Matrix3X operator*(const Matrix3X& rhs) const;
 
   inline Sim3 operator*(const Sim3& rhs) const;
 
@@ -44,8 +45,10 @@ public:
   inline Vector7 log() const;
 
   inline Eigen::Matrix<Scalar, 4, 4> getTransformationMatrix() const;
-  inline Transform getTransform() const { return T_A_B_; }
+  inline const Transform& getTransform() const { return T_A_B_; }
   inline Scalar getScale() const { return scale_A_B_; }
+
+  inline void setScale(const Scalar scale_A_B) { scale_A_B_ = scale_A_B; }
 
 private:
   Transform T_A_B_;

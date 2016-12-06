@@ -25,14 +25,14 @@ QuatSimTransformTemplate<Scalar>::QuatSimTransformTemplate(
 }
 
 template <typename Scalar>
-typename QuatSimTransformTemplate<Scalar>::Vector
-QuatSimTransformTemplate<Scalar>::operator*(const Vector& rhs) const {
+typename QuatSimTransformTemplate<Scalar>::Vector3
+QuatSimTransformTemplate<Scalar>::operator*(const Vector3& rhs) const {
   return T_A_B_ * (scale_A_B_ * rhs);
 }
 
 template <typename Scalar>
-typename QuatSimTransformTemplate<Scalar>::Vectors
-QuatSimTransformTemplate<Scalar>::operator*(const Vectors& rhs) const {
+typename QuatSimTransformTemplate<Scalar>::Matrix3X
+QuatSimTransformTemplate<Scalar>::operator*(const Matrix3X& rhs) const {
   return T_A_B_.transformVectorized(scale_A_B_ * rhs);
 }
 
@@ -46,7 +46,7 @@ QuatSimTransformTemplate<Scalar> QuatSimTransformTemplate<Scalar>::operator*(
   return QuatSimTransformTemplate<Scalar>(
       QuatTransformationTemplate<Scalar>(
           T_A_B_.getRotation() * rhs.T_A_B_.getRotation(),
-          operator *(rhs.T_A_B_.getPosition())),
+          (*this) * rhs.T_A_B_.getPosition()),
           scale_A_B_ * rhs.scale_A_B_);
 }
 
