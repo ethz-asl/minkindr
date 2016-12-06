@@ -1,6 +1,8 @@
 #ifndef KINDR_MINIMAL_QUAT_SIM_TRANSFORM_H_
 #define KINDR_MINIMAL_QUAT_SIM_TRANSFORM_H_
 
+#include <Eigen/Dense>
+
 #include "kindr/minimal/quat-transformation.h"
 
 namespace kindr {
@@ -17,20 +19,36 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   typedef QuatTransformationTemplate<Scalar> Transform;
-  typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Vectors;
+  typedef QuatSimTransformTemplate<Scalar> Sim3;
+  typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
+  typedef Eigen::Matrix<Scalar, 7, 1> Vector7;
+  typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic> Matrix3X;
 
   // Creates identity similarity transform.
   QuatSimTransformTemplate();
 
   QuatSimTransformTemplate(const Transform& T_A_B, const Scalar scale_A_B);
 
-  Vectors operator*(const Vectors& rhs) const;
+  QuatSimTransformTemplate(const Vector7& log_vector);
 
-  QuatSimTransformTemplate<Scalar> inverse() const;
+  inline Vector3 operator*(const Vector3& rhs) const;
 
-  Eigen::Matrix<Scalar, 4, 4> getTransformationMatrix() const;
-  Transform getTransform() const { return T_A_B_; }
-  Scalar getScale() const { return scale_A_B_; }
+  // Vectorized, applies operator * to each column vector.
+  inline Matrix3X operator*(const Matrix3X& rhs) const;
+
+  inline Sim3 operator*(const Sim3& rhs) const;
+
+  inline Sim3 operator*(const Transform& rhs) const;
+
+  inline Sim3 inverse() const;
+
+  inline Vector7 log() const;
+
+  inline Eigen::Matrix<Scalar, 4, 4> getTransformationMatrix() const;
+  inline const Transform& getTransform() const { return T_A_B_; }
+  inline Scalar getScale() const { return scale_A_B_; }
+
+  inline void setScale(const Scalar scale_A_B) { scale_A_B_ = scale_A_B; }
 
 private:
   Transform T_A_B_;
@@ -42,6 +60,11 @@ private:
 };
 
 typedef QuatSimTransformTemplate<double> QuatSimTransform;
+
+template<typename Scalar>
+inline QuatSimTransformTemplate<Scalar> operator*(
+    const QuatTransformationTemplate<Scalar>& lhs,
+    const QuatSimTransformTemplate<Scalar>& rhs);
 
 template<typename Scalar>
 std::ostream & operator<<(std::ostream & out,
