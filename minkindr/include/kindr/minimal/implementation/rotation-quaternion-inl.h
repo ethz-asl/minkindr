@@ -425,13 +425,13 @@ RotationQuaternionTemplate<Scalar>::getRotationMatrix() const {
 template<typename Scalar>
 Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
     const RotationQuaternionTemplate<Scalar>& rhs) const{
-  return AngleAxis(rhs * this->inverse()).getUnique().angle();
+  return AngleAxisTemplate<Scalar>(rhs * this->inverse()).getUnique().angle();
 }
 
 template<typename Scalar>
 Scalar RotationQuaternionTemplate<Scalar>::getDisparityAngle(
     const AngleAxisTemplate<Scalar>& rhs) const{
-  return AngleAxis(rhs * this->inverse()).getUnique().angle();
+  return AngleAxisTemplate<Scalar>(rhs * this->inverse()).getUnique().angle();
 }
 
 template<typename Scalar>
