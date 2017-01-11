@@ -31,17 +31,20 @@
 namespace kindr {
 namespace minimal {
 
-template<typename Scalar>
+template <typename Scalar>
 struct EPS {
   static constexpr Scalar value();
+  static constexpr Scalar normalization_value();
 };
-template<>
+template <>
 struct EPS<double> {
   static constexpr double value() { return 1.0e-8; }
+  static constexpr double normalization_value() { return 1.0e-4; }
 };
-template<>
+template <>
 struct EPS<float> {
   static constexpr float value() { return 1.0e-5f; }
+  static constexpr float normalization_value() { return 1.0e-4f; }
 };
 
 
@@ -55,7 +58,8 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     Scalar w, Scalar x, Scalar y, Scalar z) :
     q_A_B_(w,x,y,z) {
-  CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), static_cast<Scalar>(1e-4));
+  CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), 
+             EPS<Scalar>::normalization_value());
 }
 
 /// \brief initialize from real and imaginary components
@@ -65,7 +69,7 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const typename RotationQuaternionTemplate<Scalar>::Vector3& imaginary) :
     q_A_B_(real, imaginary[0], imaginary[1], imaginary[2]){
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0),
-             static_cast<Scalar>(1e-4));
+             EPS<Scalar>::normalization_value());
 }
 
 /// \brief initialize from an Eigen quaternion
@@ -74,7 +78,7 @@ RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const Implementation& quaternion) :
     q_A_B_(quaternion){
   CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0),
-             static_cast<Scalar>(1e-4));
+             EPS<Scalar>::normalization_value());
 }
 
 namespace detail {
@@ -115,7 +119,8 @@ RotationQuaternionTemplate<Scalar>::fromApproximateRotationMatrix(
     const RotationMatrix& matrix) {
   // We still want the input matrix to resemble a rotation matrix to avoid
   // bug hiding.
-  CHECK(isValidRotationMatrix(matrix, 1.e-5));
+  CHECK(isValidRotationMatrix(
+      matrix, static_cast<Scalar>(EPS<float>::normalization_value())));
   // http://people.csail.mit.edu/bkph/articles/Nearest_Orthonormal_Matrix.pdf
   // as discussed in https://github.com/ethz-asl/kindr/issues/55 ,
   // code by Philipp Krüsi.
@@ -398,15 +403,23 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::operator*(
     const RotationQuaternionTemplate<Scalar>& rhs) const {
-  return RotationQuaternionTemplate<Scalar>(q_A_B_ * rhs.q_A_B_);
+  Implementation result = q_A_B_ * rhs.q_A_B_;
+
+  // check if the multiplication has resulted in the quaternion no longer being
+  // approximately normalized.
+  if (std::abs(result.squaredNorm() - static_cast<Scalar>(1.0)) >
+      EPS<Scalar>::normalization_value()) {
+    // renormalize
+    result.normalize();
+  }
+  return RotationQuaternionTemplate<Scalar>(result);
 }
 
 template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::operator*(
     const AngleAxisTemplate<Scalar>& rhs) const {
-  return RotationQuaternionTemplate<Scalar>(q_A_B_ *
-                                            rhs.toImplementation());
+  return *this * RotationQuaternionTemplate<Scalar>(rhs);
 }
 
 template<typename Scalar>
