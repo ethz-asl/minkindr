@@ -419,8 +419,7 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::operator*(
     const AngleAxisTemplate<Scalar>& rhs) const {
-  return RotationQuaternionTemplate<Scalar>(
-      q_A_B_ * RotationQuaternionTemplate<Scalar>(rhs));
+  return *this * RotationQuaternionTemplate<Scalar>(rhs);
 }
 
 template<typename Scalar>
