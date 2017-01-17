@@ -33,8 +33,10 @@ namespace minimal {
 
 template <typename Scalar>
 struct EPS {
-  static constexpr Scalar value();
-  static constexpr Scalar normalization_value();
+  static constexpr Scalar value() { return static_cast<Scalar>(1.0e-5); }
+  static constexpr Scalar normalization_value() {
+    return static_cast<Scalar>(1.0e-4);
+  }
 };
 template <>
 struct EPS<double> {
@@ -407,8 +409,9 @@ RotationQuaternionTemplate<Scalar>::operator*(
 
   // check if the multiplication has resulted in the quaternion no longer being
   // approximately normalized.
-  if (std::abs(result.squaredNorm() - static_cast<Scalar>(1.0)) >
-      EPS<Scalar>::normalization_value()) {
+  Scalar signed_norm_diff = result.squaredNorm() - static_cast<Scalar>(1.0);
+  if ((signed_norm_diff > EPS<Scalar>::normalization_value()) ||
+      (signed_norm_diff < - EPS<Scalar>::normalization_value())) {
     // renormalize
     result.normalize();
   }
