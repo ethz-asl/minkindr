@@ -24,6 +24,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef KINDR_MIN_ROTATION_QUATERNION_INL_H_
 #define KINDR_MIN_ROTATION_QUATERNION_INL_H_
+
+#include <type_traits>
+
 #include <glog/logging.h>
 #include <kindr/minimal/rotation-quaternion.h>
 #include <kindr/minimal/angle-axis.h>
@@ -48,7 +51,6 @@ struct EPS<float> {
   static constexpr float value() { return 1.0e-5f; }
   static constexpr float normalization_value() { return 1.0e-4f; }
 };
-
 
 /// \brief initialize to identity
 template<typename Scalar>
@@ -409,6 +411,8 @@ RotationQuaternionTemplate<Scalar>::operator*(
 
   // check if the multiplication has resulted in the quaternion no longer being
   // approximately normalized.
+  // Cover the case of non-arithmetic types that may not provide an
+  // implementation of std::abs.
   Scalar signed_norm_diff = result.squaredNorm() - static_cast<Scalar>(1.0);
   if ((signed_norm_diff > EPS<Scalar>::normalization_value()) ||
       (signed_norm_diff < - EPS<Scalar>::normalization_value())) {
@@ -416,6 +420,38 @@ RotationQuaternionTemplate<Scalar>::operator*(
     result.normalize();
   }
   return RotationQuaternionTemplate<Scalar>(result);
+}
+
+template<> inline
+RotationQuaternionTemplate<float>
+RotationQuaternionTemplate<float>::operator*(
+    const RotationQuaternionTemplate<float>& rhs) const {
+  Implementation result = q_A_B_ * rhs.q_A_B_;
+
+  // check if the multiplication has resulted in the quaternion no longer being
+  // approximately normalized.
+  if (std::abs(result.squaredNorm() - 1.0f) >
+      EPS<float>::normalization_value()) {
+    // renormalize
+    result.normalize();
+  }
+  return RotationQuaternionTemplate<float>(result);
+}
+
+template<> inline
+RotationQuaternionTemplate<double>
+RotationQuaternionTemplate<double>::operator*(
+    const RotationQuaternionTemplate<double>& rhs) const {
+  Implementation result = q_A_B_ * rhs.q_A_B_;
+
+  // check if the multiplication has resulted in the quaternion no longer being
+  // approximately normalized.
+  if (std::abs(result.squaredNorm() - 1.0f) >
+      EPS<double>::normalization_value()) {
+    // renormalize
+    result.normalize();
+  }
+  return RotationQuaternionTemplate<double>(result);
 }
 
 template<typename Scalar>
