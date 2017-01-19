@@ -218,6 +218,8 @@ class RotationQuaternionTemplate {
   RotationQuaternionTemplate<ScalarAfterCast> cast() const;
 
  private:
+  void normalizationHelper(Implementation* quaternion) const;
+
   Implementation q_A_B_;
 };
 

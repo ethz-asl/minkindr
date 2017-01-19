@@ -407,9 +407,12 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::operator*(
     const RotationQuaternionTemplate<Scalar>& rhs) const {
+  CHECK(!std::is_arithmetic<Scalar>::value) << "Please provide a specialized "
+      "function for arithmetic types. This function is only a workaround for "
+      "non-arithmetic types.";
   Implementation result = q_A_B_ * rhs.q_A_B_;
 
-  // check if the multiplication has resulted in the quaternion no longer being
+  // Check if the multiplication has resulted in the quaternion no longer being
   // approximately normalized.
   // Cover the case of non-arithmetic types that may not provide an
   // implementation of std::abs.
@@ -427,14 +430,7 @@ RotationQuaternionTemplate<float>
 RotationQuaternionTemplate<float>::operator*(
     const RotationQuaternionTemplate<float>& rhs) const {
   Implementation result = q_A_B_ * rhs.q_A_B_;
-
-  // check if the multiplication has resulted in the quaternion no longer being
-  // approximately normalized.
-  if (std::abs(result.squaredNorm() - 1.0f) >
-      EPS<float>::normalization_value()) {
-    // renormalize
-    result.normalize();
-  }
+  normalizationHelper(&result);
   return RotationQuaternionTemplate<float>(result);
 }
 
@@ -443,14 +439,7 @@ RotationQuaternionTemplate<double>
 RotationQuaternionTemplate<double>::operator*(
     const RotationQuaternionTemplate<double>& rhs) const {
   Implementation result = q_A_B_ * rhs.q_A_B_;
-
-  // check if the multiplication has resulted in the quaternion no longer being
-  // approximately normalized.
-  if (std::abs(result.squaredNorm() - 1.0f) >
-      EPS<double>::normalization_value()) {
-    // renormalize
-    result.normalize();
-  }
+  normalizationHelper(&result);
   return RotationQuaternionTemplate<double>(result);
 }
 
@@ -587,6 +576,18 @@ RotationQuaternionTemplate<Scalar>::cast() const {
   // renormalization needed to allow casting to increased precision
   return RotationQuaternionTemplate<ScalarAfterCast>::constructAndRenormalize(
       getRotationMatrix().template cast<ScalarAfterCast>());
+}
+
+template <typename Scalar>
+void RotationQuaternionTemplate<Scalar>::normalizationHelper(Implementation* quaternion) const {
+  CHECK_NOTNULL(quaternion);
+  // check if the multiplication has resulted in the quaternion no longer being
+  // approximately normalized.
+  if (std::abs(quaternion->squaredNorm() - static_cast<Scalar>(1)) >
+      EPS<Scalar>::normalization_value()) {
+    // renormalize
+    quaternion->normalize();
+  }
 }
 
 } // namespace minimal
