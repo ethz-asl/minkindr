@@ -408,8 +408,8 @@ RotationQuaternionTemplate<Scalar>
 RotationQuaternionTemplate<Scalar>::operator*(
     const RotationQuaternionTemplate<Scalar>& rhs) const {
   CHECK(!std::is_arithmetic<Scalar>::value) << "Please provide a specialized "
-      "function for arithmetic types. This function is only a workaround for "
-      "non-arithmetic types.";
+      "function for this specific arithmetic type. This function is only a "
+      "workaround for non-arithmetic types.";
   Implementation result = q_A_B_ * rhs.q_A_B_;
 
   // Check if the multiplication has resulted in the quaternion no longer being
