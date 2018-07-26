@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>minkindr_python</name>
+  <version>0.0.1</version>
+  <description>lsafjl</description>
+
+  <maintainer email="paul.furgale@mavt.ethz.ch">Paul Furgale</maintainer>
+  <license>New BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>glog_catkin</depend>
+  <depend>minkindr</depend>
+  <depend>numpy_eigen</depend>
+  <depend>python_module</depend>
+
+</package>
