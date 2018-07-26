@@ -14,6 +14,11 @@ Quaternion createQuaternionFromXYZW(const Eigen::Vector4d& xyzw) {
   return Quaternion(xyzw(3), xyzw(0), xyzw(1), xyzw(2));
 }
 
+Quaternion createQuaternionFromApproximateRotationMatrix(
+    const Eigen::Matrix3d& R) {
+ return Quaternion::constructAndRenormalize(R);
+}
+
 void exportRotationQuaternion() {
   using namespace boost::python;
 
@@ -29,4 +34,5 @@ void exportRotationQuaternion() {
     ;
 
   def("createQuaternionFromXYZW", createQuaternionFromXYZW, "...");
+  def("createQuaternionFromApproximateRotationMatrix", createQuaternionFromApproximateRotationMatrix, "...");
 }
