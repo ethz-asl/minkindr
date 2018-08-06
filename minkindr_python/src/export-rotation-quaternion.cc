@@ -22,7 +22,7 @@ Quaternion createQuaternionFromApproximateRotationMatrix(
 void exportRotationQuaternion() {
   using namespace boost::python;
 
-  class_< Quaternion >( "Quaternion", init<>() )
+  class_< Quaternion, boost::shared_ptr<Quaternion> >( "Quaternion", init<>() )
     .def(init<const Eigen::Matrix3d&>())
     .def(init<const double, const double, const double, const double>())
     .def("w", &Quaternion::w)
@@ -31,6 +31,8 @@ void exportRotationQuaternion() {
     .def("z", &Quaternion::z)
     .def("getRotationMatrix", &Quaternion::getRotationMatrix)
     .def("getQuaternionXYZW", getQuaternionXYZW)
+    .def("inverse", &Quaternion::inverse)
+    .def(self * self)
     ;
 
   def("createQuaternionFromXYZW", createQuaternionFromXYZW, "...");

@@ -17,13 +17,14 @@ kindr::minimal::RotationQuaternionTemplate<double> getRotation(const Transformat
 void exportTransformation() {
   using namespace boost::python;
 
-  class_< Transformation >( "Transformation", init<>() )
+  class_< Transformation, boost::shared_ptr<Transformation> >( "Transformation", init<>() )
     .def(init<const Eigen::Matrix4d&>())
     .def(init<const Transformation::Rotation&, const Transformation::Position&>())
     .def("getTransformationMatrix", &Transformation::getTransformationMatrix)
     .def("getRotation", getRotation)
     .def("getRotationMatrix", &Transformation::getRotationMatrix)
     .def("getPosition", getPosition)
+    .def("inverse", &Transformation::inverse)
     .def(self * self)
     ;
 }
