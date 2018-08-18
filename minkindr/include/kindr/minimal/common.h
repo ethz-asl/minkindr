@@ -25,6 +25,7 @@
 #ifndef MINKINDR_MINIMAL_COMMON_H
 #define MINKINDR_MINIMAL_COMMON_H
 
+#include <math.h>
 #include <Eigen/Core>
 #include <glog/logging.h>
 
@@ -58,6 +59,25 @@ inline Eigen::Matrix3d skewMatrix(const Eigen::Vector3d& v) {
   skewMatrix(v, &skew);
   return skew;
 }
+
+inline Eigen::Matrix3d eulerAnglesYawPitchRollToRotationMatrix(const double& yaw, const double& pitch, const double& roll) {
+    Eigen::Matrix3d C;
+    double cx = cos(roll);
+    double sx = sin(roll);
+    double cy = cos(pitch);
+    double sy = sin(pitch);
+    double cz = cos(yaw);
+    double sz = sin(yaw);
+      //[cos(z)*cos(y), -sin(z)*cos(x)+cos(z)*sin(y)*sin(x),  sin(z)*sin(x)+cos(z)*sin(y)*cos(x)]
+      //[sin(z)*cos(y),  cos(z)*cos(x)+sin(z)*sin(y)*sin(x), -cos(z)*sin(x)+sin(z)*sin(y)*cos(x)]
+      //[      -sin(y),                       cos(y)*sin(x),                       cos(y)*cos(x)]
+      C <<
+	cz*cy,  -sz*cx+cz*sy*sx,   sz*sx+cz*sy*cx,
+	sz*cy,   cz*cx+sz*sy*sx,  -cz*sx+sz*sy*cx,
+        -sy,         cy*sx,            cy*cx;
+
+      return C;
+    }
 
 }  // namespace minimal
 }  // namespace kindr
