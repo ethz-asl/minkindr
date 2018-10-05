@@ -19,6 +19,17 @@ Quaternion createQuaternionFromApproximateRotationMatrix(
  return Quaternion::constructAndRenormalize(R);
 }
 
+Eigen::Vector3d getAngleAxis(const Quaternion* quaternion) {
+  const Eigen::Matrix3d& rot_matrix =
+      CHECK_NOTNULL(quaternion)->getRotationMatrix();
+  kindr::minimal::AngleAxis angle_axis(rot_matrix);
+  return angle_axis.axis() * angle_axis.angle();
+}
+
+void normalize(Quaternion* quaternion) {
+  CHECK_NOTNULL(quaternion)->normalize();
+}
+
 void exportRotationQuaternion() {
   using namespace boost::python;
 
@@ -32,6 +43,8 @@ void exportRotationQuaternion() {
     .def("getRotationMatrix", &Quaternion::getRotationMatrix)
     .def("getQuaternionXYZW", getQuaternionXYZW)
     .def("inverse", &Quaternion::inverse)
+    .def("getAngleAxis", getAngleAxis)
+    .def("normalize", normalize)
     .def(self * self)
     ;
 
