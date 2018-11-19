@@ -16,7 +16,7 @@ Quaternion createQuaternionFromXYZW(const Eigen::Vector4d& xyzw) {
 
 Quaternion createQuaternionFromApproximateRotationMatrix(
     const Eigen::Matrix3d& R) {
- return Quaternion::constructAndRenormalize(R);
+  return Quaternion::constructAndRenormalize(R);
 }
 
 Eigen::Vector3d getAngleAxis(const Quaternion* quaternion) {
