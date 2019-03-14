@@ -35,7 +35,7 @@ void exportRotationQuaternion() {
 
   class_< Quaternion, boost::shared_ptr<Quaternion> >( "Quaternion", init<>() )
     .def(init<const Eigen::Matrix3d&>())
-    .def(init<const double, const double, const double, const double>()/*, "Quaternion(w, x, y, z)"*/)
+    .def(init<const double, const double, const double, const double>("Quaternion(w, x, y, z)"))
     .def("w", &Quaternion::w)
     .def("x", &Quaternion::x)
     .def("y", &Quaternion::y)
