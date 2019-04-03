@@ -121,5 +121,3 @@ TEST(TestTransformation2D, TestCast) {
 
 }  // namespace minimal
 }  // namespace kindr
-
-// SEVENCPP_UNITTEST_ENTRYPOINT
