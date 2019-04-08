@@ -1,3 +1,7 @@
+#ifndef KINDR_MINIMAL_IMPLEMENTATION_TRANSFORM_2D_INL_H_
+#define KINDR_MINIMAL_IMPLEMENTATION_TRANSFORM_2D_INL_H_
+
+#include <cmath>
 #include <limits>
 
 #include <glog/logging.h>
@@ -25,7 +29,9 @@ Transformation2DTemplate<Scalar>::Transformation2DTemplate(
   CHECK_LE((T(2, 2) - static_cast<Scalar>(1.0)), kEpsilon);
   const Eigen::Matrix<Scalar, 2, 2> rotation_matrix =
       T.template topLeftCorner<2, 2>().eval();
-  CHECK_LE(rotation_matrix.determinant() - static_cast<Scalar>(1.0), kEpsilon);
+  CHECK_LE(
+      std::abs(rotation_matrix.determinant() - static_cast<Scalar>(1.0)),
+      kEpsilon);
 }
 
 template <typename Scalar>
@@ -142,3 +148,5 @@ Transformation2DTemplate<Scalar>::cast() const {
 
 }  // namespace minimal
 }  // namespace kindr
+
+#endif  // KINDR_MINIMAL_IMPLEMENTATION_TRANSFORM_2D_INL_H_

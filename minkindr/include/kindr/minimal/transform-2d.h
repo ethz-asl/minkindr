@@ -91,7 +91,7 @@ class Transformation2DTemplate {
   // A_v = r_A_B * B_v;
   Rotation r_A_B_;
 
-  // The vector from the origin of A to the origin of B expressed in A.
+  // The vector from the origin of A to the origin of B, expressed in A.
   Position A_t_A_B_;
 };
 
