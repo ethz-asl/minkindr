@@ -12,13 +12,8 @@ Transformation2DTemplate<Scalar>::Transformation2DTemplate() {
 
 template <typename Scalar>
 Transformation2DTemplate<Scalar>::Transformation2DTemplate(
-    const Rotation& r_A_B, const Position& A_t_A_B)
+    const Rotation r_A_B, const Position& A_t_A_B)
     : r_A_B_(r_A_B), A_t_A_B_(A_t_A_B) {}
-
-template <typename Scalar>
-Transformation2DTemplate<Scalar>::Transformation2DTemplate(
-    const Position& A_t_A_B, const Rotation& r_A_B)
-    : Transformation2DTemplate<Scalar>(r_A_B, A_t_A_B) {}
 
 template <typename Scalar>
 Transformation2DTemplate<Scalar>::Transformation2DTemplate(
@@ -26,13 +21,15 @@ Transformation2DTemplate<Scalar>::Transformation2DTemplate(
     : Transformation2DTemplate<Scalar>(
           Rotation2D(T.template topLeftCorner<2, 2>().eval()),
           T.template topRightCorner<2, 1>().eval()) {
-  constexpr Scalar kScalarOne = static_cast<Scalar>(1.0);
   constexpr Scalar kEpsilon = std::numeric_limits<Scalar>::epsilon();
-  CHECK_LE((T(2, 2) - kScalarOne), kEpsilon);
+  CHECK_LE((T(2, 2) - static_cast<Scalar>(1.0)), kEpsilon);
   const Eigen::Matrix<Scalar, 2, 2> rotation_matrix =
       T.template topLeftCorner<2, 2>().eval();
-  CHECK_LE(rotation_matrix.determinant() - kScalarOne, kEpsilon);
+  CHECK_LE(rotation_matrix.determinant() - static_cast<Scalar>(1.0), kEpsilon);
 }
+
+template <typename Scalar>
+Transformation2DTemplate<Scalar>::~Transformation2DTemplate() {}
 
 template <typename Scalar>
 void Transformation2DTemplate<Scalar>::setIdentity() {
@@ -74,10 +71,13 @@ template <typename Scalar>
 typename Transformation2DTemplate<Scalar>::TransformationMatrix
 Transformation2DTemplate<Scalar>::getTransformationMatrix() const {
   TransformationMatrix transformation_matrix;
-  transformation_matrix.setIdentity();
   transformation_matrix.template topLeftCorner<2, 2>() =
       r_A_B_.toRotationMatrix();
   transformation_matrix.template topRightCorner<2, 1>() = A_t_A_B_;
+  transformation_matrix.template bottomRows<1>() =
+      (Eigen::Matrix<Scalar, 1, 3>() << static_cast<Scalar>(0.0),
+       static_cast<Scalar>(0.0), static_cast<Scalar>(1.0))
+          .finished();
   return transformation_matrix;
 }
 
@@ -109,7 +109,6 @@ template <typename Scalar>
 typename Transformation2DTemplate<Scalar>::Matrix2X
 Transformation2DTemplate<Scalar>::transformVectorized(
     const Matrix2X& rhs) const {
-  CHECK_GT(rhs.cols(), 0);
   return (r_A_B_.toRotationMatrix() * rhs).colwise() + A_t_A_B_;
 }
 

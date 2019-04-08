@@ -28,12 +28,11 @@ class Transformation2DTemplate {
 
   Transformation2DTemplate();
 
-  Transformation2DTemplate(const Rotation& r_A_B, const Position& A_t_A_B);
-  Transformation2DTemplate(const Position& A_t_A_B, const Rotation& r_A_B);
+  Transformation2DTemplate(const Rotation r_A_B, const Position& A_t_A_B);
 
   explicit Transformation2DTemplate(const TransformationMatrix& T);
 
-  virtual ~Transformation2DTemplate() {}
+  ~Transformation2DTemplate();
 
   void setIdentity();
 

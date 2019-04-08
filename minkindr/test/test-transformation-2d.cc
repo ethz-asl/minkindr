@@ -2,6 +2,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <eigen-checks/gtest.h>
 #include <gtest/gtest.h>
 
 #include "kindr/minimal/transform-2d.h"
@@ -9,20 +10,6 @@
 #ifndef TEST
 #define TEST(a, b) int Test_##a##_##b()
 #endif
-
-#define __INTERNAL_GTEST_NEAR_EIGEN(PREDICATE, matrix_A, matrix_B, precision) \
-  PREDICATE##_TRUE(                                                           \
-      ((matrix_A) - (matrix_B)).cwiseAbs().maxCoeff() <= precision)           \
-      << "For matrices '" << #matrix_A << "' and '" << #matrix_B << "'."      \
-      << std::endl                                                            \
-      << "Where '" << #matrix_A << "' equals: " << std::endl                  \
-      << (matrix_A) << std::endl                                              \
-      << "and '" << #matrix_B << "' equals: " << std::endl                    \
-      << (matrix_B) << std::endl                                              \
-      << "and precision equals: " << precision;
-
-#define EXPECT_NEAR_EIGEN(matrix_A, matrix_B, precision) \
-  __INTERNAL_GTEST_NEAR_EIGEN(EXPECT, matrix_A, matrix_B, precision)
 
 namespace kindr {
 namespace minimal {
@@ -35,16 +22,12 @@ static Eigen::Vector2d v(6.26257419, 1.58356548);
 TEST(TestTransformation2D, TestInitialization) {
   const Transformation2D T;
   EXPECT_NEAR(T.getRotation().angle(), 0.0, kEpsilon);
-  EXPECT_NEAR_EIGEN(T.getPosition(), Eigen::Vector2d(0.0, 0.0), kEpsilon);
+  EXPECT_TRUE(
+      EIGEN_MATRIX_NEAR(T.getPosition(), Eigen::Vector2d(0.0, 0.0), kEpsilon));
 
   const Transformation2D T_rot_pos(r, t);
   EXPECT_NEAR(T_rot_pos.getRotation().angle(), r.angle(), kEpsilon);
-  EXPECT_NEAR_EIGEN(T_rot_pos.getPosition(), t, kEpsilon);
-
-  const Transformation2D T_pos_rot(t, r);
-  EXPECT_NEAR_EIGEN(
-      T_rot_pos.getTransformationMatrix(), T_pos_rot.getTransformationMatrix(),
-      kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(T_rot_pos.getPosition(), t, kEpsilon));
 
   const Eigen::Matrix<double, 3, 3> transformation_matrix =
       (Eigen::Matrix<double, 3, 3>() << std::cos(r.angle()),
@@ -52,10 +35,10 @@ TEST(TestTransformation2D, TestInitialization) {
        t.y(), 0.0, 0.0, 1.0)
           .finished();
   const Transformation2D T_from_mat(transformation_matrix);
-  EXPECT_NEAR_EIGEN(
-      transformation_matrix, T_from_mat.getTransformationMatrix(), kEpsilon);
-  EXPECT_NEAR_EIGEN(
-      T_rot_pos.getTransformationMatrix(), transformation_matrix, kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(
+      transformation_matrix, T_from_mat.getTransformationMatrix(), kEpsilon));
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(
+      transformation_matrix, T_rot_pos.getTransformationMatrix(), kEpsilon));
 
   const Eigen::Matrix<double, 3, 3> invalid_transformation_matrix =
       (Eigen::Matrix<double, 3, 3>() << 1.0, 1.0, t.x(), 1.0, 1.0, t.y(), 0.0,
@@ -70,10 +53,10 @@ TEST(TestTransformation2D, TestGettersAndSetters) {
   T.getRotation() = r;
   T.getPosition() = t;
   EXPECT_NEAR(T.getRotation().angle(), r.angle(), kEpsilon);
-  EXPECT_NEAR_EIGEN(T.getPosition(), t, kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(T.getPosition(), t, kEpsilon));
 
-  EXPECT_NEAR_EIGEN(
-      T.asVector(), (Eigen::Vector3d() << r.angle(), t).finished(), kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(
+      T.asVector(), (Eigen::Vector3d() << r.angle(), t).finished(), kEpsilon));
 
   constexpr double angle_new = 3.1415;
   T.getRotation().angle() = angle_new;
@@ -90,20 +73,22 @@ Eigen::Vector3d toHomogeneous(const Eigen::Vector2d& v) {
 
 TEST(TestTransformation2D, TestComposition) {
   const Eigen::Vector3d vh = toHomogeneous(v);
-  EXPECT_NEAR_EIGEN(v, fromHomogeneous(vh), kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(v, fromHomogeneous(vh), kEpsilon));
 
   const Transformation2D T(r, t);
   const Eigen::Matrix<double, 3, 3> T_mat = T.getTransformationMatrix();
-  EXPECT_NEAR_EIGEN(T * v, fromHomogeneous(T_mat * vh), kEpsilon);
-  EXPECT_NEAR_EIGEN(T * T * v, fromHomogeneous(T_mat * T_mat * vh), kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(T * v, fromHomogeneous(T_mat * vh), kEpsilon));
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(
+      T * T * v, fromHomogeneous(T_mat * T_mat * vh), kEpsilon));
 
-  EXPECT_NEAR_EIGEN(
-      T.inverse().getTransformationMatrix(), T_mat.inverse(), kEpsilon);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(
+      T.inverse().getTransformationMatrix(), T_mat.inverse(), kEpsilon));
 
   const Eigen::MatrixXd v_vectorized = Eigen::MatrixXd::Random(2, 10);
   const Eigen::MatrixXd v_result = T.transformVectorized(v_vectorized);
   for (int i = 0; i < v_vectorized.cols(); ++i) {
-    EXPECT_NEAR_EIGEN(v_result.col(i), T * v_vectorized.col(i), kEpsilon);
+    EXPECT_TRUE(
+        EIGEN_MATRIX_NEAR(v_result.col(i), T * v_vectorized.col(i), kEpsilon));
   }
 }
 
@@ -115,8 +100,8 @@ TEST(TestTransformation2D, TestCast) {
   EXPECT_NEAR(
       T_double.getRotation().angle(),
       static_cast<double>(T_float.getRotation().angle()), 1e-5);
-  EXPECT_NEAR_EIGEN(
-      T_double.getPosition(), T_float.getPosition().cast<double>(), 1e-5);
+  EXPECT_TRUE(EIGEN_MATRIX_NEAR(
+      T_double.getPosition(), T_float.getPosition().cast<double>(), 1e-5));
 }
 
 }  // namespace minimal
