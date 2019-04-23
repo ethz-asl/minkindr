@@ -4,10 +4,9 @@ project(minkindr_python)
 find_package(catkin_simple REQUIRED)
 catkin_simple()
 
-# enable warnings
 set (CMAKE_CXX_FLAGS "-Wall  ${CMAKE_CXX_FLAGS}")
 
-# enable C++11 support.
+# Enable C++11 support.
 if (CMAKE_VERSION VERSION_LESS "3.1")
   if (MSVC)
     message(FATAL_ERROR "CMake version 3.1 or later is required to compiler ${PROJECT_NAME} with Microsoft Visual C++")
