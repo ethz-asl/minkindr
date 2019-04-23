@@ -295,7 +295,7 @@ QuatTransformationTemplate<Scalar>::cast() const {
 }
 
 template<typename Scalar>
-QuatTransformationTemplate<Scalar> interpolateLinearly(
+QuatTransformationTemplate<Scalar> interpolateComponentwise(
     const QuatTransformationTemplate<Scalar>& T_a,
     const QuatTransformationTemplate<Scalar>& T_b, const double lambda) {
   CHECK_GE(lambda, 0.0);

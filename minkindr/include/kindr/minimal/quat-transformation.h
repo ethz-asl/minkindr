@@ -194,8 +194,10 @@ template<typename Scalar>
 std::ostream & operator<<(std::ostream & out,
                           const QuatTransformationTemplate<Scalar>& pose);
 
+// Exponential interpolation (i.e., Slerp) in SO(3) and linear interpolation in
+// R3. Lambda is in [0, 1], with 0 returning T_a, and 1 returning T_b.
 template<typename Scalar>
-inline QuatTransformationTemplate<Scalar> interpolateLinearly(
+inline QuatTransformationTemplate<Scalar> interpolateComponentwise(
     const QuatTransformationTemplate<Scalar>& T_a,
     const QuatTransformationTemplate<Scalar>& T_b, const double lambda);
 } // namespace minimal
