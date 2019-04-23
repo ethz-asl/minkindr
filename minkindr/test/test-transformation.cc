@@ -246,8 +246,10 @@ TEST(MinKindrTests, testLinearInterpolation) {
   Transformation T_b;
   T_b.setRandom();
 
-  EXPECT_DEATH(interpolateLinearly(T_a, T_b, 1.0 + std::numeric_limits<double>::epsilon()), "");
-  EXPECT_DEATH(interpolateLinearly(T_a, T_b, 0.0 - std::numeric_limits<double>::epsilon()), "");
+  EXPECT_DEATH(interpolateComponentwise(
+      T_a, T_b, 1.0 + std::numeric_limits<double>::epsilon()), "");
+  EXPECT_DEATH(interpolateComponentwise(
+      T_a, T_b, 0.0 - std::numeric_limits<double>::epsilon()), "");
 
   Eigen::Matrix3d R_a;
   R_a << 0.0, -1.0, 0.0,
@@ -263,19 +265,19 @@ TEST(MinKindrTests, testLinearInterpolation) {
   Eigen::Vector3d p_b(4.0, 5.0, 6.0);
   T_b = Transformation(RotationQuaternion(R_b), p_b);
 
-  Transformation T_int = interpolateLinearly(T_a, T_b, 0.0);
+  Transformation T_int = interpolateComponentwise(T_a, T_b, 0.0);
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
       T_int.getRotationMatrix(), R_a, 1e-6));
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
       T_int.getPosition(), p_a, 1e-6));
 
-  T_int = interpolateLinearly(T_a, T_b, 1.0);
+  T_int = interpolateComponentwise(T_a, T_b, 1.0);
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
       T_int.getRotationMatrix(), R_b, 1e-6));
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
       T_int.getPosition(), p_b, 1e-6));
 
-  T_int = interpolateLinearly(T_a, T_b, 0.5);
+  T_int = interpolateComponentwise(T_a, T_b, 0.5);
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
       T_int.getRotationMatrix(), Eigen::Matrix3d::Identity(), 1e-6));
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
