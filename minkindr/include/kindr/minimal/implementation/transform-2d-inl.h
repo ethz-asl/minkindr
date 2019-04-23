@@ -23,7 +23,7 @@ template <typename Scalar>
 Transformation2DTemplate<Scalar>::Transformation2DTemplate(
     const TransformationMatrix& T)
     : Transformation2DTemplate<Scalar>(
-          Rotation2D(T.template topLeftCorner<2, 2>().eval()),
+          Rotation2D().fromRotationMatrix(T.template topLeftCorner<2, 2>().eval()),
           T.template topRightCorner<2, 1>().eval()) {
   constexpr Scalar kEpsilon = std::numeric_limits<Scalar>::epsilon();
   CHECK_LE((T(2, 2) - static_cast<Scalar>(1.0)), kEpsilon);
