@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>minkindr</name>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
   <description>minkindr</description>
 
   <maintainer email="paul.furgale@gmail.com">Paul Furgale</maintainer>
