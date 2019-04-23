@@ -82,7 +82,7 @@ TEST(TestTransformation2D, TestComposition) {
       T * T * v, fromHomogeneous(T_mat * T_mat * vh), kEpsilon));
 
   EXPECT_TRUE(EIGEN_MATRIX_NEAR(
-      T.inverse().getTransformationMatrix(), T_mat.inverse(), kEpsilon));
+      T.inverse().getTransformationMatrix(), T_mat.inverse().eval(), kEpsilon));
 
   const Eigen::MatrixXd v_vectorized = Eigen::MatrixXd::Random(2, 10);
   const Eigen::MatrixXd v_result = T.transformVectorized(v_vectorized);
