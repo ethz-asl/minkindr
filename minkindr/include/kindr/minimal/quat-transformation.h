@@ -194,6 +194,10 @@ template<typename Scalar>
 std::ostream & operator<<(std::ostream & out,
                           const QuatTransformationTemplate<Scalar>& pose);
 
+template<typename Scalar>
+inline QuatTransformationTemplate<Scalar> interpolateLinearly(
+    const QuatTransformationTemplate<Scalar>& T_a,
+    const QuatTransformationTemplate<Scalar>& T_b, const double lambda);
 } // namespace minimal
 } // namespace kindr
 

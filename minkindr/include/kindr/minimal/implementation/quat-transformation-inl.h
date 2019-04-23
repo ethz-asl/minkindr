@@ -26,6 +26,8 @@
 #define KINDR_MINIMAL_QUAT_TRANSFORMATION_H_INL_
 #include <kindr/minimal/quat-transformation.h>
 
+#include <glog/logging.h>
+
 namespace kindr {
 namespace minimal {
 
@@ -290,6 +292,19 @@ QuatTransformationTemplate<Scalar>::cast() const {
   return QuatTransformationTemplate<ScalarAfterCast>(
       getRotation().template cast<ScalarAfterCast>(),
       getPosition().template cast<ScalarAfterCast>());
+}
+
+template<typename Scalar>
+QuatTransformationTemplate<Scalar> interpolateLinearly(
+    const QuatTransformationTemplate<Scalar>& T_a,
+    const QuatTransformationTemplate<Scalar>& T_b, const double lambda) {
+  CHECK_GE(lambda, 0.0);
+  CHECK_LE(lambda, 1.0);
+  const PositionTemplate<Scalar> p_int =
+      T_a.getPosition() + lambda * (T_b.getPosition() - T_a.getPosition());
+  const Eigen::Quaternion<Scalar> q_int =
+      T_a.getEigenQuaternion().slerp(lambda, T_b.getEigenQuaternion());
+  return QuatTransformationTemplate<Scalar>(q_int, p_int);
 }
 
 } // namespace minimal
