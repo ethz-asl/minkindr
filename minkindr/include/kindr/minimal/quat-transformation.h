@@ -194,6 +194,7 @@ template<typename Scalar>
 std::ostream & operator<<(std::ostream & out,
                           const QuatTransformationTemplate<Scalar>& pose);
 
+// Lambda is in [0, 1], with 0 returning T_a, and 1 returning T_b.
 template<typename Scalar>
 inline QuatTransformationTemplate<Scalar> interpolateLinearly(
     const QuatTransformationTemplate<Scalar>& T_a,
