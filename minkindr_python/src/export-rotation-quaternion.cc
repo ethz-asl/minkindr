@@ -7,7 +7,9 @@ using namespace boost::python;
 typedef kindr::minimal::RotationQuaternionTemplate<double> Quaternion;
 
 Eigen::Vector4d getQuaternionXYZW(const Quaternion* quaternion) {
-  return CHECK_NOTNULL(quaternion)->toImplementation().coeffs();
+  CHECK_NOTNULL(quaternion);
+  return Eigen::Vector4d(
+      quaternion->x(), quaternion->y(), quaternion->z(), quaternion->w());
 }
 
 Eigen::Vector4d getQuaternionWXYZ(const Quaternion* quaternion) {
