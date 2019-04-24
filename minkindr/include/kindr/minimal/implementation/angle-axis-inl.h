@@ -63,12 +63,12 @@ AngleAxisTemplate<Scalar>::AngleAxisTemplate(const RotationMatrix& matrix) :
 }
 
 template<typename Scalar>
-AngleAxisTemplate<Scalar>::AngleAxisTemplate(const Vector3& angleAxis) {
-    const Scalar angle_rad = angleAxis.norm();
+AngleAxisTemplate<Scalar>::AngleAxisTemplate(const Vector3& rotationVector) {
+    const Scalar angle_rad = rotationVector.norm();
     if (angle_rad < std::numeric_limits<Scalar>::epsilon()) {
       setIdentity();
     } else {
-      Vector3 axis = angleAxis;
+      Vector3 axis = rotationVector;
       axis = axis / angle_rad;
 
       C_A_B_ = Implementation(angle_rad, axis);
