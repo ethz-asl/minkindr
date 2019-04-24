@@ -28,5 +28,5 @@ void exportTransformation() {
     .def(self * self)
     ;
 
-  def("interpolateLinearly", &kindr::minimal::interpolateLinearly<double>);
+  def("interpolateLinearly", &kindr::minimal::interpolateComponentwise<double>);
 }

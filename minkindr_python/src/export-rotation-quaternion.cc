@@ -31,8 +31,7 @@ Quaternion createQuaternionFromApproximateRotationMatrix(
 }
 
 Eigen::Vector3d getRotationVector(const Quaternion* quaternion) {
-  kindr::minimal::AngleAxis angle_axis(
-      CHECK_NOTNULL(quaternion)->toImplementation());
+  const kindr::minimal::AngleAxis angle_axis(*CHECK_NOTNULL(quaternion));
   return angle_axis.axis() * angle_axis.angle();
 }
 
