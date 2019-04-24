@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 #include <kindr/minimal/rotation-quaternion.h>
 #include <numpy_eigen/boost_python_headers.hpp>
 
@@ -30,13 +29,13 @@ Quaternion createQuaternionFromApproximateRotationMatrix(
   return Quaternion::constructAndRenormalize(R);
 }
 
-Eigen::Vector3d getRotationVector(const Quaternion* quaternion) {
-  const kindr::minimal::AngleAxis angle_axis(*CHECK_NOTNULL(quaternion));
+Eigen::Vector3d getRotationVector(const Quaternion& quaternion) {
+  const kindr::minimal::AngleAxis angle_axis(quaternion);
   return angle_axis.axis() * angle_axis.angle();
 }
 
-void normalize(Quaternion* quaternion) {
-  CHECK_NOTNULL(quaternion)->normalize();
+void normalize(Quaternion& quaternion) {
+  quaternion.normalize();
 }
 
 void exportRotationQuaternion() {

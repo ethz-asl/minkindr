@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 #include <kindr/minimal/quat-transformation.h>
 #include <numpy_eigen/boost_python_headers.hpp>
 
@@ -6,12 +5,12 @@ using namespace boost::python;
 
 using Transformation = kindr::minimal::QuatTransformationTemplate<double>;
 
-Eigen::Vector3d getPosition(const Transformation* transformation) {
-  return CHECK_NOTNULL(transformation)->getPosition();
+Eigen::Vector3d getPosition(const Transformation& transformation) {
+  return transformation.getPosition();
 }
 
-kindr::minimal::RotationQuaternionTemplate<double> getRotation(const Transformation* transformation) {
-  return CHECK_NOTNULL(transformation)->getRotation();
+Transformation::Rotation getRotation(const Transformation& transformation) {
+  return transformation.getRotation();
 }
 
 void exportTransformation() {
