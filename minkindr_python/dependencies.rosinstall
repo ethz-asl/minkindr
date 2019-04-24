@@ -1,7 +1,4 @@
 - git:
-    local-name: catkin_simple
-    uri: https://github.com/catkin/catkin_simple.git
-- git:
     local-name: catkin_boost_python_buildtool
     uri: https://github.com/ethz-asl/catkin_boost_python_buildtool
 - git:
