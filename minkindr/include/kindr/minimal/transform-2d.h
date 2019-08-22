@@ -102,6 +102,7 @@ using Transformation2D = Transformation2DTemplate<double>;
 template<typename Scalar>
 std::ostream & operator<<(std::ostream & out,
     const Transformation2DTemplate<Scalar>& rhs);
+
 }  // namespace minimal
 }  // namespace kindr
 
