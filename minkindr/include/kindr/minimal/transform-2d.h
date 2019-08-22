@@ -99,6 +99,9 @@ using Position2D = Position2DTemplate<double>;
 using Rotation2D = Rotation2DTemplate<double>;
 using Transformation2D = Transformation2DTemplate<double>;
 
+template<typename Scalar>
+std::ostream & operator<<(std::ostream & out,
+    const Transformation2DTemplate<Scalar>& rhs);
 }  // namespace minimal
 }  // namespace kindr
 

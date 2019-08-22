@@ -136,6 +136,13 @@ bool Transformation2DTemplate<Scalar>::operator!=(
 }
 
 template <typename Scalar>
+std::ostream & operator<<(std::ostream & out,
+                          const Transformation2DTemplate<Scalar>& rhs) {
+  out << rhs.asVector().transpose();
+  return out;
+}
+
+template <typename Scalar>
 template <typename ScalarAfterCast>
 Transformation2DTemplate<ScalarAfterCast>
 Transformation2DTemplate<Scalar>::cast() const {
