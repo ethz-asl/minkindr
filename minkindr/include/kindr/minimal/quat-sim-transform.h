@@ -1,9 +1,9 @@
 #ifndef KINDR_MINIMAL_QUAT_SIM_TRANSFORM_H_
 #define KINDR_MINIMAL_QUAT_SIM_TRANSFORM_H_
 
-#include <Eigen/Dense>
-
 #include <ostream>
+
+#include <Eigen/Dense>
 
 #include "kindr/minimal/quat-transformation.h"
 
