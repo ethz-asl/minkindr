@@ -3,6 +3,8 @@
 
 #include <Eigen/Dense>
 
+#include <ostream>
+
 #include "kindr/minimal/quat-transformation.h"
 
 namespace kindr {

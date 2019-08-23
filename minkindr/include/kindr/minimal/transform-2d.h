@@ -1,6 +1,8 @@
 #ifndef KINDR_MINIMAL_TRANSFORM_2D_H_
 #define KINDR_MINIMAL_TRANSFORM_2D_H_
 
+#include <ostream>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
