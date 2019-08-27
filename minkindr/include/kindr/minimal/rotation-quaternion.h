@@ -25,6 +25,8 @@
 #ifndef KINDR_MIN_ROTATION_QUATERNION_H_
 #define KINDR_MIN_ROTATION_QUATERNION_H_
 
+#include <ostream>
+
 #include <Eigen/Dense>
 
 namespace kindr {

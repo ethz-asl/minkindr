@@ -25,6 +25,8 @@
 #ifndef KINDR_MINIMAL_QUAT_TRANSFORMATION_H_
 #define KINDR_MINIMAL_QUAT_TRANSFORMATION_H_
 
+#include <ostream>
+
 #include <kindr/minimal/rotation-quaternion.h>
 #include <kindr/minimal/position.h>
 
