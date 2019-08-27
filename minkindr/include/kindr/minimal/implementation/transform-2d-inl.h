@@ -138,7 +138,8 @@ bool Transformation2DTemplate<Scalar>::operator!=(
 template <typename Scalar>
 std::ostream & operator<<(std::ostream & out,
                           const Transformation2DTemplate<Scalar>& rhs) {
-  out << rhs.asVector().transpose();
+   out << "[" <<rhs.getRotation().angle() << ", ["
+       << rhs.getPosition().transpose() << "]]";
   return out;
 }
 
