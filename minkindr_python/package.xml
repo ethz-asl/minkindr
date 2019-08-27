@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>minkindr_python</name>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
   <description>Python exports for minkindr.</description>
 
   <maintainer email="mathias.buerki@mavt.ethz.ch">Mathias Buerki</maintainer>
