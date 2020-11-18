@@ -69,7 +69,7 @@ void exportRotationQuaternion() {
   def("createQuaternionFromApproximateRotationMatrix",
       createQuaternionFromApproximateRotationMatrix,
       "Creates a quaternion from an (approximate) numpy 3x3 rotation matrix.");
-  def("createQuaternionFromRotationVectorDegs",
+  def("createQuaternionFromRotationVectorRads",
       createQuaternionFromRotationVectorRads,
       "Creates a quaternion from a rotation vector [x, y, z] in radians.");
 }
