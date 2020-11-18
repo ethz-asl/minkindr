@@ -29,6 +29,10 @@ Quaternion createQuaternionFromApproximateRotationMatrix(
   return Quaternion::constructAndRenormalize(R);
 }
 
+Quaternion createQuaternionFromRotationVectorRads(const Eigen::Vector3d& rotation_vector_xyz_rads) {
+  return Quaternion(rotation_vector_xyz_rads);
+}
+
 Eigen::Vector3d getRotationVector(const Quaternion& quaternion) {
   const kindr::minimal::AngleAxis angle_axis(quaternion);
   return angle_axis.axis() * angle_axis.angle();
@@ -65,4 +69,7 @@ void exportRotationQuaternion() {
   def("createQuaternionFromApproximateRotationMatrix",
       createQuaternionFromApproximateRotationMatrix,
       "Creates a quaternion from an (approximate) numpy 3x3 rotation matrix.");
+  def("createQuaternionFromRotationVectorDegs",
+      createQuaternionFromRotationVectorRads,
+      "Creates a quaternion from a rotation vector [x, y, z] in radians.");
 }
