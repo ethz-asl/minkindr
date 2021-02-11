@@ -1,6 +1,6 @@
 // Copyright (c) 2015, Autonomous Systems Lab, ETH Zurich
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //     * Redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 //     * Neither the name of the <organization> nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -41,13 +41,13 @@ struct EPS {
 };
 template <>
 struct EPS<double> {
-  static constexpr double value() { return 1.0e-8; }
-  static constexpr double normalization_value() { return 1.0e-4; }
+  static constexpr double value() { return 1.0e-4; }
+  static constexpr double normalization_value() { return 1.0e-3; }
 };
 template <>
 struct EPS<float> {
-  static constexpr float value() { return 1.0e-5f; }
-  static constexpr float normalization_value() { return 1.0e-4f; }
+  static constexpr float value() { return 1.0e-2f; }
+  static constexpr float normalization_value() { return 1.0e-1f; }
 };
 
 /// \brief initialize to identity
@@ -60,7 +60,7 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     Scalar w, Scalar x, Scalar y, Scalar z) :
     q_A_B_(w,x,y,z) {
-  CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0), 
+  CHECK_NEAR(squaredNorm(), static_cast<Scalar>(1.0),
              EPS<Scalar>::normalization_value());
 }
 
@@ -231,7 +231,7 @@ RotationQuaternionTemplate<Scalar>::getUnique() const {
   } else if (this->w() < 0){
     return RotationQuaternionTemplate<Scalar>(
         -this->w(),-this->x(),-this->y(),-this->z());
-  } 
+  }
   // w == 0
   if(this->x() > 0) {
     return *this;
@@ -245,7 +245,7 @@ RotationQuaternionTemplate<Scalar>::getUnique() const {
   } else if (this->y() < 0){
     return RotationQuaternionTemplate<Scalar>(
         -this->w(),-this->x(),-this->y(),-this->z());
-  } 
+  }
   // y == 0
   if(this->z() > 0) { // z must be either -1 or 1 in this case
     return *this;
