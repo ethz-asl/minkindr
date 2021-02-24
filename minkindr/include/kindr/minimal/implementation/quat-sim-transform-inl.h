@@ -1,6 +1,8 @@
 #ifndef KINDR_MINIMAL_IMPLEMENTATION_QUAT_SIM_TRANSFORM_INL_H_
 #define KINDR_MINIMAL_IMPLEMENTATION_QUAT_SIM_TRANSFORM_INL_H_
 
+#include <cmath>
+
 #include <glog/logging.h>
 
 namespace kindr {
@@ -20,8 +22,14 @@ template <typename Scalar>
 QuatSimTransformTemplate<Scalar>::QuatSimTransformTemplate(
     const Vector7& log_vector)
     : T_A_B_(Eigen::Matrix<Scalar, 6, 1>(log_vector.template head<6>())),
-      scale_A_B_(log_vector(6)) {
+      scale_A_B_(::exp(log_vector(6))) {
   CHECK_GT(scale_A_B_, 0.);
+}
+
+template <typename Scalar>
+bool QuatSimTransformTemplate<Scalar>::operator==(
+    const QuatSimTransformTemplate<Scalar>& other) const {
+  return T_A_B_ == other.T_A_B_ && scale_A_B_ == other.scale_A_B_;
 }
 
 template <typename Scalar>
@@ -69,7 +77,7 @@ template <typename Scalar>
 inline Eigen::Matrix<Scalar, 7, 1>
 QuatSimTransformTemplate<Scalar>::log() const {
   Eigen::Matrix<Scalar, 7, 1> result;
-  result << T_A_B_.log(), scale_A_B_;
+  result << T_A_B_.log(), ::log(scale_A_B_);
   return result;
 }
 

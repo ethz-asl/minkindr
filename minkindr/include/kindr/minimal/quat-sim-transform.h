@@ -33,6 +33,8 @@ public:
 
   QuatSimTransformTemplate(const Vector7& log_vector);
 
+  inline bool operator==(const QuatSimTransformTemplate<Scalar>& other) const;
+
   inline Vector3 operator*(const Vector3& rhs) const;
 
   // Vectorized, applies operator * to each column vector.
