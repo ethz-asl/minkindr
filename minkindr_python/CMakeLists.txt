@@ -31,7 +31,7 @@ add_python_export_library(${PY_PROJECT_NAME} ${PY_PACKAGE_DIR}
 )
 
 if(${PYTHON_VERSION_MAJOR} EQUAL 2) 
-  add_python_export_library(${PY_PROJECT_NAME} ${PY_PACKAGE_DIR}
+  add_python_export_library(minkindr_python3 ${PY_PACKAGE_DIR}
   src/module.cpp
   src/export-rotation-quaternion.cc
   src/export-transformation.cc
