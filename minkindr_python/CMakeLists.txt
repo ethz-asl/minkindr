@@ -30,5 +30,14 @@ add_python_export_library(${PY_PROJECT_NAME} ${PY_PACKAGE_DIR}
   src/export-transformation.cc
 )
 
+if(${PYTHON_VERSION_MAJOR} EQUAL 2) 
+  add_python_export_library(${PY_PROJECT_NAME} ${PY_PACKAGE_DIR}
+  src/module.cpp
+  src/export-rotation-quaternion.cc
+  src/export-transformation.cc
+  VERSION 3.6
+  )
+endif()
+
 cs_install()
 cs_export()
