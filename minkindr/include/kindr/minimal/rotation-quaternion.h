@@ -67,6 +67,7 @@ class RotationQuaternionTemplate {
 
   /// \brief initialize to identity.
   RotationQuaternionTemplate();
+  RotationQuaternionTemplate(const RotationQuaternionTemplate& other) = default;
 
   /// \brief initialize from angle scaled axis.
   explicit RotationQuaternionTemplate(const Vector3& angle_scaled_axis);

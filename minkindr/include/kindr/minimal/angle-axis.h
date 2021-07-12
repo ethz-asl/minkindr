@@ -64,6 +64,7 @@ class AngleAxisTemplate {
 
   /// \brief initialize to identity.
   AngleAxisTemplate();
+  AngleAxisTemplate(const AngleAxisTemplate& other) = default;
 
   /// \brief initialize from the angle and rotation axis (angle first).
   AngleAxisTemplate(Scalar angle, Scalar v1, Scalar v2, Scalar v3);
