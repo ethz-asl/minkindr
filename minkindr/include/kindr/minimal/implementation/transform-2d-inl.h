@@ -43,6 +43,23 @@ void Transformation2DTemplate<Scalar>::setIdentity() {
 }
 
 template <typename Scalar>
+Transformation2DTemplate<Scalar>&
+Transformation2DTemplate<Scalar>::setRandom() {
+  r_A_B_ = Rotation(M_PI * Eigen::Matrix<Scalar, 1, 1>::Random().x());
+  A_t_A_B_.setRandom();
+  return *this;
+}
+
+template <typename Scalar>
+Transformation2DTemplate<Scalar>&
+Transformation2DTemplate<Scalar>::setRandom(Scalar norm_translation) {
+  setRandom();
+  A_t_A_B_.normalize();
+  A_t_A_B_ *= norm_translation;
+  return *this;
+}
+
+template <typename Scalar>
 typename Transformation2DTemplate<Scalar>::Position&
 Transformation2DTemplate<Scalar>::getPosition() {
   return A_t_A_B_;

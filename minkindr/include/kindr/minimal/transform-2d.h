@@ -38,6 +38,12 @@ class Transformation2DTemplate {
 
   void setIdentity();
 
+  /// Set to random transformation.
+  Transformation2DTemplate<Scalar>& setRandom();
+
+  /// Set to random transformation with a given translation norm.
+  Transformation2DTemplate<Scalar>& setRandom(Scalar norm_translation);
+
   // Non-const getter for the position vector.
   Position& getPosition();
 
