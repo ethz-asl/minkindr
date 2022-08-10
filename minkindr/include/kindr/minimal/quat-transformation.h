@@ -75,7 +75,21 @@ class QuatTransformationTemplate {
   explicit QuatTransformationTemplate(
       const Position& A_t_A_B, const typename Rotation::Implementation& q_A_B);
 
+  [[deprecated(
+      "This is dangerous, since it does not guarantee to create a unit "
+      "quaternion. Use 'fromApproximateTransformationMatrix' "
+      "instead.")]]
   explicit QuatTransformationTemplate(const TransformationMatrix& T);
+
+  /// \brief take an approximate transformation matrix, recover the closest
+  /// matrix in SO(3) for the rotation and construct.
+  static QuatTransformationTemplate<Scalar> fromApproximateTransformationMatrix(
+      const TransformationMatrix& T) {
+    return QuatTransformationTemplate(
+        RotationQuaternionTemplate<Scalar>::fromApproximateRotationMatrix(
+            T.template block<3, 3>(0, 0)),
+        T.template block<3, 1>(0, 3));
+  }
 
   /// \brief a constructor based on the exponential map.
   /// translational part in the first 3 dimensions,
