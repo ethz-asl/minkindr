@@ -82,7 +82,11 @@ class RotationQuaternionTemplate {
   explicit RotationQuaternionTemplate(const Implementation& quaternion);
 
   /// \brief initialize from a rotation matrix.
-  explicit RotationQuaternionTemplate(const RotationMatrix& matrix);
+  [[deprecated(
+      "This is dangerous, since it does not guarantee to create a unit "
+      "quaternion. Use 'fromApproximateRotationMatrix' "
+      "instead.")]] explicit RotationQuaternionTemplate(const RotationMatrix&
+                                                            matrix);
 
   /// \brief take an approximate rotation matrix, recover the closest matrix
   /// in SO(3) and construct.

@@ -69,8 +69,10 @@ TEST(MinKindrTests, testTransform) {
          0.85444827, -0.36445416, -0.37025845,  0.7790679,
          0.40276403,  0.91484567,  0.02895739,  4.1696795,
       0.        ,  0.        ,  0.        ,  1. ;
-  
-  
+
+  const Transformation TFmx = Transformation::fromApproximateTransformationMatrix(Tmx);
+  ASSERT_TRUE(EIGEN_MATRIX_NEAR(TFmx.getTransformationMatrix(), Tmx, 1e-8));
+
   Eigen::Vector3d Tv1 = T.transform(v);
   Eigen::Vector4d Tvh2 = T.transform4(vh);
   Eigen::Vector4d Tvh3 = T.transform4(vh2);
